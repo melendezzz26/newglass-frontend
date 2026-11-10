@@ -18,7 +18,8 @@ import { RunMaskInspection } from './RunMaskInspection';
 import { RunVisualization } from './RunVisualization';
 import { MaterialTrace, InventoryReceipt } from './MaterialTrace';
 import { UnplacedSummary } from './UnplacedSummary';
-import { CompactComparisonTable, areaForOperator, percentageForOperator } from './CompactComparisonTable';
+import { CompactComparisonTable } from './CompactComparisonTable';
+import { areaForOperator, percentageForOperator } from './comparisonResultModel';
 import './ComparisonWorkspace.css';
 
 const PHASES = ['Máscaras', 'Orden de piezas', 'Giros y colocación', 'Resultado'];

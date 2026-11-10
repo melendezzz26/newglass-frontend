@@ -27,7 +27,7 @@ test('inspector vacío; 2D selecciona unidad y muestra original, rotación y té
   fireEvent.click(within(inspector).getByText('Datos técnicos exactos'));
   expect(inspector).toHaveTextContent('Posición X');
   expect(inspector).toHaveTextContent('Geometría colocada');
-  expect(document.querySelectorAll('[data-placement]')).toHaveLength(2);
+  expect(document.querySelectorAll('[data-placement]')).toHaveLength(3);
   expect(screen.getAllByRole('complementary', { name: 'Inspector de pieza' })).toHaveLength(1);
 });
 
@@ -91,6 +91,6 @@ test('3D oculta etiquetas indiscriminadas, ofrece opción secundaria e inspector
   fireEvent.click(document.querySelector('[data-piece-3d]'));
   expect(document.querySelectorAll('.placement-3d-piece-label')).toHaveLength(1);
   fireEvent.click(screen.getByRole('button', { name: 'Mostrar IDs generales' }));
-  expect(document.querySelectorAll('.placement-3d-piece-label')).toHaveLength(2);
+  expect(document.querySelectorAll('.placement-3d-piece-label')).toHaveLength(3);
   expect(screen.getByRole('button', { name: 'Ocultar etiquetas generales' })).toHaveAttribute('aria-pressed', 'true');
 });

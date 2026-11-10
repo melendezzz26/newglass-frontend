@@ -18,7 +18,7 @@ test('220 unidades pendientes se agrupan sin perder IDs de unidad ni motivo', ()
   expect(within(summary).getAllByRole('listitem')).toHaveLength(2);
   expect(container.querySelectorAll('details')).toHaveLength(2);
   fireEvent.click(within(summary).getByText(/Pieza #100 · 110 unidades/));
-  expect(within(summary).getByText(/Unidades exactas: 1, 2, 3/)).toBeVisible();
+  expect(within(container.querySelector('details[open]')).getByText(/Unidades exactas: 1, 2, 3/)).toBeVisible();
   expect(grouped[0].units.at(-1)).toBe(110);
 });
 

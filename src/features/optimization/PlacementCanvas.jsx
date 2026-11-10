@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { containerKey, placementKey } from './optimizationModel';
 import { getGeometryBounds } from './visualizationGeometry';
 import { PlacementScene3D } from './PlacementScene3D';
@@ -6,6 +6,9 @@ import { DEFAULT_YAW, placementColors } from './placementScene';
 import { placementMatchesGroup } from './materialGroups';
 import { InspectionViewport } from './InspectionViewport';
 import { RasterInspection } from './RasterInspection';
+import { PieceInspector } from './PieceInspector';
+import { PiecePlacementList } from './PiecePlacementList';
+import { matchSelectedPiece, pieceInspectionDetails, pieceSelectionKey } from './pieceInspectionModel';
 
 function Shape({ geometry }) {
   if (geometry.type === 'RECTANGULO') return <rect width={geometry.width_mm} height={geometry.height_mm} />;
@@ -16,6 +19,9 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
   const titleId = useId();
   const [chosen, setChosen] = useState('');
   const [chosenGroup, setChosenGroup] = useState('');
+  const [selectedKey, setSelectedKey] = useState(null);
+  const scope = { comparisonId: visualContext?.runId ?? null, executionId: visualContext?.executionId ?? null };
+  useEffect(() => { setSelectedKey(null); }, [scope.comparisonId, scope.executionId]);
   const [view, setView] = useState('2d');
   const [yaw, setYaw] = useState(DEFAULT_YAW);
   const [zoom3d, setZoom3d] = useState(1);
@@ -25,6 +31,8 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
   const container = containers.find(c => containerKey(c) === chosen) ?? containers[0];
   const compatible = useMemo(() => placements.filter(p => group && p.group_id === group.id && placementMatchesGroup(snapshot, p)), [placements, group, snapshot]);
   const visible = useMemo(() => compatible.filter(p => container && containerKey(p) === containerKey(container)), [compatible, container]);
+  const selected = matchSelectedPiece(visible, selectedKey, scope);
+  const inspected = selected && container ? pieceInspectionDetails(snapshot, selected, container) : null;
   if (!container) return null;
   const bounds = getGeometryBounds(container.geometry);
   const residuals = (snapshot.residuals ?? []).filter(region => containerKey(region) === containerKey(container));
@@ -33,12 +41,12 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
     && getGeometryBounds(p.geometria));
   return <section className="first-fit-canvas" aria-label="Distribución de piezas">
     <div className="first-fit-group-select"><label htmlFor={`${titleId}-group`}>Vidrio del resultado</label>
-      <select id={`${titleId}-group`} className="ng-control" value={group.id} onChange={e => { setChosenGroup(e.target.value); setChosen(''); }}>
+      <select id={`${titleId}-group`} className="ng-control" value={group.id} onChange={e => { setChosenGroup(e.target.value); setChosen(''); setSelectedKey(null); }}>
         {snapshot.groups.map(g => <option key={g.id} value={g.id}>{g.name} · {g.thickness} mm</option>)}
       </select></div>
     <p>Vidrio: {group.name} · {group.thickness} mm · pedidos {group.orders.map(id => `#${id}`).join(', ')}</p>
     <label htmlFor={titleId}>Plancha o retazo</label>
-    <select id={titleId} className="ng-control" value={containerKey(container)} onChange={e => setChosen(e.target.value)}>
+    <select id={titleId} className="ng-control" value={containerKey(container)} onChange={e => { setChosen(e.target.value); setSelectedKey(null); }}>
       {containers.map(c => <option key={containerKey(c)} value={containerKey(c)}>{c.material_source === 'PLANCHA' ? 'Plancha' : 'Retazo'} #{c.material_id} · unidad {c.stock_unit_index} · {c.material_name ?? 'Material'} · {c.espesor_mm} mm</option>)}
     </select>
     <p>{container.material_source === 'PLANCHA' ? 'Plancha seleccionada' : 'Retazo seleccionado'}: {container.material_width_mm} × {container.material_height_mm} mm · unidad física {container.stock_unit_index}</p>
@@ -47,8 +55,10 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
       <button type="button" className="ng-button" aria-pressed={view === '3d'} onClick={() => setView('3d')}>Ver en 3D</button>
       <button type="button" className="ng-button" aria-pressed={view === 'raster'} onClick={() => setView('raster')}>Ver detalle de piezas</button>
     </div>}
+    <div className="piece-inspection-layout">
+      <div className="piece-inspection-main">
     {view === 'raster' && canVisualize ? <RasterInspection key={group.id} snapshot={snapshot} group={group} placements={visible} visualContext={visualContext} />
-      : view === '3d' && canVisualize ? <PlacementScene3D snapshot={snapshot} container={container} placements={visible} yaw={yaw} onYawChange={setYaw} zoom={zoom3d} onZoomChange={setZoom3d} camera={camera} onCameraChange={setCamera} /> : <>
+      : view === '3d' && canVisualize ? <PlacementScene3D snapshot={snapshot} container={container} placements={visible} scope={scope} selectedKey={selectedKey} onSelect={setSelectedKey} yaw={yaw} onYawChange={setYaw} zoom={zoom3d} onZoomChange={setZoom3d} camera={camera} onCameraChange={setCamera} /> : <>
     <InspectionViewport label="2D">
     <svg className="first-fit-sheet" viewBox={`0 0 ${container.material_width_mm} ${container.material_height_mm}`}
       preserveAspectRatio="xMidYMid meet" role="img" aria-label={`Colocaciones en ${container.material_source.toLowerCase()} #${container.material_id}`}>
@@ -59,7 +69,12 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
       {visible.map(p => {
         const b = getGeometryBounds(p.geometria);
         const [color, edge] = placementColors(snapshot, p);
-        return <g key={placementKey(p)} data-placement={placementKey(p)} className="first-fit-piece" style={{ fill: color, stroke: edge }}
+        const key = pieceSelectionKey(scope, p);
+        const isSelected = selectedKey === key;
+        return <g key={placementKey(p)} data-placement={placementKey(p)} data-selected={isSelected} className="first-fit-piece"
+          onClick={() => setSelectedKey(key)}
+          style={{ fill: color, stroke: isSelected ? '#bb4b06' : edge,
+            strokeWidth: isSelected ? Math.max(2, Math.min(container.material_width_mm, container.material_height_mm) * .003) : undefined }}
           transform={`translate(${p.x_mm} ${p.y_mm})`}>
           <title>Pedido #{p.id_pedido} · Pieza #{p.id_pieza} · unidad {p.unit_index} · rotación aplicada: {p.rotation_deg}°</title>
           <g transform={`translate(${-b.minX} ${-b.minY})`}><Shape geometry={p.geometria} /></g>
@@ -69,16 +84,20 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
       })}
     </svg>
     </InspectionViewport>
-    <ul className="cut-area-legend" aria-label="Leyenda de aprovechamiento">
-      <li>Piezas colocadas: colores por pieza</li><li>Verde: retazo reutilizable calculado</li><li>Rosado rayado: merma no reutilizable (ubicación aproximada)</li>
-    </ul>
-    <p>El retazo verde corresponde a la región calculada y guardada. La merma se informa por su área exacta; el sombreado del espacio restante es aproximado, especialmente en bordes curvos y separación entre piezas.</p>
-    {!residuals.length && <p>Este resultado no incluye regiones recuperables para esta plancha o retazo.</p>}
-    <ul className="first-fit-legend" aria-label="Leyenda de pedidos">{visible.map(p => <li key={placementKey(p)}>
-      <span className="first-fit-swatch" style={{ background: placementColors(snapshot, p)[0], border: `1px solid ${placementColors(snapshot, p)[1]}` }} aria-hidden="true" />Pedido #{p.id_pedido} · Pieza #{p.id_pieza} · unidad {p.unit_index}
-    </li>)}</ul>
-    <ul aria-label="Detalle de colocaciones">{visible.map(p => <li key={placementKey(p)}>Pedido #{p.id_pedido} · Pieza #{p.id_pieza} · unidad {p.unit_index} · rotación aplicada: {p.rotation_deg}°</li>)}</ul>
+    <details className="piece-visual-notes"><summary>Leyenda y precisión del patrón</summary>
+      <ul className="cut-area-legend" aria-label="Leyenda de aprovechamiento">
+        <li>Piezas colocadas: colores por pieza</li><li>Verde: retazo reutilizable calculado</li>
+        <li>Rosado rayado: merma no reutilizable (ubicación aproximada)</li>
+      </ul>
+      <p>El retazo verde corresponde a la región calculada y guardada. La merma se informa por su área exacta;
+        el sombreado del espacio restante es aproximado, especialmente en bordes curvos y separación entre piezas.</p>
+      {!residuals.length && <p>Este resultado no incluye regiones recuperables para esta plancha o retazo.</p>}
+    </details>
     {!visible.length && <p>Las piezas aparecerán al recibir sus colocaciones.</p>}
     </>}
+        <PiecePlacementList placements={visible} scope={scope} selectedKey={selected ? selectedKey : null} onSelect={setSelectedKey} />
+      </div>
+      <PieceInspector piece={inspected} />
+    </div>
   </section>;
 }

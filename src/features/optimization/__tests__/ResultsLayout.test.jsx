@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v2.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v2.json';
 import { CompactComparisonTable, areaForOperator, eligibilityReason } from '../CompactComparisonTable';
 import { groupUnplacedUnits, UnplacedSummary } from '../UnplacedSummary';
 

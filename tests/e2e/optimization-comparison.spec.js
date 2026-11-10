@@ -474,6 +474,22 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
       await expect(listButton).toHaveAttribute('aria-pressed', 'true');
       await expect(inspector).toContainText(`Pieza #${second.id_pieza}`);
       await expect(canvas.locator('[data-placement][data-selected="true"]')).toHaveCount(1);
+      // Viewports solicitados por la auditoría: verificar el inspector a la derecha y sin desbordar.
+      const originalViewport = page.viewportSize();
+      for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
+        await page.setViewportSize(viewport);
+        const geometry = await canvas.locator('.piece-inspection-layout').evaluate(node => {
+          const main = node.querySelector('.piece-inspection-main').getBoundingClientRect();
+          const inspector = node.querySelector('.piece-inspector').getBoundingClientRect();
+          return { mainRight: main.right, inspectorLeft: inspector.left, inspectorRight: inspector.right,
+            pageWidth: document.documentElement.scrollWidth, viewportWidth: window.innerWidth };
+        });
+        expect(geometry.inspectorLeft).toBeGreaterThanOrEqual(geometry.mainRight - 2);
+        expect(geometry.inspectorRight).toBeLessThanOrEqual(viewport.width + 2);
+        expect(geometry.pageWidth).toBeLessThanOrEqual(geometry.viewportWidth + 2);
+        await capture(page, info, `en-ux-002-${viewport.width}x${viewport.height}`, canvas);
+      }
+      await page.setViewportSize(originalViewport);
       await capture(page, info, 'en-ux-002-2d-inspector', canvas);
     }
     await capture(page, info, `${execution.method}-2d`, canvas);

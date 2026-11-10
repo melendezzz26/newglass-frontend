@@ -22,7 +22,7 @@ afterEach(() => {
 })
 
 test('Pages abre el editor dentro de pedidos sin abandonar el subpath', async () => {
-  window.history.replaceState({}, '', '/optimizador-vidrio/')
+  window.history.replaceState({}, '', '/newglass-frontend/')
   vi.stubGlobal('fetch', vi.fn(async (url) => ({
     ok: true, status: 200,
     json: async () => {
@@ -43,8 +43,8 @@ test('Pages abre el editor dentro de pedidos sin abandonar el subpath', async ()
   await user.selectOptions(screen.getByLabelText('Espesor del vidrio (mm)'), '6')
   await user.selectOptions(screen.getByLabelText('Forma'), 'POLIGONO_CONVEXO')
   expect(screen.getByRole('dialog', { name: 'Dibujar Polígono Convexo' })).toBeVisible()
-  expect(window.location.pathname).toBe('/optimizador-vidrio/')
+  expect(window.location.pathname).toBe('/newglass-frontend/')
   await user.click(screen.getByRole('button', { name: 'Cerrar editor de polígono' }))
   expect(screen.queryByRole('dialog', { name: 'Dibujar Polígono Convexo' })).not.toBeInTheDocument()
-  expect(window.location.pathname).toBe('/optimizador-vidrio/')
+  expect(window.location.pathname).toBe('/newglass-frontend/')
 })

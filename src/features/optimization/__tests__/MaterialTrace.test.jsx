@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v2.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v2.json';
 import { MaterialTrace, InventoryReceipt } from '../MaterialTrace';
 
 const result = () => structuredClone(Object.values(fixture.results)[0].result);

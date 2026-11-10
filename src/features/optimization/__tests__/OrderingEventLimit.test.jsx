@@ -1,7 +1,7 @@
 // Revisión del 08/11/2026: el orden de piezas acompaña a L-03 (800 unidades) en v1 y v2.
 import { expect, test } from 'vitest';
-import v1 from '../../../../../docs/contracts/optimization/comparison-v1.json';
-import v2 from '../../../../../docs/contracts/optimization/comparison-v2.json';
+import v1 from '../../../../docs/contracts/optimization/comparison-v1.json';
+import v2 from '../../../../docs/contracts/optimization/comparison-v2.json';
 import { createComparisonApi, parseComparisonEvent } from '../comparisonApi';
 import { createComparisonV2Api } from '../comparisonApiV2';
 import { parseComparisonEventV2 } from '../comparisonV2Contract';

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, expect, test, vi } from 'vitest';
-import comparisonV2 from '../../../../../docs/contracts/optimization/comparison-v2.json';
-import comparisonV1 from '../../../../../docs/contracts/optimization/comparison-v1.json';
+import comparisonV2 from '../../../../docs/contracts/optimization/comparison-v2.json';
+import comparisonV1 from '../../../../docs/contracts/optimization/comparison-v1.json';
 import { OptimizationPage } from '../OptimizationPage';
 import { createFixturePendingOrdersSource } from '../pendingOrdersSource';
 import { withPermissions } from '../../authentication/__tests__/permissionFixtures';

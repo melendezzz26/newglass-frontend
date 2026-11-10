@@ -1,7 +1,7 @@
 // Autor: Fabricio Melendez Quezada. Revisor asignado: Andro Quispe.
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v1.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v1.json';
 import { OptimizationPage } from '../OptimizationPage';
 import { createFixturePendingOrdersSource } from '../pendingOrdersSource';
 import { withPermissions } from '../../authentication/__tests__/permissionFixtures';

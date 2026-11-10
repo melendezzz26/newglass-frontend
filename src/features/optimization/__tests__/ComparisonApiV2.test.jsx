@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v2.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v2.json';
 import { createComparisonV2Api } from '../comparisonApiV2';
 
 const jsonResponse = value => ({ ok: true, headers: { get: () => 'application/json' }, body: null,

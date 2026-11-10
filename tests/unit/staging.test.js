@@ -3,7 +3,7 @@ import test from 'node:test'
 import { PAGES_BASE, stagingApiUrl } from '../../config/staging.js'
 
 test('Pages usa el subpath aprobado y una API HTTPS explícita', () => {
-  assert.equal(PAGES_BASE, '/optimizador-vidrio/')
+  assert.equal(PAGES_BASE, '/newglass-frontend/')
   assert.equal(stagingApiUrl('https://api.example.test/'), 'https://api.example.test')
 })
 

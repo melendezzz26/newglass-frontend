@@ -49,13 +49,13 @@ test('sidebar respeta permisos del operario sin exponer Administración', () => 
 
 test.each(['Administrador', 'Operario'])('%s navega a Optimization por teclado sin cambiar subpath', async role => {
   state.role = role;
-  window.history.replaceState({}, '', '/optimizador-vidrio/');
+  window.history.replaceState({}, '', '/newglass-frontend/');
   const user = userEvent.setup(); render(<App />);
   const button = screen.getByRole('button', { name: 'Optimización', exact: true });
   button.focus(); await user.keyboard('{Enter}');
   expect(screen.getByRole('heading', { name: 'Optimización de corte', exact: true })).toBeVisible();
   expect(screen.getByRole('button', { name: 'Optimización', exact: true })).toHaveAttribute('aria-current', 'page');
-  expect(window.location.pathname).toBe('/optimizador-vidrio/');
+  expect(window.location.pathname).toBe('/newglass-frontend/');
   expect(screen.getAllByRole('button', { name: 'Cerrar sesión' })).toHaveLength(1);
   window.history.replaceState({}, '', '/');
 });

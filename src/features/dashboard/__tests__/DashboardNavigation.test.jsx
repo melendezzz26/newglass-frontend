@@ -68,7 +68,7 @@ test('restaura sesión con me antes de consultar Dashboard y utiliza el rol vige
   expect(JSON.parse(sessionStorage.getItem('optimizador.auth')).usuario.rol).toBe('Almacenero');
 });
 test('Inicio navega por teclado y conserva subpath; logout/relogin vuelve a Inicio desde otro módulo', async () => {
-  storeSession(); window.history.replaceState({}, '', '/optimizador-vidrio/');
+  storeSession(); window.history.replaceState({}, '', '/newglass-frontend/');
   const user = userEvent.setup(); render(<App />);
   await screen.findByRole('heading', { name: 'Inicio' });
   await user.click(screen.getByRole('button', { name: 'Registro de pedidos', exact: true }));
@@ -76,7 +76,7 @@ test('Inicio navega por teclado y conserva subpath; logout/relogin vuelve a Inic
   screen.getByRole('button', { name: 'Inicio', exact: true }).focus();
   await user.keyboard('{Enter}');
   expect(screen.getByRole('heading', { name: 'Inicio' })).toBeVisible();
-  expect(window.location.pathname).toBe('/optimizador-vidrio/');
+  expect(window.location.pathname).toBe('/newglass-frontend/');
   await user.click(screen.getByRole('button', { name: 'Registro de pedidos', exact: true }));
   await user.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
   expect(sessionStorage.getItem('optimizador.auth')).toBeNull();

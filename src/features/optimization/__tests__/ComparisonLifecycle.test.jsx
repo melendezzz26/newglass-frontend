@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v1.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v1.json';
 import { createComparisonController } from '../comparisonController';
 
 function deferred() {

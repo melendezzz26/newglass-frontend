@@ -1,7 +1,7 @@
 // TA-046 T02: las medidas originales se ven junto al resultado de cada motor y en la comparación.
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, expect, test, vi } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v1.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v1.json';
 import { OptimizationPage } from '../OptimizationPage';
 import { OriginalMeasuresTable } from '../OriginalMeasuresTable';
 import { createFixturePendingOrdersSource } from '../pendingOrdersSource';

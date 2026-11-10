@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v2.json';
-import historical from '../../../../../docs/contracts/optimization/comparison-v1.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v2.json';
+import historical from '../../../../docs/contracts/optimization/comparison-v1.json';
 import { CATALOG_V2, METHODS_V2, validateMethods, parseComparisonV2,
   parseExecutionV2, parseComparisonEventV2 } from '../comparisonV2Contract';
 import { parseComparison, parseExecution } from '../comparisonApi';

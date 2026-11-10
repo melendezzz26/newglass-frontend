@@ -5,8 +5,8 @@
 La vista principal de Optimización usa la API `comparison-v1`: tres pestañas de
 motor y una de comparación, fases reales, solicitud original, elección manual y
 confirmación del elegido. Las unidades de esta entrega siguen siendo mm/mm².
-Consultar la [guía del contrato](../docs/contracts/optimization/comparison-v1.md)
-y la [evidencia de integración](../docs/evidence/sprint-02/OPT-MULTIMOTOR-VISUAL/README.md).
+Consultar la [guía del contrato](https://github.com/melendezzz26/optimizador-vidrio/blob/137f2ccd7a542c73e99fd40a792287595cdcd9c8/docs/contracts/optimization/comparison-v1.md)
+y la [evidencia de integración](https://github.com/melendezzz26/optimizador-vidrio/blob/137f2ccd7a542c73e99fd40a792287595cdcd9c8/docs/evidence/sprint-02/OPT-MULTIMOTOR-VISUAL/README.md).
 
 Las máscaras y eventos son temporales; los resultados y medidas guardadas se
 recuperan desde la API. Pausar la vista o cambiar pestaña no detiene el cálculo.
@@ -119,7 +119,7 @@ Se genera
 se conservan en `test-results/` únicamente ante fallos. Son artefactos ignorados.
 No hay sleeps ni reintentos automáticos para ocultar fallos.
 
-La [evidencia HU-007](../docs/evidence/sprint-01/HU-007/t01-t02-pruebas-frontend.md)
+La [evidencia HU-007](https://github.com/melendezzz26/optimizador-vidrio/blob/137f2ccd7a542c73e99fd40a792287595cdcd9c8/docs/evidence/sprint-01/HU-007/t01-t02-pruebas-frontend.md)
 registra casos, criterios SPEC, resultados y limitaciones. Lint y build siguen
 siendo verificaciones adicionales, no pruebas de comportamiento.
 

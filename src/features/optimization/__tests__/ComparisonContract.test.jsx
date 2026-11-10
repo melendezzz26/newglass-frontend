@@ -1,6 +1,6 @@
 // Autor: Fabricio Melendez Quezada. Revisor asignado: Andro Quispe.
 import { expect, test } from 'vitest';
-import fixture from '../../../../../docs/contracts/optimization/comparison-v1.json';
+import fixture from '../../../../docs/contracts/optimization/comparison-v1.json';
 import { parseComparison, parseComparisonEvent, parseExecution } from '../comparisonApi';
 import { parseRun } from '../runContract';
 

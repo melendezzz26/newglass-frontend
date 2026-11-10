@@ -1,4 +1,4 @@
-export const PAGES_BASE = '/optimizador-vidrio/'
+export const PAGES_BASE = '/newglass-frontend/'
 
 export function stagingApiUrl(value) {
   const message = 'Staging requiere VITE_API_URL HTTPS, sin localhost, credenciales, query ni fragmento.'

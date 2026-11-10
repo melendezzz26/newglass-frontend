@@ -76,7 +76,8 @@ test('editar tres veces conserva ID, cantidad de pedidos y selección en optimiz
   expect(calculated.status()).toBe(201);
   expect(calculated.request().postDataJSON()).toEqual({ order_ids: [id_pedido] });
   await page.getByRole('button', { name: 'Ver en 3D', exact: true }).click();
-  await expect(page.getByRole('list', { name: 'Piezas en la vista 3D', exact: true })).toContainText('160 × 200 mm');
+  await page.getByRole('list', { name: 'Colocaciones consultables' }).getByRole('button').first().click();
+  await expect(page.getByRole('complementary', { name: 'Inspector de pieza' })).toContainText('160 × 200 mm');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 

@@ -24,6 +24,47 @@ function setup({ confirmed = false } = {}) {
   return { flow, api, source, current };
 }
 
+test('a definitive preflight rejection keeps the previous result recoverable after reload', async () => {
+  const { flow, api, source, current } = setup();
+  try {
+    current.released = true;
+    await flow.load(1);
+    flow.select([99]);
+    api.start.mockRejectedValueOnce(Object.assign(new Error('No hay material compatible.'), {
+      status: 422, code: 'NO_COMPATIBLE_STOCK', requestAccepted: false,
+    }));
+    await flow.start();
+    expect(flow.getSnapshot()).toMatchObject({ busy: false, pendingRequest: false,
+      error: 'No hay material compatible.', comparison: { comparison_id: 1 } });
+    expect(JSON.parse(localStorage.getItem('lifecycle-test')).id).toBe(1);
+    flow.dispose();
+    const restored = createComparisonController({ api, source, storageKey: 'lifecycle-test' });
+    restored.mount();
+    try {
+      await vi.waitFor(() => expect(restored.getSnapshot().comparison?.comparison_id).toBe(1));
+    } finally { restored.dispose(); }
+    const again = createComparisonController({ api, source, storageKey: 'lifecycle-test' });
+    again.mount();
+    try {
+      await vi.waitFor(() => expect(again.getSnapshot().comparison?.comparison_id).toBe(1));
+    } finally { again.dispose(); }
+  } finally { flow.dispose(); }
+});
+
+test.each(['NO_COMPATIBLE_STOCK', 'PIECE_DOES_NOT_FIT'])('a %s rejection allows correcting and retrying', async code => {
+  const { flow, api, current } = setup();
+  try {
+    flow.select([1]);
+    api.start.mockRejectedValueOnce(Object.assign(new Error('Revisa el material.'), { status: 422, code }));
+    await flow.start();
+    expect(flow.getSnapshot()).toMatchObject({ busy: false, pendingRequest: false, error: 'Revisa el material.' });
+    flow.select([99]);
+    api.start.mockResolvedValueOnce(current);
+    await flow.start();
+    expect(api.start.mock.calls[1][0]).toEqual([99]);
+  } finally { flow.dispose(); }
+});
+
 test('an ambiguous start keeps its key and order set across reload and retry', async () => {
   const { flow, api, source, current } = setup();
   flow.select([1]);

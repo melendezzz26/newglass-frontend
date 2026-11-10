@@ -11,19 +11,20 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
     savedComparisons: [], historyNext: null, historyOpen: false, pendingRequest: false,
     profile: initialProfile === 'comparison-v2' ? 'comparison-v2' : 'comparison-v1' };
   let active = false, generation = 0, observer, request, retry, unsubscribe, requestKey, operation, syncTimer;
-  let actionSequence = 0;
+  let actionSequence = 0, preservedHistory = false;
   let attemptOrders = null;
   const confirmedOrders = new Set();
   const listeners = new Set();
   const set = patch => { state = { ...state, ...patch }; listeners.forEach(fn => fn()); };
-  const remember = (pending = false) => { try { localStorage.setItem(storageKey, JSON.stringify({ id: pending ? null : state.comparison?.comparison_id,
-    requestKey, operation, attemptOrders, profile: state.profile })); } catch { /* Almacenamiento opcional. */ } };
+  const remember = (pending = false, preserveHistory = preservedHistory) => { try { localStorage.setItem(storageKey, JSON.stringify({ id: pending ? null : state.comparison?.comparison_id,
+    requestKey, operation, attemptOrders, profile: preserveHistory ? state.comparison?.profile ?? state.profile : state.profile,
+    preserveHistory })); } catch { /* Almacenamiento opcional. */ } };
   const client = profile => profile === 'comparison-v2' ? apiV2 : api;
   const valid = g => active && g === generation;
   const fail = error => { if (error.status === 401) onExpired?.(); set({ error: error.message,
     admissionDiagnostic: error.admissionDiagnostic ?? null, loading: false }); };
   function clearWork(success = '') {
-    prepare(); actionSequence++; requestKey = null; operation = null; attemptOrders = null;
+    prepare(); actionSequence++; requestKey = null; operation = null; attemptOrders = null; preservedHistory = false;
     try { localStorage.removeItem(storageKey); } catch { /* Almacenamiento opcional. */ }
     set({ comparison: null, results: {}, visuals: {}, live: {}, cursor: 0, selected: [], error: '',
       partial: false, history: false, busy: false, loading: true, success, connection: 'connecting',
@@ -180,6 +181,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       source.load();
       let saved = {};
       try { const value = JSON.parse(localStorage.getItem(storageKey) ?? '{}'); if (value && typeof value === 'object') saved = value; } catch { /* Sin estado local. */ }
+      preservedHistory = saved.preserveHistory === true;
       const restoredProfile = initialProfile ?? (initialId ? 'comparison-v1' : saved.profile);
       if (restoredProfile === 'comparison-v2' && apiV2) set({ profile: 'comparison-v2' });
       requestKey = saved.requestKey; operation = saved.operation;
@@ -187,7 +189,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         ? saved.attemptOrders : null;
       if (requestKey && !saved.id) set({ pendingRequest: true, selected: attemptOrders ?? [] });
       const g = generation;
-      if (initialId ?? saved.id) load(initialId ?? saved.id, { automatic: !initialId, profile: restoredProfile });
+      if (initialId ?? saved.id) load(initialId ?? saved.id, { automatic: !initialId && !saved.preserveHistory, profile: restoredProfile });
       else if (requestKey) client(restoredProfile).lookup(requestKey).then(current => { if (valid(g)) load(current.comparison_id, { automatic: true, profile: restoredProfile }); })
         .catch(error => { if (valid(g) && error.status !== 404) fail(error); });
     },
@@ -240,11 +242,13 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         // A rejected input never became an accepted work. Network errors and
         // conflicts remain recoverable with the original key and frozen orders.
         if ([400, 422].includes(error.status) || error.requestAccepted === false) {
-          requestKey = null; attemptOrders = null; set({ pendingRequest: false }); remember(true);
+          requestKey = null; attemptOrders = null; preservedHistory = !!state.comparison;
+          set({ pendingRequest: false }); remember();
         }
         throw error;
       }
       if (!valid(g)) return;
+      preservedHistory = false;
       set({ visuals: {}, results: {}, live: {}, cursor: 0, partial: false, success: '', history: false }); apply(current); source.refresh?.(); follow(g);
     }),
     choose: id => action(async () => {

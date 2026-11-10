@@ -42,7 +42,7 @@ test('result modes isolate groups, keep snapshot and allow zoom/grid inspection 
   expect(screen.getByLabelText('Ampliación 3D')).toHaveTextContent('150 %');
   fireEvent.change(screen.getByLabelText('Vidrio del resultado'), { target: { value: '2:5.5' } });
   expect(document.querySelectorAll('[data-piece-3d]')).toHaveLength(1);
-  expect(screen.getByRole('list', { name: 'Piezas en la vista 3D' })).not.toHaveTextContent('Pedido #22');
+  expect(screen.getByRole('list', { name: 'Colocaciones consultables' })).not.toHaveTextContent('Pedido #22');
   click('Ver detalle de piezas');
   expect(screen.getByLabelText('Vidrio del resultado')).toHaveValue('2:5.5');
   expect(screen.getByRole('img', { name: 'Detalle de la pieza #103' })).toBeVisible();

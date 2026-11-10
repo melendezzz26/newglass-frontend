@@ -1,5 +1,12 @@
 # Frontend de NewGlass
 
+> **Repositorio independiente:** `melendezzz26/newglass-frontend`.
+> Los comandos se ejecutan desde su raíz. La API se desarrolla en
+> [newglass-backend](https://github.com/melendezzz26/newglass-backend);
+> este frontend nunca se conecta directamente a PostgreSQL.
+> Procedencia y trazabilidad: [docs/MIGRATION.md](docs/MIGRATION.md).
+
+
 ## Optimización comparativa FF/BF/WF
 
 La vista principal de Optimización usa la API `comparison-v1`: tres pestañas de
@@ -18,7 +25,7 @@ principal y servicios reales, con PostgreSQL temporal.
 
 `npm run build` conserva el build local. Para el artefacto Pages, suministrar
 `VITE_API_URL` externamente y ejecutar `npm run build:staging`, seguido de
-`npm run check:staging`. El modo staging fija `/optimizador-vidrio/` y rechaza
+`npm run check:staging`. El modo staging fija `/newglass-frontend/` y rechaza
 API ausente, HTTP, localhost/loopback o URL con credenciales/query/fragmento.
 No existe una URL productiva predeterminada. El build normal no debe publicarse
 en Pages; el workflow de publicación debe usar exclusivamente el modo staging.
@@ -37,7 +44,7 @@ Interfaz web con React y Vite, organizada progresivamente por funcionalidades.
 El entorno de pruebas HU-007 utiliza Node.js **24.21.0** y npm **11.19.0**.
 Para las nuevas dependencias de pruebas, usar Node 22.22.2+, 24.15.0+ o 26+,
 según los rangos de sus `engines`; Node 22.16.0 del entorno anterior ya no basta.
-Los comandos se ejecutan desde `frontend/`.
+Los comandos se ejecutan desde la raíz del repositorio.
 
 ## Instalación
 
@@ -67,61 +74,49 @@ Para revisar localmente el build:
 npm run preview
 ```
 
-## Pruebas HU-007 T01/T02
+## Pruebas y compatibilidad entre repositorios
 
-En Windows local, instalar Google Chrome estable y ejecutar:
+El CI de este repositorio ejecuta `npm ci`, `npm run test:unit`,
+`npm run test:component`, `npm run lint` y `npm run build`.
+También ejecuta Playwright E2E contra **dos checkouts Git independientes**
+(frontend y backend), con PostgreSQL temporal y Chromium administrado. La
+revisión del backend está fijada al SHA completo de
+[.github/backend-e2e.sha](.github/backend-e2e.sha): cada actualización de
+backend requiere revisar compatibilidad y actualizar el SHA en un PR del frontend.
 
-```powershell
-npm.cmd run test:e2e
-# O todas las suites:
-npm.cmd test
+Para reproducir E2E localmente, clonar los repositorios como carpetas hermanas:
+
+```text
+newglass-workspace/
+    frontend/    # git clone .../newglass-frontend.git frontend
+    backend/     # git clone .../newglass-backend.git backend
 ```
 
-`test` ejecuta en orden `test:unit` (las 38 pruebas existentes con `node:test`),
-`test:component` (Vitest + React Testing Library en jsdom) y `test:e2e`
-(Playwright). Cada script también puede ejecutarse por separado con `npm run`.
-Vitest reutiliza la configuración Vite y solo descubre pruebas de componente;
-no recoge las suites de Node ni de Playwright.
-
-Playwright inicia y detiene Vite en `http://127.0.0.1:5173`, necesita ese puerto
-libre y abre `/hu007-t01.html`. No requiere Login, backend, credenciales ni BD.
-Prueba el flujo frontend en Google Chrome de escritorio y móvil emulado. No representa
-el E2E completo de NewGlass ni registra el pedido.
-
-La configuración usa por defecto `channel: 'chrome'`, el
-[canal oficial de Playwright](https://playwright.dev/docs/browsers#google-chrome--microsoft-edge)
-para Google Chrome estable instalado. No requiere descargar Chromium ni definir
-variables de entorno en Windows local, y no contiene rutas absolutas al ejecutable.
-Se conservan los nombres `chromium-desktop` y `chromium-mobile` para mantener la
-trazabilidad, con los mismos viewports, casos, servidor y artefactos.
-
-Una futura CI puede instalar el Chromium oficial de Playwright y seleccionarlo
-con la variable opcional `PLAYWRIGHT_CHANNEL=chromium`. Ejemplo para Linux CI:
+Preparar las dependencias Python 3.11 de `backend/requirements.txt`, Node 22
+compatible y PostgreSQL temporal según la configuración de pruebas del backend.
+Playwright inicia `python -m tests.e2e_server` desde `../backend` y Vite en
+`http://127.0.0.1:5173`. Requiere tener libres esos puertos. El backend de
+pruebas utiliza PostgreSQL aislado y **no** debe apuntar a Supabase Staging.
 
 ```bash
 npm ci
+npm run test:unit
+npm run test:component
+npm run lint
+npm run build
+# En Linux/WSL con Chromium de Playwright disponible y backend hermano:
 npx playwright install --with-deps chromium
-PLAYWRIGHT_CHANNEL=chromium npm run test:e2e
+PLAYWRIGHT_CHANNEL=chromium node scripts/run-e2e-phases.js
 ```
 
-Esa alternativa requiere descarga y dependencias del sistema; no fue ejecutada
-en esta validación local. Si CI mantiene el valor predeterminado, deberá disponer
-de Chrome estable. Una variable `PLAYWRIGHT_CHANNEL` existente prevalece sobre
-el valor predeterminado; quitarla para volver a Chrome.
+El orquestador E2E ejecuta las fases `b02` y `remaining` en procesos de prueba
+separados para proteger el smoke de migración PostgreSQL y los escenarios
+comerciales. El gate de E2E falla ante omisiones críticas y conserva reportes
+en `test-results/e2e-phases/` y `playwright-report/e2e-phases/`.
+No se deshabilitan esos controles para conseguir un resultado verde.
 
-Incidencia de entorno previa: "Descarga de Chromium de Playwright fallida por
-timeout; ejecución local realizada posteriormente con Google Chrome instalado."
-El error de ejecutable ausente impide iniciar los E2E y no demuestra un fallo
-funcional de NewGlass.
-
-Se genera
-`playwright-report/` (abrir con `npx playwright show-report`); las trazas y capturas
-se conservan en `test-results/` únicamente ante fallos. Son artefactos ignorados.
-No hay sleeps ni reintentos automáticos para ocultar fallos.
-
-La [evidencia HU-007](https://github.com/melendezzz26/optimizador-vidrio/blob/137f2ccd7a542c73e99fd40a792287595cdcd9c8/docs/evidence/sprint-01/HU-007/t01-t02-pruebas-frontend.md)
-registra casos, criterios SPEC, resultados y limitaciones. Lint y build siguen
-siendo verificaciones adicionales, no pruebas de comportamiento.
+La [evidencia histórica HU-007](https://github.com/melendezzz26/optimizador-vidrio/blob/137f2ccd7a542c73e99fd40a792287595cdcd9c8/docs/evidence/sprint-01/HU-007/t01-t02-pruebas-frontend.md)
+sigue disponible; el flujo actual de E2E es más amplio que esa entrega inicial.
 
 ## Organización por features
 

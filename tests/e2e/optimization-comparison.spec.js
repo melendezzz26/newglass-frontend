@@ -395,26 +395,36 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
   await expect(table).toContainText('Métricas de 6 motores');
   await expect(page.getByText(/no se ordenan ni recomiendan un motor/)).toBeVisible();
   const headings = await table.locator('thead th').allTextContents();
-  const metricColumn = name => headings.findIndex(heading => heading.includes(name)) - 1;
+  expect(headings).toEqual(['Motor', 'Estado / Cobertura', 'Planchas / Retazos reutilizados',
+    'Aprovechamiento', 'Merma / recuperable', 'Elegibilidad y acciones']);
+  await expect(table.locator('tbody tr')).toHaveCount(6);
+  const formatArea = value => `${new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 }).format(Number(value) / 1_000_000)} m²`;
   for (const execution of current.executions) {
     const name = ({ FF: 'First Fit', BF: 'Best Fit', WF: 'Worst Fit', HF: 'Hole Filling',
       M5: 'Best Residual Fit', 'M6-BS': 'Beam Search acotada' })[execution.method];
     const row = table.locator('tbody tr').filter({ hasText: name });
     await expect(row).toHaveCount(1);
     await expect(row.locator('td').nth(0)).toContainText('Completo');
+    await expect(row.locator('td').nth(0)).toContainText(`${execution.placed_units} / ${execution.total_units}`);
     const metrics = results[execution.method].execution.metrics;
-    for (const [label, expected] of [
-      ['Cobertura', `${(execution.placed_units / execution.total_units * 100).toFixed(1)} %`],
-      ['Aprovechamiento', metrics.aprovechamiento_pct], ['Merma', metrics.merma_mm2],
-      ['Recuperable potencial', metrics.retazo_recuperable_mm2], ['Planchas usadas', metrics.planchas_nuevas_usadas],
-      ['Retazos reutilizados', results[execution.method].result.materials_used.filter(item => item.material_source === 'RETAZO').length],
-      ['Piezas colocadas', `${execution.placed_units} / ${execution.total_units}`],
-      ['Piezas no colocadas', 0], ['Tiempo de cálculo', metrics.tiempo_computacional_ms], ['Resultado', 'Completo'],
-    ]) {
-      const index = metricColumn(label);
-      expect(index).toBeGreaterThanOrEqual(0);
-      await expect(row.locator('td').nth(index)).toContainText(String(expected));
-    }
+    const remnants = results[execution.method].result.materials_used
+      .filter(source => source.material_source === 'RETAZO').length;
+    await expect(row.locator('td').nth(1)).toContainText(`${metrics.planchas_nuevas_usadas} / ${remnants}`);
+    await expect(row.locator('td').nth(2)).toContainText('%');
+    await expect(row.locator('td').nth(3)).toContainText(formatArea(metrics.merma_mm2));
+    await expect(row.locator('td').nth(3)).toContainText(formatArea(metrics.retazo_recuperable_mm2));
+    await expect(row.locator('td').nth(4)).toContainText('Elegir');
+  }
+  await page.getByText('Datos técnicos exactos de los seis motores').click();
+  const technical = page.getByRole('table', { name: 'Áreas en mm² y tiempos en ms, sin redondeo' });
+  await expect(technical.locator('tbody tr')).toHaveCount(6);
+  for (const execution of current.executions) {
+    const row = technical.locator('tbody tr').filter({ hasText: execution.method }).first();
+    const metrics = results[execution.method].execution.metrics;
+    await expect(row.locator('td').nth(0)).toContainText(String(metrics.tiempo_computacional_ms));
+    await expect(row.locator('td').nth(1)).toContainText(String(metrics.merma_mm2));
+    await expect(row.locator('td').nth(2)).toContainText(String(metrics.retazo_recuperable_mm2));
+    await expect(row.locator('td').nth(3)).toContainText(String(metrics.aprovechamiento_pct));
   }
   await capture(page, info, 'comparison-v2-six-metrics');
 

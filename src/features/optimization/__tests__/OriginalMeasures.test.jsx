@@ -36,7 +36,7 @@ test('la tabla describe forma, cantidad, vidrio y medidas en mm, incluidos los l
   expect(screen.getByText(/pueden aparecer giradas/)).toBeVisible();
 });
 
-test('CA-06: el resultado de cada motor y la comparación muestran las medidas sin desplegar nada', async () => {
+test('EN-UX-001: el pedido conserva medidas originales en una consulta compartida y plegada', async () => {
   const current = structuredClone(fixture.completed);
   const api = {
     start: vi.fn(async () => structuredClone(fixture.accepted)),
@@ -56,11 +56,12 @@ test('CA-06: el resultado de cada motor y la comparación muestran las medidas s
 
   const first = screen.getByRole('tabpanel', { name: /First Fit/ });
   await within(first).findByRole('heading', { name: 'Resultado de First Fit' }, { timeout: 3000 });
-  expect(rows(within(first).getByRole('table', { name: 'Medidas originales del pedido' })))
-    .toEqual([['#1', '#1', 'Rectángulo', '3', 'Material sintético · 6 mm', '2 × 2 mm']]);
-
+  expect(within(first).queryByRole('table', { name: 'Medidas originales del pedido' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('table', { name: 'Medidas originales del pedido' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText(/Piezas y medidas solicitadas/));
+  const table = screen.getByRole('table', { name: 'Medidas originales del pedido' });
+  expect(rows(table)).toEqual([['#1', '#1', 'Rectángulo', '3', 'Material sintético · 6 mm', '2 × 2 mm']]);
+  expect(screen.getAllByRole('table', { name: 'Medidas originales del pedido' })).toHaveLength(1);
   fireEvent.click(screen.getByRole('tab', { name: 'Comparación' }));
-  const comparison = screen.getByRole('tabpanel', { name: 'Comparación' });
-  expect(within(comparison).getByRole('table', { name: 'Medidas originales del pedido' })).toBeVisible();
-  expect(within(comparison).getByRole('table', { name: 'Métricas de los tres motores' })).toBeVisible();
+  expect(within(screen.getByRole('tabpanel', { name: 'Comparación' })).getByRole('table', { name: 'Métricas de los tres motores' })).toBeVisible();
 });

@@ -15,6 +15,15 @@ function mount(name = 'complete', permissions = view, adapter = {}) {
 }
 beforeEach(() => vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ fillRect: vi.fn(), setTransform: vi.fn() }));
 
+test.each(['0', '0.01'])('individual result shows its applied separation %s mm in 2D and 3D', separation => {
+  const result = scenarioFixture('complete');
+  result.configuracion.separacion_mm = separation;
+  render(<OptimizationPage user={user(view)} result={result} source={createFixturePendingOrdersSource([])} adapter={{}} />);
+  expect(screen.getByText(`Separación de corte: ${separation} mm`)).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'Ver en 3D' }));
+  expect(screen.getByText(`Separación de corte: ${separation} mm`)).toBeVisible();
+});
+
 test('el resultado individual muestra geometría original sin alterar los placements orientados', () => {
   const result = scenarioFixture('complete');
   result.groups[0].units.forEach(unit => { unit.geometria = { type: 'RECTANGULO', width_mm: 125.36, height_mm: 80.04 }; });

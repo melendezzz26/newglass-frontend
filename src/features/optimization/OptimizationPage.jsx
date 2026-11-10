@@ -18,6 +18,7 @@ import { groupRasterReady } from './rasterInspectionModel';
 import { parseConfirmation } from './runContract.js';
 import { Hu015Rasterization } from './Hu015Rasterization';
 import { OriginalMeasuresTable } from './OriginalMeasuresTable';
+import { CutSeparation } from './CutSeparation';
 
 import { useGlassCatalog, glassGroups } from './useGlassCatalog';
 import { calculationState } from './workLabels';
@@ -68,6 +69,7 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
   return <>
     <OptimizationStages state={state} />
     {state.method && <p>Método aplicado: {({ FF: 'Primer ajuste (First Fit)', BF: 'Mejor ajuste (Best Fit)', WF: 'Peor ajuste (Worst Fit)' })[state.method] ?? state.method}</p>}
+    <CutSeparation configuration={state.config} />
     {state.config && <details><summary>Configuración aplicada</summary><dl className="optimization-facts">
       {Object.entries({ resolucion_raster_mm: 'Resolución (mm/celda)', margen_mm: 'Margen (mm)',
         separacion_mm: 'Separación (mm)', paso_angular_grados: 'Paso angular (grados)' }).map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{state.config[key]}</dd></div>)}

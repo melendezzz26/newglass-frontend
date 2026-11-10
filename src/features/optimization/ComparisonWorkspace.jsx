@@ -17,6 +17,7 @@ import { PlacementCanvas } from './PlacementCanvas';
 import { RunMaskInspection } from './RunMaskInspection';
 import { RunVisualization } from './RunVisualization';
 import { MaterialTrace, InventoryReceipt } from './MaterialTrace';
+import { CutSeparation } from './CutSeparation';
 import './ComparisonWorkspace.css';
 
 const PHASES = ['Máscaras', 'Orden de piezas', 'Giros y colocación', 'Resultado'];
@@ -296,6 +297,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
         {' '}{current.executions.filter(e => e.outcome === 'PARTIAL').length} parciales · {current.executions.filter(e => e.outcome === 'FAILED').length} interrumpidos o con error.
         {current.terminal && completeCount !== current.executions.length ? ' Comparación parcialmente completada.' : ''}</p>
       {current.confirmed && <InventoryReceipt confirmation={current.confirmation} />}
+      <CutSeparation configuration={current.configuration} />
       <details className="comparison-configuration"><summary>Configuración y unidades aplicadas</summary><p>Resolución {current.configuration.resolucion_raster_mm} mm/celda · margen {current.configuration.margen_mm} mm · separación {current.configuration.separacion_mm} mm · paso angular {current.configuration.paso_angular_grados}°.</p></details>
       {state.partial && <FeedbackMessage variant="info">Se recuperó el estado actual. Parte del avance anterior ya no estaba retenido; los resultados guardados se conservan.</FeedbackMessage>}
       {state.connection === 'reconnecting' && !current.terminal && <p role="status">Recuperando el avance; los motores continúan ejecutándose.</p>}

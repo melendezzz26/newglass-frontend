@@ -1,0 +1,443 @@
+{
+    "frontend":  "816aeddbbd85afca7a5d3ad50dbf37d464a03030",
+    "backend":  "5ebab8c7ace33324e6a4a465678979b554c8b57d",
+    "inicio_utc":  "2026-11-10T19:03:10.581Z",
+    "total":  72,
+    "aprobadas":  72,
+    "fallidas":  0,
+    "omitidas":  0,
+    "casos":  [
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3578
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2665
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1682
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1698
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  14959
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3052
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1964
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3450
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "chrome-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  698
+                  },
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1599
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1620
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1434
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1423
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  14288
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2733
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2719
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3413
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "chrome-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  920
+                  },
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  2339
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  1898
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  1705
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  1506
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  24310
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  3465
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  3071
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  4539
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "chrome-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  1192
+                  },
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  2636
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  3062
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  2594
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  2845
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  25442
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  3655
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  3268
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  4701
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "chrome-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  1360
+                  },
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3964
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3935
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3553
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3240
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  19340
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3139
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2194
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  3158
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "msedge-desktop",
+                      "resultado":  "passed",
+                      "duracion_ms":  819
+                  },
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2074
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1949
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1608
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  1633
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  14384
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2227
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2012
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  2887
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "msedge-laptop",
+                      "resultado":  "passed",
+                      "duracion_ms":  758
+                  },
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  1841
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  2121
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  1715
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  1622
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  12409
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  2394
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  2116
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  3061
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "msedge-tablet",
+                      "resultado":  "passed",
+                      "duracion_ms":  693
+                  },
+                  {
+                      "caso":  "CF-01 login real y navegacion",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  1560
+                  },
+                  {
+                      "caso":  "CF-02 pedidos, formulario e importacion",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  1793
+                  },
+                  {
+                      "caso":  "CF-03 inventario y formulario de plancha",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  1901
+                  },
+                  {
+                      "caso":  "CF-06 rutas y controles principales",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  1517
+                  },
+                  {
+                      "caso":  "CF-04 y CF-05 comparacion real",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  13203
+                  },
+                  {
+                      "caso":  "CF-02 importacion real de CSV",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  2901
+                  },
+                  {
+                      "caso":  "CF-03 edicion y formulario de retazo",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  2066
+                  },
+                  {
+                      "caso":  "CF-07 reflujo y controles criticos",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  3521
+                  },
+                  {
+                      "caso":  "CF-01 mensajes obligatorios de login",
+                      "proyecto":  "msedge-mobile",
+                      "resultado":  "passed",
+                      "duracion_ms":  1176
+                  }
+              ]
+}

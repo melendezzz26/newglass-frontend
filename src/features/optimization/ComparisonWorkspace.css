@@ -34,3 +34,51 @@
   .comparison-results th[scope=row]{display:block}.comparison-results td{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem;overflow-wrap:anywhere}
   .comparison-results td[data-label]::before{content:attr(data-label);font-weight:600}.comparison-results td small{flex-basis:100%}
 }
+
+/* EN-UX-001: navegación contextual compacta. La cabecera general no se fija. */
+.comparison-context{position:sticky;top:0;z-index:20;isolation:isolate;display:grid;gap:.35rem;margin:1rem 0;padding:.55rem .7rem;border:1px solid #bddbd4;border-radius:14px;background:#f7fbf9;box-shadow:0 5px 18px #143d341c}
+.comparison-context__info{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem .9rem;font-size:.79rem;color:#40665e}
+.comparison-context__info strong{color:#153e43;font-size:.9rem}
+.comparison-context__info .ng-button{padding:.38rem .6rem;min-height:34px;font-size:.78rem}
+.comparison-context .comparison-tabs{margin:0;padding:.25rem;grid-template-columns:repeat(4,minmax(0,1fr));border-radius:9px}
+.comparison-context .comparison-tabs--six{grid-template-columns:repeat(7,minmax(0,1fr))}
+.comparison-context .comparison-tabs [role=tab]{min-height:46px;padding:.4rem .3rem;font-size:.82rem;line-height:1.15}
+.comparison-context .comparison-tabs [role=tab] small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.63rem}
+.comparison-context .comparison-tabs [role=tab]:focus-visible{outline:3px solid #197c78;outline-offset:-2px}
+.comparison-request-content{padding:.75rem 1rem 1rem;display:grid;gap:.6rem}
+.comparison-request-content>label{display:grid;gap:.4rem;max-width:340px;font-size:.82rem;font-weight:600}
+.comparison-request-content>p{margin:0;color:var(--cmp-muted);font-size:.81rem}
+.comparison-request-scroll{max-height:min(64dvh,550px);overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--cmp-line);border-radius:9px;padding:.75rem;scrollbar-gutter:stable}
+.comparison-request-scroll:focus-visible,.comparison-table-scroll:focus-visible,.comparison-source-list:focus-visible{outline:3px solid #197c78;outline-offset:2px}
+.comparison-request-grid{padding:.35rem;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.comparison-request-grid article h4{margin:.25rem 0;font-size:.89rem}
+.comparison-result-summary{margin:.6rem 0 1rem}
+.comparison-result-summary h4{margin:.55rem 0}
+.comparison-result-summary .comparison-metrics{margin:.6rem 0 1rem;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem}
+.comparison-result-summary .comparison-metrics>div{padding:.65rem .75rem}
+.comparison-result-summary .comparison-metrics dd{font-size:1.05rem;overflow-wrap:anywhere}
+.comparison-result-visual{scroll-margin-top:130px;margin-top:1rem;border-top:1px solid var(--cmp-line);padding-top:.4rem}
+.comparison-result-visual h4{margin:.6rem 0 .25rem}
+.comparison-unplaced{margin:1rem 0;background:#fff9f3;border:1px solid #efd9b5;border-radius:12px;padding:.8rem 1rem}
+.comparison-unplaced h4{margin:.2rem 0 .5rem}.comparison-unplaced p{font-size:.82rem;margin:.2rem 0 .6rem}
+.comparison-unplaced ul{padding:0;list-style:none;display:grid;gap:.3rem;margin:.6rem 0 0}
+.comparison-unplaced details{border-top:1px solid #efdfc5}.comparison-unplaced summary{font-size:.83rem;padding:.5rem 0;cursor:pointer}
+.comparison-unplaced details p{padding:.35rem .5rem;overflow-wrap:anywhere}
+.comparison-source-list{max-height:200px;overflow:auto;overscroll-behavior:contain;border:1px solid var(--cmp-line);border-radius:9px;margin:.7rem 0}
+.comparison-source-list ul{margin:.45rem 0;padding:.3rem .5rem .3rem 1.7rem;font-size:.8rem;line-height:1.65}
+.comparison-technical-results{margin:.6rem 0;padding:.5rem;border:1px solid var(--cmp-line);border-radius:10px;background:#f8faf9}
+.comparison-technical-results>summary{font-size:.83rem;font-weight:600;cursor:pointer}
+.comparison-technical-results dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.45rem;padding:.7rem}
+.comparison-technical-results dt{font-size:.77rem;color:var(--cmp-muted)}.comparison-technical-results dd{margin:.2rem 0;font-size:.83rem;overflow-wrap:anywhere}
+.comparison-decision-table{table-layout:fixed;width:100%;min-width:780px;white-space:normal!important}
+.comparison-decision-table th,.comparison-decision-table td{vertical-align:top;padding:.7rem .6rem;overflow-wrap:anywhere}
+.comparison-decision-table th[scope=row],.comparison-technical-results table th[scope=row]{position:sticky;left:0;background:#f7faf8;z-index:2;box-shadow:1px 0 #dbe7e4}
+.comparison-decision-table tr.is-selected th[scope=row]{background:#edf8f1}
+.comparison-decision-table td small{display:block;font-size:.73rem;line-height:1.3;margin-top:.3rem}
+.comparison-decision-table td .ng-button{display:block;margin-top:.5rem;padding:.35rem .55rem;font-size:.76rem;min-height:34px}
+.comparison-decision-table td label{font-size:.78rem}.comparison-decision-table td label input{width:17px;height:17px}
+.comparison-decision .comparison-table-scroll{margin:.65rem 0}
+.comparison-decision .comparison-technical-results .comparison-table-scroll{margin-top:.5rem}
+@media(max-width:1120px){.comparison-context .comparison-tabs--six{grid-template-columns:repeat(7,minmax(73px,1fr))}.comparison-context .comparison-tabs{overflow-x:auto}.comparison-result-summary .comparison-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.comparison-context .comparison-tabs--six{grid-template-columns:repeat(7,minmax(75px,1fr))}.comparison-context .comparison-tabs [role=tab] small{display:none}.comparison-context__info{font-size:.7rem}.comparison-result-summary .comparison-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.comparison-decision-table{min-width:0}.comparison-decision .comparison-table-scroll{overflow-x:auto!important;border:1px solid var(--cmp-line)}.comparison-decision-table{display:table!important;white-space:normal!important}.comparison-decision-table thead{position:static!important;clip-path:none!important;width:auto!important;height:auto!important}.comparison-decision-table tbody{display:table-row-group!important}.comparison-decision-table tr{display:table-row!important;border:0!important}.comparison-decision-table th[scope=row],.comparison-decision-table td{display:table-cell!important}.comparison-decision-table td:before{content:none!important}}
+@media(prefers-reduced-motion:reduce){.comparison-context{scroll-behavior:auto}}

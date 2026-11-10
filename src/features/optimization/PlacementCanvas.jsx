@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from 'react';
+import { memo, useId, useMemo, useState } from 'react';
 import { containerKey, placementKey } from './optimizationModel';
 import { getGeometryBounds } from './visualizationGeometry';
 import { PlacementScene3D } from './PlacementScene3D';
@@ -15,6 +15,20 @@ function Shape({ geometry }) {
   if (geometry.type === 'CIRCUNFERENCIA') return <circle r={geometry.radius_mm} />;
   return <polygon points={geometry.vertices_mm.map(p => p.join(',')).join(' ')} />;
 }
+const PlacedShape2D = memo(function PlacedShape2D({ snapshot, piece, container, selectionId, selected, onSelect }) {
+  const bounds = getGeometryBounds(piece.geometria);
+  const [color, edge] = placementColors(snapshot, piece);
+  return <g data-placement={placementKey(piece)} data-selected={selected} className="first-fit-piece"
+    onClick={() => onSelect(selectionId)}
+    style={{ fill: color, stroke: selected ? '#bb4b06' : edge,
+      strokeWidth: selected ? Math.max(2, Math.min(container.material_width_mm, container.material_height_mm) * .003) : undefined }}
+    transform={`translate(${piece.x_mm} ${piece.y_mm})`}>
+    <title>Pedido #{piece.id_pedido} · Pieza #{piece.id_pieza} · unidad {piece.unit_index} · rotación aplicada: {piece.rotation_deg}°</title>
+    <g transform={`translate(${-bounds.minX} ${-bounds.minY})`}><Shape geometry={piece.geometria} /></g>
+    <text x={bounds.width / 2} y={bounds.height / 2} textAnchor="middle" dominantBaseline="middle"
+      style={{ fontSize: Math.min(60, bounds.height / 4, bounds.width / (String(piece.id_pieza).length + 1)) }}>#{piece.id_pieza}</text>
+  </g>;
+});
 export function PlacementCanvas({ snapshot, placements, visualContext }) {
   const titleId = useId();
   const [chosen, setChosen] = useState('');
@@ -66,20 +80,9 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
       {residuals.map(region => <rect key={`${region.x_mm}:${region.y_mm}`} data-recoverable-region="" x={region.x_mm} y={region.y_mm}
         width={region.width_mm} height={region.height_mm} fill="#a2d9bd" stroke="#176f66" strokeWidth="2"><title>Retazo reutilizable · {region.area_mm2} mm²</title></rect>)}
       {visible.map(p => {
-        const b = getGeometryBounds(p.geometria);
-        const [color, edge] = placementColors(snapshot, p);
-        const key = pieceSelectionKey(scope, p);
-        const isSelected = selectedKey === key;
-        return <g key={placementKey(p)} data-placement={placementKey(p)} data-selected={isSelected} className="first-fit-piece"
-          onClick={() => setSelectedKey(key)}
-          style={{ fill: color, stroke: isSelected ? '#bb4b06' : edge,
-            strokeWidth: isSelected ? Math.max(2, Math.min(container.material_width_mm, container.material_height_mm) * .003) : undefined }}
-          transform={`translate(${p.x_mm} ${p.y_mm})`}>
-          <title>Pedido #{p.id_pedido} · Pieza #{p.id_pieza} · unidad {p.unit_index} · rotación aplicada: {p.rotation_deg}°</title>
-          <g transform={`translate(${-b.minX} ${-b.minY})`}><Shape geometry={p.geometria} /></g>
-          <text x={b.width / 2} y={b.height / 2} textAnchor="middle" dominantBaseline="middle"
-            style={{ fontSize: Math.min(60, b.height / 4, b.width / (String(p.id_pieza).length + 1)) }}>#{p.id_pieza}</text>
-        </g>;
+        const selectionId = pieceSelectionKey(scope, p);
+        return <PlacedShape2D key={placementKey(p)} snapshot={snapshot} piece={p} container={container}
+          selectionId={selectionId} selected={selectedKey === selectionId} onSelect={setSelectedKey} />;
       })}
     </svg>
     </InspectionViewport>

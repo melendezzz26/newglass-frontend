@@ -2,6 +2,8 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { expect, test } from 'vitest';
 import { PlacementCanvas } from '../PlacementCanvas';
 import { fixturePlacements, prepareFixture } from '../firstFitFixture';
+import { scenarioFixture } from '../runFixtures';
+import { resultSnapshot, visualPlacement } from '../runContract';
 
 const fixture = () => {
   const snapshot = prepareFixture([21, 22]);
@@ -93,4 +95,34 @@ test('3D oculta etiquetas indiscriminadas, ofrece opción secundaria e inspector
   fireEvent.click(screen.getByRole('button', { name: 'Mostrar IDs generales' }));
   expect(document.querySelectorAll('.placement-3d-piece-label')).toHaveLength(3);
   expect(screen.getByRole('button', { name: 'Ocultar etiquetas generales' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('un resultado parcial permite inspeccionar sus colocaciones sin presentar las pendientes como ubicadas', () => {
+  const result = scenarioFixture('incomplete');
+  const snapshot = resultSnapshot(result);
+  render(<PlacementCanvas snapshot={snapshot} placements={result.placements.map(visualPlacement)}
+    visualContext={{ runId: result.id_optimizacion, executionId: 'FF' }} />);
+  expect(document.querySelectorAll('[data-placement]')).toHaveLength(1);
+  fireEvent.click(document.querySelector('[data-placement]'));
+  const inspector = screen.getByRole('complementary', { name: 'Inspector de pieza' });
+  expect(inspector).toHaveTextContent('Pedido de origen');
+  expect(inspector).toHaveTextContent('Medidas originales');
+  expect(screen.getAllByRole('complementary', { name: 'Inspector de pieza' })).toHaveLength(1);
+});
+
+test('dos unidades físicas de la misma plancha no comparten selección aunque tengan mismo material', () => {
+  const result = scenarioFixture('complete');
+  render(<PlacementCanvas snapshot={resultSnapshot(result)} placements={result.placements.map(visualPlacement)}
+    visualContext={{ runId: result.id_optimizacion, executionId: 'FF' }} />);
+  expect(screen.getByLabelText('Plancha o retazo')).toHaveValue('PLANCHA:5:1');
+  fireEvent.click(document.querySelector('[data-placement]'));
+  const inspector = screen.getByRole('complementary', { name: 'Inspector de pieza' });
+  expect(inspector).toHaveTextContent('Unidad física');
+  expect(inspector).toHaveTextContent('Plancha comercial #5');
+  fireEvent.change(screen.getByLabelText('Plancha o retazo'), { target: { value: 'PLANCHA:5:2' } });
+  expect(inspector).toHaveTextContent('Selecciona una pieza del patrón');
+  fireEvent.click(document.querySelector('[data-placement]'));
+  expect(inspector).toHaveTextContent('Pieza #');
+  const units = within(inspector).getByText('Unidad física').closest('div');
+  expect(units).toHaveTextContent('2');
 });

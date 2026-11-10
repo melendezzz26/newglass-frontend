@@ -57,7 +57,7 @@ test('EN-UX-001: el pedido conserva medidas originales en una consulta compartid
   const first = screen.getByRole('tabpanel', { name: /First Fit/ });
   await within(first).findByRole('heading', { name: 'Resultado de First Fit' }, { timeout: 3000 });
   expect(within(first).queryByRole('table', { name: 'Medidas originales del pedido' })).not.toBeInTheDocument();
-  expect(screen.queryByRole('table', { name: 'Medidas originales del pedido' })).not.toBeInTheDocument();
+  expect(screen.getByRole('table', { name: 'Medidas originales del pedido' }).closest('details')).not.toHaveAttribute('open');
   fireEvent.click(screen.getByText(/Piezas y medidas solicitadas/));
   const table = screen.getByRole('table', { name: 'Medidas originales del pedido' });
   expect(rows(table)).toEqual([['#1', '#1', 'Rectángulo', '3', 'Material sintético · 6 mm', '2 × 2 mm']]);

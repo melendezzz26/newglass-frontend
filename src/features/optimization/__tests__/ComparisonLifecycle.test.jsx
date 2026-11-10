@@ -7,7 +7,7 @@ function deferred() {
   const promise = new Promise((ok, fail) => { resolve = ok; reject = fail; });
   return { promise, resolve, reject };
 }
-function setup({ confirmed = false } = {}) {
+function setup({ confirmed = false, withV2 = false } = {}) {
   localStorage.clear();
   let listener;
   const current = { ...structuredClone(fixture.completed), selected_execution_id: 2,
@@ -19,9 +19,10 @@ function setup({ confirmed = false } = {}) {
     result: vi.fn(async (_, e) => structuredClone(fixture.results[e.execution_id])),
     manifest: vi.fn(async (_, e) => structuredClone(fixture.manifests[e.execution_id])),
     confirm: vi.fn(async () => {}), choose: vi.fn(), release: vi.fn(), start: vi.fn(), observe: vi.fn(), lookup: vi.fn() };
-  const flow = createComparisonController({ api, source, storageKey: 'lifecycle-test' });
+  const apiV2 = withV2 ? { ...api, start: vi.fn() } : undefined;
+  const flow = createComparisonController({ api, apiV2, source, storageKey: 'lifecycle-test' });
   flow.mount();
-  return { flow, api, source, current };
+  return { flow, api, apiV2, source, current };
 }
 
 test('a definitive preflight rejection keeps the previous result recoverable after reload', async () => {
@@ -48,6 +49,24 @@ test('a definitive preflight rejection keeps the previous result recoverable aft
     try {
       await vi.waitFor(() => expect(again.getSnapshot().comparison?.comparison_id).toBe(1));
     } finally { again.dispose(); }
+  } finally { flow.dispose(); }
+});
+
+test('an ambiguous new profile retains its own recovery endpoint after a rejected request', async () => {
+  const { flow, api, apiV2, current } = setup({ withV2: true });
+  try {
+    current.released = true;
+    await flow.load(1);
+    flow.select([99]);
+    api.start.mockRejectedValueOnce(Object.assign(new Error('No cabe.'), { status: 422 }));
+    await flow.start();
+    flow.setProfile('comparison-v2');
+    apiV2.start.mockRejectedValueOnce(Object.assign(new Error('Sin conexion.'), { status: 0 }));
+    await flow.start('comparison-v2');
+    const saved = JSON.parse(localStorage.getItem('lifecycle-test'));
+    expect(saved.id).toBeNull();
+    expect(saved.profile).toBe('comparison-v2');
+    expect(flow.getSnapshot().pendingRequest).toBe(true);
   } finally { flow.dispose(); }
 });
 

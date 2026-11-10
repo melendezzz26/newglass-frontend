@@ -17,7 +17,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
   const listeners = new Set();
   const set = patch => { state = { ...state, ...patch }; listeners.forEach(fn => fn()); };
   const remember = (pending = false, preserveHistory = preservedHistory) => { try { localStorage.setItem(storageKey, JSON.stringify({ id: pending ? null : state.comparison?.comparison_id,
-    requestKey, operation, attemptOrders, profile: preserveHistory ? state.comparison?.profile ?? state.profile : state.profile,
+    requestKey, operation, attemptOrders, profile: !pending && preserveHistory ? state.comparison?.profile ?? state.profile : state.profile,
     preserveHistory })); } catch { /* Almacenamiento opcional. */ } };
   const client = profile => profile === 'comparison-v2' ? apiV2 : api;
   const valid = g => active && g === generation;

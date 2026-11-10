@@ -521,9 +521,9 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
   expect(await restored.json()).toEqual(current);
   // Inspector historical works from placements and original units, even when transient masks expire.
   await page.getByRole('tab', { name: /^FF/ }).click();
-  const historical = page.getByRole('tabpanel', { name: 'First Fit' });
-  await historical.getByRole('button', { name: /Resultado/ }).click();
-  const historicalCanvas = historical.getByRole('region', { name: 'Distribución de piezas', exact: true });
+  const historicalPanel = page.getByRole('tabpanel', { name: 'First Fit' });
+  await historicalPanel.getByRole('button', { name: /Resultado/ }).click();
+  const historicalCanvas = historicalPanel.getByRole('region', { name: 'Distribución de piezas', exact: true });
   const historicalSelection = historicalCanvas.getByRole('list', { name: 'Colocaciones consultables' }).getByRole('button').first();
   await historicalSelection.click();
   await expect(historicalCanvas.getByRole('complementary', { name: 'Inspector de pieza' })).toContainText('Pedido de origen');

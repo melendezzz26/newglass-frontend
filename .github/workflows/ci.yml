@@ -38,6 +38,14 @@ jobs:
         run: npm run lint
       - name: Build
         run: npm run build
+      - name: Validar build Staging sin publicar
+        env:
+          # URL sintética HTTPS: este gate solo valida el bundle y los assets.
+          # El deployment usa vars.VITE_API_URL aprobado por separado.
+          VITE_API_URL: https://api.example.invalid
+        run: |
+          npm run build:staging
+          npm run check:staging
 
   e2e:
     runs-on: ubuntu-24.04

@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { containerKey, placementKey } from './optimizationModel';
 import { getGeometryBounds } from './visualizationGeometry';
 import { PlacementScene3D } from './PlacementScene3D';
@@ -21,7 +21,6 @@ export function PlacementCanvas({ snapshot, placements, visualContext }) {
   const [chosenGroup, setChosenGroup] = useState('');
   const [selectedKey, setSelectedKey] = useState(null);
   const scope = { comparisonId: visualContext?.runId ?? null, executionId: visualContext?.executionId ?? null };
-  useEffect(() => { setSelectedKey(null); }, [scope.comparisonId, scope.executionId]);
   const [view, setView] = useState('2d');
   const [yaw, setYaw] = useState(DEFAULT_YAW);
   const [zoom3d, setZoom3d] = useState(1);

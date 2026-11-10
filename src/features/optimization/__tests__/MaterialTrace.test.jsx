@@ -14,6 +14,7 @@ test('physical sources are counted once and show inventory IDs, pieces and real 
   expect(screen.getByText('12 × 8 mm')).toBeInTheDocument();
   expect(screen.getByLabelText('Piezas en Plancha comercial #1, unidad 1').children).toHaveLength(value.placements.length);
   expect(screen.getByText('Área residual total')).toBeInTheDocument();
+  expect(screen.queryByRole('region', { name: 'Distribución de piezas' })).not.toBeInTheDocument();
   expect(screen.getByText(/solo se registran como nuevos retazos al confirmar/)).toBeInTheDocument();
 });
 

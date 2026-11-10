@@ -1,18 +1,9 @@
 import { CATALOG_V2 } from './comparisonV2Contract';
 
-const number = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 });
+import { areaForOperator, percentageForOperator, eligibilityReason } from './comparisonResultModel';
+
 const metricExact = value => value === null || value === undefined ? null : String(value);
 const methodName = method => CATALOG_V2.find(item => item.code === method)?.name ?? method;
-
-export function areaForOperator(value) {
-  if (metricExact(value) === null || !Number.isFinite(Number(value))) return '—';
-  const squareMeters = Number(value) / 1000000;
-  return `${number.format(squareMeters)} m²`;
-}
-
-export function percentageForOperator(value) {
-  return metricExact(value) === null || !Number.isFinite(Number(value)) ? '—' : `${number.format(Number(value))} %`;
-}
 
 function statusLabel(execution) {
   if (execution.diagnostic?.statistics?.runtime_not_started_global === 1) return 'No ejecutado por interrupción global';
@@ -22,17 +13,6 @@ function statusLabel(execution) {
   if (execution.dispatch_state === 'RUNNING') return 'Calculando';
   if (execution.outcome === 'PARTIAL' || execution.complete === false) return 'Parcial';
   return 'Completo';
-}
-
-export function eligibilityReason(comparison, execution, execute) {
-  if (!execute) return 'Sin permisos para elegir';
-  if (comparison.confirmed) return 'Corte ya confirmado';
-  if (comparison.released) return 'Trabajo liberado (solo consulta)';
-  if (!comparison.terminal) return 'En cálculo: espera el cierre';
-  if (execution.outcome === 'FAILED' || execution.status === 'FALLIDA') return 'Motor con error';
-  if (!execution.complete) return 'Cobertura incompleta';
-  if (!comparison.selection_allowed || !execution.eligible) return 'Selección no habilitada';
-  return null;
 }
 
 export function CompactComparisonTable({ comparison, results, execute, busy, pendingChoice, selectedId, onChoose, onInspect, id }) {

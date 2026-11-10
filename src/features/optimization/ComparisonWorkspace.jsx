@@ -17,6 +17,8 @@ import { PlacementCanvas } from './PlacementCanvas';
 import { RunMaskInspection } from './RunMaskInspection';
 import { RunVisualization } from './RunVisualization';
 import { MaterialTrace, InventoryReceipt } from './MaterialTrace';
+import { UnplacedSummary } from './UnplacedSummary';
+import { CompactComparisonTable, areaForOperator, percentageForOperator } from './CompactComparisonTable';
 import './ComparisonWorkspace.css';
 
 const PHASES = ['Máscaras', 'Orden de piezas', 'Giros y colocación', 'Resultado'];
@@ -52,19 +54,35 @@ function readOnlySource() {
     load() { listener?.({ type: 'orders', orders: [] }); }, dispose() {}, refresh() {} };
 }
 
+
 function OriginalRequest({ comparison }) {
-  return <details className="comparison-request"><summary>Piezas y medidas solicitadas <span>{comparison.requested_pieces.reduce((n, p) => n + p.cantidad, 0)} unidades</span></summary>
-    <div className="comparison-request-grid">{comparison.requested_pieces.map(p => <article key={p.id_pieza}>
-      <h3>Pedido #{p.id_pedido} · Pieza #{p.id_pieza}</h3>
-      <p>{p.cantidad} unidades · {p.material_nombre ?? `Vidrio #${p.id_tipo_vidrio}`} · espesor {p.espesor_mm} mm</p>
-      <GeometryPreview geometry={p.geometria} pieceId={p.id_pieza} frame={getRasterComparisonFrame(p.geometria)} />
-      <p>{p.dimensiones ? 'Medidas guardadas del pedido' : 'Medidas derivadas de la geometría guardada'}</p>
-      {p.dimensiones && <dl>{Object.entries(p.dimensiones).map(([key, value]) => <div key={key}>
-        <dt>{({ width_mm: 'Ancho', height_mm: 'Alto', radius_mm: 'Radio', vertices_mm: 'Vértices', lengths_mm: 'Longitudes', angles_deg: 'Ángulos' })[key] ?? key.replaceAll('_', ' ')}</dt>
-        <dd>{Array.isArray(value) ? value.map(v => Array.isArray(v) ? `(${v.join(', ')})` : String(v)).join(' · ') : String(value)}{key.endsWith('_mm') ? ' mm' : key.endsWith('_deg') ? '°' : ''}</dd>
-      </div>)}</dl>}
-      <small>Estas medidas corresponden a la solicitud original; las colocaciones pueden estar giradas.</small>
-    </article>)}</div>
+  const [query, setQuery] = useState('');
+  const pieces = comparison.requested_pieces;
+  const units = pieces.reduce((total, piece) => total + piece.cantidad, 0);
+  const normalized = query.trim().toLocaleLowerCase('es-PE');
+  const filtered = pieces.filter(piece => !normalized || [piece.id_pedido, piece.id_pieza, piece.material_nombre,
+    piece.tipo_forma, piece.id_tipo_vidrio].some(value => String(value ?? '').toLocaleLowerCase('es-PE').includes(normalized)));
+  return <details className="comparison-request"><summary>Piezas y medidas solicitadas <span>{pieces.length} tipos · {units} unidades</span></summary>
+    <div className="comparison-request-content">
+      <label>Buscar una pieza del pedido<input className="ng-control" type="search" value={query} onChange={event => setQuery(event.target.value)}
+        placeholder="Pedido, pieza, forma o vidrio" /></label>
+      <p>{filtered.length} de {pieces.length} tipos visibles. Todas las dimensiones originales siguen disponibles en mm.</p>
+      <div className="comparison-request-scroll" role="region" aria-label="Consulta de medidas originales" tabIndex={0}>
+        <OriginalMeasuresTable pieces={filtered} />
+        <h3>Geometría original de cada tipo</h3>
+        <div className="comparison-request-grid">{filtered.map(piece => <article key={`${piece.id_pedido}:${piece.id_pieza}`}>
+          <h4>Pedido #{piece.id_pedido} · Pieza #{piece.id_pieza}</h4>
+          <p>{piece.cantidad} unidades · {piece.material_nombre ?? `Vidrio #${piece.id_tipo_vidrio}`} · espesor {piece.espesor_mm} mm</p>
+          <GeometryPreview geometry={piece.geometria} pieceId={piece.id_pieza} frame={getRasterComparisonFrame(piece.geometria)} />
+          <p>{piece.dimensiones ? 'Medidas guardadas del pedido' : 'Medidas derivadas de la geometría guardada'}</p>
+          {piece.dimensiones && <dl>{Object.entries(piece.dimensiones).map(([key, value]) => <div key={key}>
+            <dt>{({ width_mm: 'Ancho', height_mm: 'Alto', radius_mm: 'Radio', vertices_mm: 'Vértices', lengths_mm: 'Longitudes', angles_deg: 'Ángulos' })[key] ?? key.replaceAll('_', ' ')}</dt>
+            <dd>{Array.isArray(value) ? value.map(v => Array.isArray(v) ? `(${v.join(', ')})` : String(v)).join(' · ') : String(value)}{key.endsWith('_mm') ? ' mm' : key.endsWith('_deg') ? '°' : ''}</dd>
+          </div>)}</dl>}
+          <small>Solicitud original; el motor puede girar la pieza al colocarla.</small>
+        </article>)}</div>
+      </div>
+    </div>
   </details>;
 }
 
@@ -95,7 +113,7 @@ function liveSnapshot(comparison, live) {
     groups: [...groups.values()], materials_used: live?.materials ?? [], residual_regions: [] });
 }
 
-function EnginePanel({ comparison, execution, visual: supplied, live, result, api, onSessionExpired }) {
+function EnginePanel({ comparison, execution, visual: supplied, live, result, api, onSessionExpired, patternAnchor }) {
   const visual = supplied ?? { descriptors: {}, current: null, order: [], processed: 0 };
   const [presented, setPresented] = useState(0), [inspection, setInspection] = useState(null), [paused, setPaused] = useState(null);
   const masks = Object.values(visual.descriptors).filter(m => m.kind === 'PIECE' && Number(m.rotation_deg) === 0);
@@ -167,11 +185,14 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
           No hay planchas ni retazos compatibles para {unavailableGroups.map(group =>
             `material #${group.id_tipo_vidrio}, espesor ${group.espesor_mm} mm`).join('; ')}.
         </FeedbackMessage>}
-        <Metrics metrics={execution.metrics} execution={execution} result={result} />{!result.completo && <p role="status">Hay piezas sin colocar; este resultado es parcial y no puede confirmarse.</p>}
-        {!!result.unplaced_units.length && <ul aria-label="Piezas sin colocar">{result.unplaced_units.map(p => <li key={`${p.id_pedido}:${p.id_pieza}:${p.unit_index}`}>Pedido #{p.id_pedido} · Pieza #{p.id_pieza} · unidad {p.unit_index}: {p.reason === 'RESOURCE_LIMIT' ? 'pendiente por límite de recursos' : 'sin espacio factible'}</li>)}</ul>}
-        <OriginalMeasuresTable pieces={comparison.requested_pieces} />
-        <MaterialTrace result={result} requested={comparison.requested_pieces} />
-        <PlacementCanvas snapshot={viewSnapshot} placements={viewPlacements} visualContext={{ visual, runId: comparison.comparison_id, adapter }} /></>}
+        <Metrics execution={execution} result={result} />
+        {!result.completo && <p role="status">Hay piezas sin colocar; este resultado es parcial y no puede confirmarse.</p>}
+        <div id={patternAnchor} className="comparison-result-visual">
+          <h4>Patrón de corte · {execution.method}</h4>
+          <PlacementCanvas snapshot={viewSnapshot} placements={viewPlacements} visualContext={{ visual, runId: comparison.comparison_id, adapter }} />
+        </div>
+        <UnplacedSummary units={result.unplaced_units} />
+        <MaterialTrace result={result} requested={comparison.requested_pieces} /></>}
     </div>
   </section>;
 }
@@ -193,11 +214,32 @@ function metricValue(key, execution, result) {
   return execution.metrics?.[key] ?? null;
 }
 
+
 function Metrics({ execution, result }) {
-  return <dl className="comparison-metrics">{comparisonMetrics.map(([key, label, unit]) => {
-    const value = metricValue(key, execution, result);
-    return <div key={key}><dt>{label}</dt><dd>{value ?? '—'} {unit && <small>{unit}</small>}</dd></div>;
-  })}</dl>;
+  const metric = execution.metrics;
+  const placed = result.placed_units;
+  const requested = result.total_units;
+  const sources = result.materials_used ?? [];
+  const sheets = sources.filter(source => source.material_source === 'PLANCHA').length;
+  const remnants = sources.filter(source => source.material_source === 'RETAZO').length;
+  const values = [
+    ['Piezas colocadas', `${placed} / ${requested}`],
+    ['Piezas pendientes', result.unplaced_units.length],
+    ['Cobertura', percentageForOperator(requested ? placed * 100 / requested : null)],
+    ['Aprovechamiento', percentageForOperator(metric?.aprovechamiento_pct)],
+    ['Planchas / retazos', `${sheets} / ${remnants}`],
+    ['Merma', areaForOperator(metric?.merma_mm2)],
+    ['Retazo recuperable', areaForOperator(metric?.retazo_recuperable_mm2)],
+    ['Tiempo computacional', metric?.tiempo_computacional_ms === null || metric?.tiempo_computacional_ms === undefined
+      ? '—' : `${new Intl.NumberFormat('es-PE', { maximumFractionDigits: 2 }).format(Number(metric.tiempo_computacional_ms) / 1000)} s`],
+  ];
+  return <section aria-label="Resumen operativo del resultado" className="comparison-result-summary">
+    <h4>Resumen operativo</h4>
+    <dl className="comparison-metrics">{values.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+    <details className="comparison-technical-results"><summary>Valores exactos del motor</summary>
+      <dl>{metricRows.map(([key, label, unit]) => <div key={key}><dt>{label}</dt><dd>{metric?.[key] ?? '—'} {unit}</dd></div>)}</dl>
+    </details>
+  </section>;
 }
 
 export function ComparisonWorkspace({ token, user, initialRunId, initialProfile, onSessionExpired, onLegacy, comparisonAdapter, comparisonV2Adapter, source: suppliedSource }) {
@@ -246,6 +288,22 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
     <header className="comparison-heading"><div><span className="comparison-eyebrow">{methodCount} motores · una misma solicitud</span><h2>Comparar distribuciones de corte</h2>
       <p>{current?.profile === 'comparison-v2' ? 'Revisa y compara los resultados independientes de las seis heurísticas.' : 'Revisa el proceso de cada motor, compara sus métricas y elige una distribución.'}</p></div>
       {current && <div className="comparison-job">Trabajo <strong>#{current.comparison_id}</strong><small>{current.confirmed ? 'Corte confirmado' : current.released ? 'Pedidos liberados' : current.terminal ? 'Comparación finalizada' : 'Comparación en curso'}</small>{selected && <small>Elegido: {methodName(selected.method)}</small>}</div>}</header>
+    {current && <nav className="comparison-context" aria-label="Contexto y navegación de la comparación">
+      <div className="comparison-context__info"><strong>Trabajo #{current.comparison_id}</strong>
+        <span>Pedidos: {current.order_ids.map(orderId => `#${orderId}`).join(', ')}</span>
+        <span>{current.confirmed ? 'Corte confirmado' : current.released ? 'Pedidos liberados' : current.terminal ? 'Resultados guardados' : 'Comparación en curso'}</span>
+        <span>Vista: {activeTab === 'comparison' ? 'Comparación' : activeTab}</span>
+        <button type="button" className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>
+        {activeTab !== 'comparison' && state.results[current.executions.find(execution => execution.method === activeTab)?.execution_id]?.result &&
+          <button type="button" className="ng-button" onClick={() => document.getElementById(`${id}-pattern-${activeTab}`)?.scrollIntoView?.({ block: 'start' })}>Ir al patrón</button>}
+      </div>
+      <div className={`comparison-tabs ${current.profile === 'comparison-v2' ? 'comparison-tabs--six' : ''}`} role="tablist" aria-label="Motores y comparación">{tabs.map((key, index) => <button key={key} type="button" role="tab"
+        id={`${id}-tab-${key}`} aria-selected={activeTab === key} aria-controls={`${id}-panel-${key}`} tabIndex={activeTab === key ? 0 : -1}
+        onClick={() => setTab(key)} onKeyDown={e => {
+          const next = e.key === 'ArrowRight' ? (index + 1) % tabs.length : e.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
+          if (next !== null) { e.preventDefault(); setTab(tabs[next]); document.getElementById(`${id}-tab-${tabs[next]}`)?.focus(); }
+        }}>{key === 'comparison' ? 'Comparación' : methodLabel(key, current.profile)}{key !== 'comparison' && <small>{executionStatus(current.executions.find(e => e.method === key))}</small>}</button>)}</div>
+    </nav>}
     {state.error && <FeedbackMessage variant="error">{state.error}</FeedbackMessage>}
     {import.meta.env.MODE === 'staging' && state.error && state.admissionDiagnostic && <section aria-label="Diagnóstico técnico de admisión">
       <h3>Diagnóstico técnico</h3>
@@ -259,7 +317,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       <label>Métodos<select className="ng-control" value={state.profile} disabled={state.pendingRequest || !!current && !current.released && !current.confirmed}
         onChange={e => flow.setProfile(e.target.value)}><option value="comparison-v1">Tres métodos (histórico)</option><option value="comparison-v2">Seis métodos</option></select></label>
       <button className="ng-button" disabled={state.busy} onClick={() => flow.history()}>Ver comparaciones anteriores</button>
-      <button className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>
+      {!current && <button className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>}
     </div>
     {state.pendingRequest && <p role="status">La solicitud se conserva para reintentar o actualizar sin crear otra comparación.</p>}
     {state.historyOpen && <section className="comparison-history" aria-label="Comparaciones anteriores">
@@ -299,22 +357,22 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       <details className="comparison-configuration"><summary>Configuración y unidades aplicadas</summary><p>Resolución {current.configuration.resolucion_raster_mm} mm/celda · margen {current.configuration.margen_mm} mm · separación {current.configuration.separacion_mm} mm · paso angular {current.configuration.paso_angular_grados}°.</p></details>
       {state.partial && <FeedbackMessage variant="info">Se recuperó el estado actual. Parte del avance anterior ya no estaba retenido; los resultados guardados se conservan.</FeedbackMessage>}
       {state.connection === 'reconnecting' && !current.terminal && <p role="status">Recuperando el avance; los motores continúan ejecutándose.</p>}
-      <div className={`comparison-tabs ${current.profile === 'comparison-v2' ? 'comparison-tabs--six' : ''}`} role="tablist" aria-label="Motores y comparación">{tabs.map((key, index) => <button key={key} type="button" role="tab"
-        id={`${id}-tab-${key}`} aria-selected={activeTab === key} aria-controls={`${id}-panel-${key}`} tabIndex={activeTab === key ? 0 : -1}
-        onClick={() => setTab(key)} onKeyDown={e => {
-          const next = e.key === 'ArrowRight' ? (index + 1) % tabs.length : e.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
-          if (next !== null) { e.preventDefault(); setTab(tabs[next]); document.getElementById(`${id}-tab-${tabs[next]}`)?.focus(); }
-        }}>{key === 'comparison' ? 'Comparación' : methodLabel(key, current.profile)}{key !== 'comparison' && <small>{executionStatus(current.executions.find(e => e.method === key))}</small>}</button>)}</div>
+
       {current.executions.map(execution => <div className="comparison-panel" key={execution.execution_id} role="tabpanel" id={`${id}-panel-${execution.method}`}
         aria-label={methodName(execution.method)} aria-labelledby={`${id}-tab-${execution.method}`} hidden={activeTab !== execution.method}>
         <EnginePanel comparison={current} execution={execution} visual={state.visuals[execution.execution_id]} live={state.live[execution.execution_id]}
-          result={state.results[execution.execution_id]?.result} api={activeApi} onSessionExpired={onSessionExpired} />
+          result={state.results[execution.execution_id]?.result} api={activeApi} onSessionExpired={onSessionExpired}
+          patternAnchor={`${id}-pattern-${execution.method}`} />
       </div>)}
       <section className="comparison-panel comparison-results" role="tabpanel" id={`${id}-panel-comparison`} aria-labelledby={`${id}-tab-comparison`} hidden={activeTab !== 'comparison'}>
         <h2>Comparación de resultados</h2><p>Los {current.executions.length} motores usaron la misma solicitud, configuración e inventario inicial.{current.profile === 'comparison-v2' ? ' Las métricas no se ordenan ni recomiendan un motor.' : ' La elección es tuya.'}</p>
-        <OriginalMeasuresTable pieces={current.requested_pieces} />
         {current.incomplete && <FeedbackMessage variant="warning">La comparación está incompleta; consulta el estado y diagnóstico de cada motor. Los resultados disponibles se conservan.</FeedbackMessage>}
-        <p className="comparison-table-hint">Desliza horizontalmente para consultar todas las métricas.</p>
+        {current.profile === 'comparison-v2' ? <CompactComparisonTable comparison={current} results={state.results}
+          execute={execute} busy={state.busy} pendingChoice={pendingChoice} selectedId={selectedId} id={id}
+          onChoose={choose} onInspect={method => {
+            setTab(method);
+            requestAnimationFrame(() => document.getElementById(`${id}-pattern-${method}`)?.scrollIntoView?.({ block: 'start' }));
+          }} /> : <>        <p className="comparison-table-hint">Desliza horizontalmente para consultar todas las métricas.</p>
         <div className="comparison-table-scroll" role="region" aria-label="Tabla comparativa con desplazamiento horizontal" tabIndex={0}><table><caption>{current.profile === 'comparison-v2' ? `Métricas de ${current.executions.length} motores` : 'Métricas de los tres motores'}</caption><thead><tr><th>Motor</th><th>Estado / diagnóstico</th>
           {(current.profile === 'comparison-v2' ? comparisonMetrics : [['pieces', 'Piezas', ''], ...metricRows]).map(([, label, unit]) => <th key={label}>{label}{unit && <small>{unit}</small>}</th>)}
           <th>Elegir</th></tr></thead>
@@ -330,10 +388,10 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
                 checked={selectedId === execution.execution_id} disabled={!execute || state.busy && pendingChoice !== execution.execution_id || !current.selection_allowed || !execution.eligible}
                 onChange={() => choose(execution.execution_id)} />{selectedId === execution.execution_id ? 'Elegido' : 'Elegir'}</label></td>
             </tr>;
-          })}</tbody></table></div>
+          })}</tbody></table></div></>}
         <>
           {!current.terminal && <p role="status">La elección se habilita tras el cierre seguro de los {current.executions.length} motores y la persistencia de sus resultados.</p>}
-          <div className="comparison-choice"><div><strong>{selected ? `${methodName(selected.method)} seleccionado` : 'Todavía no has elegido un motor'}</strong>
+          <div className="comparison-choice"><div><strong>{selected ? `${methodName(selected.method)} seleccionado` : current.released ? 'Trabajo liberado: solo consulta' : current.confirmed ? 'Corte confirmado' : !current.terminal ? 'Comparación en curso' : !current.executions.some(e => e.eligible) ? 'Ninguna solución completa elegible' : 'Todavía no has elegido un motor'}</strong>
             <p>{current.confirmed ? 'El inventario y los pedidos reflejan únicamente la distribución elegida.' : 'Elegir un motor conserva el inventario. Confirma cuando hayas revisado su distribución.'}</p></div>
             {canConfirm && <button className="ng-button ng-button--primary" disabled={state.busy || !current.confirmable || !selectedResult} onClick={() => setDialog(true)}>{state.busy ? 'Procesando…' : 'Confirmar distribución elegida'}</button>}
           </div></>

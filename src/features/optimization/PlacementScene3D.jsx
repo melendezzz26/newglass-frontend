@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPlacementScene, clampYaw, DEFAULT_YAW, extrudedSides, projectPoint, projectedPath } from './placementScene';
 import './PlacementScene3D.css';
 import { ZoomControls } from './InspectionViewport';
@@ -27,6 +27,24 @@ function Dimension({ start, end, label, scene, yaw, camera }) {
   </g>;
 }
 
+const ProjectedPiece3D = memo(function ProjectedPiece3D({ piece, snapshot, scene, yaw, camera, selectionId, selected, showAllLabels, onSelect }) {
+  const center = piece.points.reduce(([x, y], point) =>
+    [x + point[0] / piece.points.length, y + point[1] / piece.points.length], [0, 0]);
+  const anchor = selected || showAllLabels ? projectPoint(center, PIECE_TOP, scene, yaw, camera) : null;
+  return <g data-piece-3d={piece.key} data-selected={selected}
+    className="placement-3d-piece" onPointerDown={event => { if (event.button === 0) event.stopPropagation(); }}
+    onClick={event => { event.stopPropagation(); onSelect(selectionId); }}>
+    {extrudedSides(piece.points, SURFACE, PIECE_TOP, scene, yaw, camera).map(side => <path key={side.key} d={side.path} fill={piece.edge} />)}
+    <path className="placement-3d-piece-surface" d={projectedPath(piece.points, PIECE_TOP, scene, yaw, camera)}
+      fill={piece.color} stroke={selected ? '#b64c0c' : piece.edge} strokeWidth={selected ? 9 : 2} />
+    {anchor && <text className="placement-3d-piece-label" x={anchor.x} y={anchor.y}
+      textAnchor="middle" dominantBaseline="middle">
+      <tspan x={anchor.x}>#{piece.placement.id_pieza}{selected ? ` · u.${piece.placement.unit_index}` : ''}</tspan>
+      {selected && <tspan x={anchor.x} dy="1.3em">{pieceDimensions(piece.placement, snapshot)}</tspan>}
+    </text>}
+  </g>;
+});
+
 export function PlacementScene3D({ snapshot, container, placements, scope = {}, selectedKey = null, onSelect = () => {}, yaw, onYawChange, zoom = 1, onZoomChange = () => {}, camera = { elevation: 48, panX: 0, panY: 0 }, onCameraChange = () => {} }) {
   const id = useId();
   const drag = useRef(null);
@@ -43,10 +61,14 @@ export function PlacementScene3D({ snapshot, container, placements, scope = {}, 
   const moveCamera = changes => onCameraChange({ ...camera, ...changes });
   const reset = () => { onYawChange(DEFAULT_YAW); onZoomChange(1); onCameraChange({ elevation: 48, panX: 0, panY: 0 }); };
   const scene = useMemo(() => createPlacementScene(snapshot, container, placements), [snapshot, container, placements]);
+  const sorted = useMemo(() => {
+    if (!scene) return [];
+    const depth = piece => piece.points.reduce((sum, point) =>
+      sum + projectPoint(point, PIECE_TOP, scene, yaw, camera).depth, 0) / piece.points.length;
+    return [...scene.pieces].sort((a, b) => depth(a) - depth(b));
+  }, [scene, yaw, camera]);
   if (!scene) return <p role="status">No hay geometría válida para mostrar este contenedor en 3D. Consulta la vista 2D.</p>;
   const surfacePath = projectedPath(scene.outline, SURFACE, scene, yaw, camera);
-  const pieceDepth = piece => piece.points.reduce((sum, p) => sum + projectPoint(p, PIECE_TOP, scene, yaw, camera).depth, 0) / piece.points.length;
-  const sorted = [...scene.pieces].sort((a, b) => pieceDepth(a) - pieceDepth(b));
   const grid = [];
   const origin = projectPoint([0, 0], SURFACE, scene, yaw, camera);
   const axes = [
@@ -122,22 +144,9 @@ export function PlacementScene3D({ snapshot, container, placements, scope = {}, 
           return <line key={i} x1={first.x} y1={first.y} x2={last.x} y2={last.y} />;
         })}</g>
         {sorted.map(piece => {
-          const center = piece.points.reduce(([x, y], p) => [x + p[0] / piece.points.length, y + p[1] / piece.points.length], [0, 0]);
-          const anchor = projectPoint(center, PIECE_TOP, scene, yaw, camera);
-          const key = pieceSelectionKey(scope, piece.placement);
-          const selected = key === selectedKey;
-          return <g key={piece.key} data-piece-3d={piece.key} data-selected={selected}
-            className="placement-3d-piece" onPointerDown={event => { if (event.button === 0) event.stopPropagation(); }}
-            onClick={event => { event.stopPropagation(); onSelect(key); }}>
-            {extrudedSides(piece.points, SURFACE, PIECE_TOP, scene, yaw, camera).map(side => <path key={side.key} d={side.path} fill={piece.edge} />)}
-            <path className="placement-3d-piece-surface" d={projectedPath(piece.points, PIECE_TOP, scene, yaw, camera)}
-              fill={piece.color} stroke={selected ? '#b64c0c' : piece.edge} strokeWidth={selected ? 9 : 2} />
-            {(selected || showAllLabels) && <text className="placement-3d-piece-label"
-              x={anchor.x} y={anchor.y} textAnchor="middle" dominantBaseline="middle">
-              <tspan x={anchor.x}>#{piece.placement.id_pieza}{selected ? ` · u.${piece.placement.unit_index}` : ''}</tspan>
-              {selected && <tspan x={anchor.x} dy="1.3em">{pieceDimensions(piece.placement, snapshot)}</tspan>}
-            </text>}
-          </g>;
+          const selectionId = pieceSelectionKey(scope, piece.placement);
+          return <ProjectedPiece3D key={piece.key} piece={piece} snapshot={snapshot} scene={scene} yaw={yaw} camera={camera}
+            selectionId={selectionId} selected={selectedKey === selectionId} showAllLabels={showAllLabels} onSelect={onSelect} />;
         })}
         <g aria-hidden="true">{axes.map(([label, end, color]) => <g key={label}>
           <line x1={origin.x} y1={origin.y} x2={end.x} y2={end.y} stroke={color} strokeWidth="4" />

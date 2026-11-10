@@ -1,8 +1,10 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 import fixture from '../../../../docs/contracts/optimization/comparison-v2.json';
-import { CompactComparisonTable, areaForOperator, eligibilityReason } from '../CompactComparisonTable';
-import { groupUnplacedUnits, UnplacedSummary } from '../UnplacedSummary';
+import { CompactComparisonTable } from '../CompactComparisonTable';
+import { areaForOperator, eligibilityReason } from '../comparisonResultModel';
+import { UnplacedSummary } from '../UnplacedSummary';
+import { groupUnplacedUnits } from '../unplacedModel';
 
 test('220 unidades pendientes se agrupan sin perder IDs de unidad ni motivo', () => {
   const units = Array.from({ length: 220 }, (_, index) => ({

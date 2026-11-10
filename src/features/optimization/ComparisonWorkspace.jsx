@@ -291,7 +291,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
     {current && <nav className="comparison-context" aria-label="Contexto y navegación de la comparación">
       <div className="comparison-context__info"><strong>Trabajo #{current.comparison_id}</strong>
         <span>Pedidos: {current.order_ids.map(orderId => `#${orderId}`).join(', ')}</span>
-        <span>{current.confirmed ? 'Corte confirmado' : current.released ? 'Pedidos liberados' : current.terminal ? 'Resultados guardados' : 'Comparación en curso'}</span>
+        <span>{current.confirmed ? 'Confirmado · solo consulta' : current.released ? 'Pedidos liberados' : current.terminal ? 'Resultados guardados' : 'Comparación en curso'}</span>
         <span>Vista: {activeTab === 'comparison' ? 'Comparación' : activeTab}</span>
         <button type="button" className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>
         {activeTab !== 'comparison' && state.results[current.executions.find(execution => execution.method === activeTab)?.execution_id]?.result &&

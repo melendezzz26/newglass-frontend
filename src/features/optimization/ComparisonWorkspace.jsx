@@ -333,7 +333,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
     </section>}
     {state.success && <FeedbackMessage variant="success">{state.success}</FeedbackMessage>}
     {cancellation === 'REQUESTED' && <FeedbackMessage variant="info">Cancelando optimización. El backend está deteniendo los motores; los pedidos siguen reservados hasta acreditar el cierre.</FeedbackMessage>}
-    {cancellation === 'CANCELLED' && <FeedbackMessage variant="success">Cancelación confirmada. Se verificó el cierre de procesos, los pedidos volvieron a pendientes y el inventario no fue descontado. Los resultados ya calculados siguen disponibles para consulta.</FeedbackMessage>}
+    {cancellation === 'CANCELLED' && <FeedbackMessage variant="success" title="Cancelación confirmada">Cancelación confirmada. Se verificó el cierre de procesos, los pedidos volvieron a pendientes y el inventario no fue descontado. Los resultados ya calculados siguen disponibles para consulta.</FeedbackMessage>}
     {cancellation === 'COMPLETED_BEFORE_CANCEL' && <FeedbackMessage variant="info">La optimización terminó antes de poder interrumpirse. Los resultados se conservan y no se registra como cancelada.</FeedbackMessage>}
     <div className="comparison-toolbar">
       <label>Métodos<select className="ng-control" value={state.profile} disabled={state.pendingRequest || !!current && !current.released && !current.confirmed}

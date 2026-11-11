@@ -41,7 +41,7 @@ test('EN-UX-004: confirmación operario, parada real, pedidos e histórico durab
   const controlled = await page.request.post(`${api}/__e2e__/comparison-worker/blocked`);
   expect(controlled.status()).toBe(200);
   expect((await controlled.json()).worker_mode).toBe('blocked');
-  let comparisonId, primaryError;
+  let comparisonId, primaryError, cleanupError;
   try {
     await login(page, data.actors.all, { comparative: true });
     await open(page);
@@ -121,22 +121,24 @@ test('EN-UX-004: confirmación operario, parada real, pedidos e histórico durab
     });
   } catch (error) {
     primaryError = error;
-    throw error;
   } finally {
     try {
       if (comparisonId) await ensureScenarioClosed(page, comparisonId, data.headers);
-      // Only restore the productive worker factory after all actual processes
-      // have stopped. A failed test must not poison the other 148 scenarios.
+      // Only restore productive worker factory after verified process closure.
       await expect.poll(async () => {
         const reset = await page.request.post(`${api}/__e2e__/comparison-worker/normal`);
-        if (reset.status() === 409) return false; // Reaper still owns admission.
+        if (reset.status() === 409) return false;
         expect(reset.status(), await reset.text()).toBe(200);
         return true;
       }, { timeout: 12_000 }).toBe(true);
-    } catch (cleanupError) {
-      if (!primaryError) throw cleanupError;
-      info.annotations.push({ type: 'cleanup-failure',
-        description: `Original error preserved; safe cleanup failed: ${cleanupError.message}` });
+    } catch (error) {
+      cleanupError = error;
     }
   }
+  if (primaryError && cleanupError) {
+    info.annotations.push({ type: 'cleanup-failure',
+      description: `Original error preserved; safe cleanup failed: ${cleanupError.message}` });
+  }
+  if (primaryError) throw primaryError;
+  if (cleanupError) throw cleanupError;
 });

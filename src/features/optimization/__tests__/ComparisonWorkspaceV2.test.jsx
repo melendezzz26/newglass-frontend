@@ -418,7 +418,10 @@ test('EN-UX-004 double confirmation click sends only one cancellation request', 
   await startV2();
   fireEvent.click(screen.getByRole('button', { name: 'Cancelar optimización' }));
   const submit = within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' });
-  fireEvent.doubleClick(submit);
+  // fireEvent.doubleClick alone emits dblclick (not the two click events).
+  // Reproduce the actual submission clicks while the mutation is guarded.
+  fireEvent.click(submit);
+  fireEvent.click(submit);
   await waitFor(() => expect(apiV2.cancel).toHaveBeenCalledTimes(1));
   await screen.findByText(/El backend está deteniendo los motores/);
   expect(screen.queryByText(/Cancelación confirmada. Se verificó/)).not.toBeInTheDocument();

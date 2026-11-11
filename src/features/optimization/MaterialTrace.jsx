@@ -1,7 +1,8 @@
 import { stockKey } from './runContract';
 
 const number = value => new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 }).format(Number(value));
-const sourceName = source => `${source.material_source === 'PLANCHA' ? 'Plancha comercial' : 'Retazo de inventario'} #${source.material_id}`;
+const sourceName = source => source.material_source === 'PLANCHA' ? `Plancha comercial #${source.material_id}`
+  : source.codigo ? `Retazo ${source.codigo}` : `Retazo de inventario #${source.material_id}`;
 
 function SourceDetail({ source, result, pieces, requested }) {
   const units = result.groups.flatMap(group => group.units);
@@ -62,7 +63,7 @@ export function InventoryReceipt({ confirmation }) {
     </li>)}</ul>
     <h4>Nuevos retazos registrados</h4>
     {receipt.remnants_created.length ? <ul>{receipt.remnants_created.map(r => <li key={r.remnant_id}>
-      Retazo #{r.remnant_id} · {number(r.area_mm2)} mm² · de {sourceName({ ...r.source, material_source: r.source.source })}
+      Retazo {r.codigo || `#${r.remnant_id}`} · {number(r.area_mm2)} mm² · de {sourceName({ ...r.source, material_source: r.source.source })}
       {' '}· unidad {r.source.physical_unit_index}
     </li>)}</ul> : <p>No se registraron nuevos retazos.</p>}
   </section>;

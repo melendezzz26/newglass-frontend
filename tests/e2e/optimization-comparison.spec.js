@@ -5,6 +5,43 @@ import { fileURLToPath } from 'node:url';
 import { api, setup, login, loginApi, open, run, stock, capture, save } from './optimizationRealSupport.js';
 import { parseComparisonV2, parseExecutionV2, parseComparisonEventV2 } from '../../src/features/optimization/comparisonV2Contract.js';
 
+for (const scenario of ['single', 'remnant']) {
+  test(`HU-MAT-001: trazabilidad real para ${scenario} en seis motores`, async ({ page }, info) => {
+    test.setTimeout(120_000);
+    const data = await setup(page, scenario);
+    await login(page, data.actors.all, { comparative: true }); await open(page);
+    await page.getByRole('checkbox', { name: new RegExp(`Pedido #${data.orders[0]}\\b`) }).check();
+    await page.getByLabel('Métodos').selectOption('comparison-v2');
+    const accepted = page.waitForResponse(r => new URL(r.url()).pathname === '/api/optimization/comparisons-v2' && r.request().method() === 'POST');
+    await page.getByRole('button', { name: 'Comparar con los seis motores', exact: true }).click();
+    const initial = parseComparisonV2(await (await accepted).json());
+    const endpoint = `${api}/api/optimization/comparisons-v2/${initial.comparison_id}`;
+    let current;
+    await expect.poll(async () => {
+      current = parseComparisonV2(await (await page.request.get(endpoint, { headers: data.headers })).json());
+      return current.terminal;
+    }, { timeout: 90_000 }).toBe(true);
+    const labels = ['FF', 'BF', 'WF', 'HF', 'BRF', 'BS-2'];
+    await page.getByRole('button', { name: 'Actualizar resultado', exact: true }).click();
+    for (const [index, execution] of current.executions.entries()) {
+      const response = await page.request.get(`${endpoint}/executions/${execution.execution_id}`, { headers: data.headers });
+      const { result } = parseExecutionV2(await response.json(), current, execution);
+      const source = result.materials_used.find(s => s.material_source === (scenario === 'single' ? 'PLANCHA' : 'RETAZO'));
+      expect(source).toBeTruthy();
+      if (scenario === 'remnant') expect(source.codigo).toBeTruthy();
+      const identity = scenario === 'single' ? `Plancha comercial #${source.material_id}` : `Retazo ${source.codigo}`;
+      await page.getByRole('tab', { name: new RegExp(`^${labels[index]}(?:\\s|$)`) }).click();
+      const panel = page.getByRole('tabpanel').filter({ visible: true });
+      await expect(panel.getByText(identity, { exact: false }).first()).toBeVisible();
+      if (index === 0) {
+        await panel.getByText(identity, { exact: false }).first().click();
+        await expect(panel.getByLabel(new RegExp(`Piezas en ${identity}`))).toBeVisible();
+        await capture(page, info, `hu-mat-${scenario}`);
+      }
+    }
+  });
+}
+
 test('S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado', async ({ page }, info) => {
   test.setTimeout(90_000);
   const data = await setup(page, 'many-sources');

@@ -122,13 +122,18 @@ export function PlacementScene3D({ snapshot, container, placements, scope = {}, 
         event.currentTarget.focus({ preventScroll: true });
         suppressSelectionAfterDrag.current = false;
         drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, yaw, camera, pan: interaction === 'pan' || event.shiftKey || event.button === 2, width: event.currentTarget.getBoundingClientRect().width || 600 };
-        event.currentTarget.setPointerCapture?.(event.pointerId);
+        // Capturing on pointerdown retargets the ensuing click to the viewport,
+        // so ordinary clicks on SVG pieces never reach their selection handler.
+        // Capture only once a real drag has started.
       }}
       onPointerMove={event => {
         const start = drag.current;
         if (start?.id !== event.pointerId) return;
         const dx = (event.clientX - start.x) / start.width, dy = (event.clientY - start.y) / start.width;
-        if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) suppressSelectionAfterDrag.current = true;
+        if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) {
+          suppressSelectionAfterDrag.current = true;
+          if (!event.currentTarget.hasPointerCapture?.(event.pointerId)) event.currentTarget.setPointerCapture?.(event.pointerId);
+        }
         if (start.pan) moveCamera({ panX: Math.max(-700, Math.min(700, start.camera.panX + dx * 1600)), panY: Math.max(-700, Math.min(700, start.camera.panY + dy * 1600)) });
         else { onYawChange(clampYaw(Math.round(start.yaw + dx * 360))); moveCamera({ elevation: Math.max(5, Math.min(90, start.camera.elevation + dy * 120)) }); }
       }} onContextMenu={event => event.preventDefault()} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={() => { drag.current = null; }}>

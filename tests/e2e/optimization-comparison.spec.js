@@ -29,9 +29,10 @@ test('S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo du
   expect(new Set(saved.result.materials_used.map(s => s.stock_unit_index)).size).toBe(8);
   await page.getByRole('button', { name: 'Actualizar resultado' }).click();
   // EN-UX-002: fuente física distinta debe limpiar selección en un trabajo real de 8 planchas, sin afectar inventario.
-  await page.getByRole('tab', { name: /^WF/ }).click();
-  const wfPanel = page.getByRole('tabpanel', { name: 'Worst Fit' });
-  await wfPanel.getByRole('button', { name: 'Resultado', exact: true }).click();
+  const wfTab = page.getByRole('tab', { name: /^WF/ });
+  await wfTab.click();
+  const wfPanel = page.locator(`[id="${await wfTab.getAttribute('aria-controls')}"]`);
+  await wfPanel.getByRole('button', { name: /Resultado/ }).click();
   const wfCanvas = wfPanel.getByRole('region', { name: 'Distribución de piezas', exact: true });
   const wfSources = wfCanvas.getByLabel('Plancha o retazo');
   await expect(wfSources.locator('option')).toHaveCount(8);
@@ -446,7 +447,7 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
     const tab = page.getByRole('tab', { name: new RegExp(`^${tabLabels[execution.method]}`) });
     const panel = page.locator(`[id="${await tab.getAttribute('aria-controls')}"]`);
     await tab.click();
-    await panel.getByRole('button', { name: 'Resultado', exact: true }).click();
+    await panel.getByRole('button', { name: /Resultado/ }).click();
     const canvas = panel.getByRole('region', { name: 'Distribución de piezas', exact: true });
     const expectedKeys = results[execution.method].result.placements.map(placement => `${placement.id_pedido}:${placement.id_pieza}:${placement.unit_index}`).sort();
     await expect(canvas.locator('[data-placement]')).toHaveCount(expectedKeys.length);
@@ -536,9 +537,10 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
   const restored = await page.request.get(`${api}/api/optimization/comparisons-v2/${current.comparison_id}`, { headers: data.headers });
   expect(await restored.json()).toEqual(current);
   // Inspector historical works from placements and original units, even when transient masks expire.
-  await page.getByRole('tab', { name: /^FF/ }).click();
-  const historicalPanel = page.getByRole('tabpanel', { name: 'First Fit' });
-  await historicalPanel.getByRole('button', { name: 'Resultado', exact: true }).click();
+  const historicalTab = page.getByRole('tab', { name: /^FF/ });
+  await historicalTab.click();
+  const historicalPanel = page.locator(`[id="${await historicalTab.getAttribute('aria-controls')}"]`);
+  await historicalPanel.getByRole('button', { name: /Resultado/ }).click();
   const historicalCanvas = historicalPanel.getByRole('region', { name: 'Distribución de piezas', exact: true });
   const historicalSelection = historicalCanvas.getByRole('list', { name: 'Colocaciones consultables' }).getByRole('button').first();
   await historicalSelection.click();
@@ -632,8 +634,9 @@ test('TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL
   await page.getByRole('button', { name: 'Consultar', exact: true }).click();
   await expect(page.getByRole('tab')).toHaveCount(4);
   for (const name of ['First Fit', 'Best Fit', 'Worst Fit']) {
-    await page.getByRole('tab', { name: new RegExp(name) }).click();
-    const panel = page.getByRole('tabpanel', { name: new RegExp(name) });
+    const tab = page.getByRole('tab', { name: new RegExp(name) });
+    await tab.click();
+    const panel = page.locator(`[id="${await tab.getAttribute('aria-controls')}"]`);
     await expect(panel).toBeVisible();
     await panel.getByRole('button', { name: 'Resultado', exact: true }).click();
     await expect(panel.locator('[data-placement]')).toHaveCount(1);

@@ -445,6 +445,9 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
   const visualEvidence = {};
   for (const execution of current.executions) {
     const tab = page.getByRole('tab', { name: new RegExp(`^${tabLabels[execution.method]}`) });
+    if (execution.method === 'M5' || execution.method === 'M6-BS') {
+      await expect(tab).toContainText(execution.method); // Alias visible junto al código real del motor.
+    }
     const panel = page.locator(`[id="${await tab.getAttribute('aria-controls')}"]`);
     await tab.click();
     await panel.getByRole('button', { name: /Resultado/ }).click();

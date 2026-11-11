@@ -365,14 +365,18 @@ test('EN-UX-004 retries a stale supervisor version with one stable cancellation 
   const { apiV2 } = setupV2({ active: true });
   await startV2();
   const actual = apiV2.cancel.getMockImplementation();
+  const load = apiV2.load.getMockImplementation();
+  let durableVersion = 0;
+  apiV2.load.mockImplementation(async () => {
+    const snapshot = await load();
+    return { ...snapshot, version: Math.max(snapshot.version, durableVersion) };
+  });
   const versions = [], keys = [];
   apiV2.cancel.mockImplementation(async (current, key) => {
     versions.push(current.version); keys.push(key);
     if (versions.length === 1) {
       // A committed worker lifecycle transition outran the rendered summary.
-      const live = await apiV2.load();
-      const changed = { ...live, version: live.version + 1 };
-      apiV2.load.mockImplementation(async () => structuredClone(changed));
+      durableVersion = current.version + 1;
       throw Object.assign(new Error('La versión del trabajo cambió.'), {
         status: 409, code: 'STATE_CONFLICT',
       });

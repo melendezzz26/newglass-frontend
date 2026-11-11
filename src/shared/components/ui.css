@@ -59,6 +59,8 @@
   background:
     linear-gradient(rgb(245 247 250 / 84%), rgb(245 247 250 / 84%)),
     url('../../assets/fondo-vidrio.png') center / cover no-repeat;
+  /* El patrón es una referencia visual del viewport, no un lienzo de altura variable. */
+  background-attachment: fixed;
 }
 .ng-app-shell__content { width: 100%; max-width: var(--ng-content-width); margin: 0 auto; }
 .ng-skip-link {

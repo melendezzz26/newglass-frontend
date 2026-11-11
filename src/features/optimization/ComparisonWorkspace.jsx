@@ -34,6 +34,7 @@ const methodLabel = (method, profile) => {
 };
 const executionStatus = execution => {
   const reason = execution.diagnostic?.termination_reason;
+  if (reason === 'CANCELLED') return 'Cancelado';
   if (execution.diagnostic?.statistics?.runtime_not_started_global === 1) return 'No ejecutado por interrupción global';
   if (reason === 'GLOBAL_TIME_LIMIT' && execution.diagnostic?.statistics?.runtime_engine_started === 0) return 'No comenzó';
   if (execution.status === 'FALLIDA' || execution.outcome === 'FAILED') return ['GLOBAL_TIME_LIMIT', 'TIME_BUDGET_EXCEEDED', 'MEMORY_BUDGET_EXCEEDED'].includes(reason) ? 'Interrumpido por recursos' : 'Error técnico';
@@ -267,7 +268,7 @@ export function ComparisonWorkspace({ token, user, initialRunId, initialProfile,
 }
 
 function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessionExpired }) {
-  const [tab, setTab] = useState('FF'), [lookup, setLookup] = useState(''), [lookupKey, setLookupKey] = useState(''), [dialog, setDialog] = useState(false);
+  const [tab, setTab] = useState('FF'), [lookup, setLookup] = useState(''), [lookupKey, setLookupKey] = useState(''), [dialog, setDialog] = useState(false), [cancelDialog, setCancelDialog] = useState(false);
   const [pendingChoice, setPendingChoice] = useState(null);
   const pendingHeading = useRef(null);
   const id = useId(), current = state.comparison;
@@ -294,16 +295,20 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
   const activeTab = tabs.includes(tab) ? tab : tabs[0] ?? 'comparison';
   const locked = state.busy || current && !current.released && !current.confirmed;
   const completeCount = current?.executions.filter(e => e.complete).length ?? 0;
+  const cancellation = current?.cancellation_status ?? 'NONE';
+  const canCancel = execute && current?.profile === 'comparison-v2' && !current.terminal && cancellation === 'NONE';
   return <PageCard className="comparison-workspace">
     <header className="comparison-heading"><div><span className="comparison-eyebrow">{methodCount} motores · una misma solicitud</span><h2>Comparar distribuciones de corte</h2>
       <p>{current?.profile === 'comparison-v2' ? 'Revisa y compara los resultados independientes de las seis heurísticas.' : 'Revisa el proceso de cada motor, compara sus métricas y elige una distribución.'}</p></div>
-      {current && <div className="comparison-job">Trabajo <strong>#{current.comparison_id}</strong><small>{current.confirmed ? 'Corte confirmado' : current.released ? 'Pedidos liberados' : current.terminal ? 'Comparación finalizada' : 'Comparación en curso'}</small>{selected && <small>Elegido: {methodName(selected.method)}</small>}</div>}</header>
+      {current && <div className="comparison-job">Trabajo <strong>#{current.comparison_id}</strong><small>{current.confirmed ? 'Corte confirmado' : current.released ? 'Pedidos liberados' : cancellation === 'CANCELLED' ? 'Optimización cancelada' : cancellation === 'REQUESTED' ? 'Cancelando' : current.terminal ? 'Comparación finalizada' : 'Comparación en curso'}</small>{selected && <small>Elegido: {methodName(selected.method)}</small>}</div>}</header>
     {current && <nav className="comparison-context" aria-label="Contexto y navegación de la comparación">
       <div className="comparison-context__info"><strong>Trabajo #{current.comparison_id}</strong>
         <span>Pedidos: {current.order_ids.map(orderId => `#${orderId}`).join(', ')}</span>
-        <span>{current.confirmed ? 'Confirmado · solo consulta' : current.released ? 'Pedidos liberados' : current.terminal ? 'Resultados guardados' : 'Comparación en curso'}</span>
+        <span>{current.confirmed ? 'Confirmado · solo consulta' : current.released ? 'Pedidos liberados' : cancellation === 'CANCELLED' ? 'Cancelación confirmada · solo consulta' : cancellation === 'REQUESTED' ? 'Cancelando optimización' : current.terminal ? 'Resultados guardados' : 'Comparación en curso'}</span>
         <span>Vista: {activeTab === 'comparison' ? 'Comparación' : activeTab}</span>
         <button type="button" className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>
+        {canCancel && <button type="button" className="ng-button ng-button--danger"
+          disabled={state.busy} onClick={() => setCancelDialog(true)}>Cancelar optimización</button>}
         {activeTab !== 'comparison' && state.results[current.executions.find(execution => execution.method === activeTab)?.execution_id]?.result &&
           <button type="button" className="ng-button" onClick={() => document.getElementById(`${id}-pattern-${activeTab}`)?.scrollIntoView?.({ block: 'start' })}>Ir al patrón</button>}
       </div>
@@ -323,6 +328,9 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       <p>Máximo: {state.admissionDiagnostic.maximum}</p>
     </section>}
     {state.success && <FeedbackMessage variant="success">{state.success}</FeedbackMessage>}
+    {cancellation === 'REQUESTED' && <FeedbackMessage variant="info">Cancelando optimización. El backend está deteniendo los motores; los pedidos siguen reservados hasta acreditar el cierre.</FeedbackMessage>}
+    {cancellation === 'CANCELLED' && <FeedbackMessage variant="success">Cancelación confirmada. Se verificó el cierre de procesos, los pedidos volvieron a pendientes y el inventario no fue descontado. Los resultados ya calculados siguen disponibles para consulta.</FeedbackMessage>}
+    {cancellation === 'COMPLETED_BEFORE_CANCEL' && <FeedbackMessage variant="info">La optimización terminó antes de poder interrumpirse. Los resultados se conservan y no se registra como cancelada.</FeedbackMessage>}
     <div className="comparison-toolbar">
       <label>Métodos<select className="ng-control" value={state.profile} disabled={state.pendingRequest || !!current && !current.released && !current.confirmed}
         onChange={e => flow.setProfile(e.target.value)}><option value="comparison-v1">Tres métodos (histórico)</option><option value="comparison-v2">Seis métodos</option></select></label>
@@ -367,7 +375,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       <CutSeparation configuration={current.configuration} />
       <details className="comparison-configuration"><summary>Configuración y unidades aplicadas</summary><p>Resolución {current.configuration.resolucion_raster_mm} mm/celda · margen {current.configuration.margen_mm} mm · separación {current.configuration.separacion_mm} mm · paso angular {current.configuration.paso_angular_grados}°.</p></details>
       {state.partial && <FeedbackMessage variant="info">Se recuperó el estado actual. Parte del avance anterior ya no estaba retenido; los resultados guardados se conservan.</FeedbackMessage>}
-      {state.connection === 'reconnecting' && !current.terminal && <p role="status">Recuperando el avance; los motores continúan ejecutándose.</p>}
+      {state.connection === 'reconnecting' && !current.terminal && <p role="status">{cancellation === 'REQUESTED' ? 'Recuperando la confirmación de parada segura.' : 'Recuperando el avance; los motores continúan ejecutándose.'}</p>}
 
       {current.executions.map(execution => <div className="comparison-panel" key={execution.execution_id} role="tabpanel" id={`${id}-panel-${execution.method}`}
         aria-label={methodName(execution.method)} aria-labelledby={`${id}-tab-${execution.method}`} hidden={activeTab !== execution.method}>
@@ -408,11 +416,18 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
           </div></>
       </section>
       <footer className="comparison-footer">
-        {execute && current.terminal && !current.confirmed && !current.released && <button className="ng-button" disabled={state.busy} onClick={flow.release}>Liberar pedidos sin confirmar</button>}
-        {(current.confirmed || current.released) && <button className="ng-button" onClick={flow.reset}>Preparar otro trabajo</button>}
-        <p>{current.confirmed ? 'Confirmado' : current.released ? 'Liberado' : current.terminal ? 'Resultados guardados' : 'Cálculo en curso'} · Trabajo #{current.comparison_id}</p>
+        {execute && current.terminal && !current.confirmed && !current.released && cancellation !== 'CANCELLED' && <button className="ng-button" disabled={state.busy} onClick={flow.release}>Liberar pedidos sin confirmar</button>}
+        {(current.confirmed || current.released || cancellation === 'CANCELLED') && <button className="ng-button" onClick={flow.reset}>Preparar otro trabajo</button>}
+        <p>{current.confirmed ? 'Confirmado' : current.released ? 'Liberado' : cancellation === 'CANCELLED' ? 'Cancelado con cierre seguro' : cancellation === 'REQUESTED' ? 'Solicitando cancelación' : current.terminal ? 'Resultados guardados' : 'Cálculo en curso'} · Trabajo #{current.comparison_id}</p>
       </footer>
     </>}
+    <ConfirmDialog open={cancelDialog && canCancel && !state.busy}
+      title="Cancelar optimización" confirmLabel="Solicitar cancelación"
+      onCancel={() => setCancelDialog(false)}
+      onConfirm={() => { setCancelDialog(false); flow.cancel(); }}>
+      <p>¿Cancelar el trabajo #{current?.comparison_id} con {current?.order_ids.length} pedido(s)?</p>
+      <p>Se detendrán los motores pendientes y se conservarán las distribuciones ya guardadas. Los pedidos solo volverán a pendientes cuando el servidor confirme que ningún proceso sigue ejecutándose. No se descontará inventario.</p>
+    </ConfirmDialog>
     <ConfirmDialog open={dialog && canConfirm && current?.confirmable && !!selectedResult && !state.busy} title={`Confirmar ${selected ? methodName(selected.method) : 'distribución'}`} confirmLabel="Confirmar corte"
       onCancel={() => setDialog(false)} onConfirm={() => { setDialog(false); flow.confirm(); }}>
       <p>Se descontarán únicamente las planchas y retazos de {selected ? methodName(selected.method) : 'la distribución elegida'} y se confirmarán sus pedidos.</p>

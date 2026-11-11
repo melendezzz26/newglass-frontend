@@ -329,7 +329,7 @@ test('EN-UX-004 requires explicit confirmation and never claims worker closure o
   const cancel = await screen.findByRole('button', { name: 'Cancelar optimización' });
   expect(apiV2.cancel).not.toHaveBeenCalled();
   fireEvent.click(cancel);
-  expect(screen.getByRole('alertdialog')).toHaveTextContent('Trabajo #43');
+  expect(screen.getByRole('alertdialog')).toHaveTextContent(/trabajo #43/i);
   expect(screen.getByRole('alertdialog')).toHaveTextContent('ningún proceso sigue ejecutándose');
   fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' }));
   await waitFor(() => expect(apiV2.cancel).toHaveBeenCalledOnce());

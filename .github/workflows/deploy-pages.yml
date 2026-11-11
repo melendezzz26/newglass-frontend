@@ -17,7 +17,9 @@ jobs:
     permissions:
       contents: read
 
-  pages:
+  # Build and upload must finish in a separate job. deploy-pages@v5 can
+  # otherwise race GitHub artifact metadata propagation immediately after upload.
+  pages_build:
     if: github.ref == 'refs/heads/main'
     needs: checks
     runs-on: ubuntu-24.04
@@ -25,10 +27,9 @@ jobs:
     permissions:
       contents: read
       pages: write
-      id-token: write
     environment:
+      # Preserve access to the approved environment-scoped VITE_API_URL.
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     env:
       VITE_API_URL: ${{ vars.VITE_API_URL }}
     defaults:
@@ -57,6 +58,20 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist
+
+  pages:
+    if: github.ref == 'refs/heads/main'
+    needs: pages_build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy approved artifact
         id: deployment
         uses: actions/deploy-pages@v5

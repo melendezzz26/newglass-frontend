@@ -297,6 +297,8 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
   const activeTab = tabs.includes(tab) ? tab : tabs[0] ?? 'comparison';
   const locked = state.busy || current && !current.released && !current.confirmed;
   const completeCount = current?.executions.filter(e => e.complete).length ?? 0;
+  const cancelledCount = current?.executions.filter(e => e.diagnostic?.termination_reason === 'CANCELLED').length ?? 0;
+  const failedCount = current?.executions.filter(e => e.outcome === 'FAILED' && e.diagnostic?.termination_reason !== 'CANCELLED').length ?? 0;
   const cancellation = current?.cancellation_status ?? 'NONE';
   const canCancel = execute && current?.profile === 'comparison-v2' && !current.terminal && cancellation === 'NONE';
   return <PageCard className="comparison-workspace">
@@ -371,8 +373,8 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
     {current && <>
       <OriginalRequest comparison={current} />
       <p role="status">{completeCount} de {current.executions.length} métodos completaron todas las piezas.
-        {' '}{current.executions.filter(e => e.outcome === 'PARTIAL').length} parciales · {current.executions.filter(e => e.outcome === 'FAILED').length} interrumpidos o con error.
-        {current.terminal && completeCount !== current.executions.length ? ' Comparación parcialmente completada.' : ''}</p>
+        {' '}{current.executions.filter(e => e.outcome === 'PARTIAL').length} parciales · {failedCount} interrumpidos o con error{cancelledCount ? ` · ${cancelledCount} cancelados por solicitud` : ''}.
+        {current.terminal && cancellation !== 'CANCELLED' && completeCount !== current.executions.length ? ' Comparación parcialmente completada.' : ''}</p>
       {current.confirmed && <InventoryReceipt confirmation={current.confirmation} />}
       <CutSeparation configuration={current.configuration} />
       <details className="comparison-configuration"><summary>Configuración y unidades aplicadas</summary><p>Resolución {current.configuration.resolucion_raster_mm} mm/celda · margen {current.configuration.margen_mm} mm · separación {current.configuration.separacion_mm} mm · paso angular {current.configuration.paso_angular_grados}°.</p></details>

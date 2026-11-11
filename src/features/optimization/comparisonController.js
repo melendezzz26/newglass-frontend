@@ -10,21 +10,21 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
     busy: false, loading: true, error: '', success: '', history: false, connection: 'connecting', partial: false,
     savedComparisons: [], historyNext: null, historyOpen: false, pendingRequest: false,
     profile: initialProfile === 'comparison-v2' ? 'comparison-v2' : 'comparison-v1' };
-  let active = false, generation = 0, observer, request, retry, unsubscribe, requestKey, operation, syncTimer;
+  let active = false, generation = 0, observer, request, retry, unsubscribe, requestKey, operation, cancelOperation, syncTimer;
   let actionSequence = 0, preservedHistory = false;
   let attemptOrders = null;
   const confirmedOrders = new Set();
   const listeners = new Set();
   const set = patch => { state = { ...state, ...patch }; listeners.forEach(fn => fn()); };
   const remember = (pending = false, preserveHistory = preservedHistory) => { try { localStorage.setItem(storageKey, JSON.stringify({ id: pending ? null : state.comparison?.comparison_id,
-    requestKey, operation, attemptOrders, profile: !pending && preserveHistory ? state.comparison?.profile ?? state.profile : state.profile,
+    requestKey, operation, cancelOperation, attemptOrders, profile: !pending && preserveHistory ? state.comparison?.profile ?? state.profile : state.profile,
     preserveHistory })); } catch { /* Almacenamiento opcional. */ } };
   const client = profile => profile === 'comparison-v2' ? apiV2 : api;
   const valid = g => active && g === generation;
   const fail = error => { if (error.status === 401) onExpired?.(); set({ error: error.message,
     admissionDiagnostic: error.admissionDiagnostic ?? null, loading: false }); };
   function clearWork(success = '') {
-    prepare(); actionSequence++; requestKey = null; operation = null; attemptOrders = null; preservedHistory = false;
+    prepare(); actionSequence++; requestKey = null; operation = null; cancelOperation = null; attemptOrders = null; preservedHistory = false;
     try { localStorage.removeItem(storageKey); } catch { /* Almacenamiento opcional. */ }
     set({ comparison: null, results: {}, visuals: {}, live: {}, cursor: 0, selected: [], error: '',
       partial: false, history: false, busy: false, loading: true, success, connection: 'connecting',
@@ -184,7 +184,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       preservedHistory = saved.preserveHistory === true;
       const restoredProfile = initialProfile ?? (initialId ? 'comparison-v1' : saved.profile);
       if (restoredProfile === 'comparison-v2' && apiV2) set({ profile: 'comparison-v2' });
-      requestKey = saved.requestKey; operation = saved.operation;
+      requestKey = saved.requestKey; operation = saved.operation; cancelOperation = saved.cancelOperation;
       attemptOrders = Array.isArray(saved.attemptOrders) && saved.attemptOrders.every(id => Number.isSafeInteger(id) && id > 0)
         ? saved.attemptOrders : null;
       if (requestKey && !saved.id) set({ pendingRequest: true, selected: attemptOrders ?? [] });
@@ -234,7 +234,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         throw new Error('Hay una comparación por recuperar. Actualiza el resultado antes de cambiar los pedidos.');
       }
       set({ profile });
-      const g = prepare(); requestKey ??= newKey(); attemptOrders = selectedOrders; operation = null;
+      const g = prepare(); requestKey ??= newKey(); attemptOrders = selectedOrders; operation = null; cancelOperation = null;
       set({ pendingRequest: true }); remember(true);
       let current;
       try { current = await client(profile).start(attemptOrders, requestKey, request.signal); }
@@ -282,14 +282,29 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         remember(); source.refresh?.({ force: true });
       } else confirmed(current);
     }),
+    cancel: () => action(async () => {
+      const current = state.comparison, g = generation;
+      if (current?.profile !== 'comparison-v2' || current.terminal
+        || (current.cancellation_status ?? 'NONE') !== 'NONE') return;
+      if (!cancelOperation || cancelOperation.comparisonId !== current.comparison_id) {
+        cancelOperation = { comparisonId: current.comparison_id, key: newKey() };
+      }
+      remember();
+      // 202 only acknowledges a durable request. The supervisor must still
+      // prove the workers stopped before the UI can claim cancellation.
+      await apiV2.cancel(current, cancelOperation.key);
+      if (valid(g)) await sync();
+    }),
     release: () => action(async () => {
       const current = state.comparison, g = generation;
-      if (!current?.terminal || current.confirmed || current.released) return;
+      if (!current?.terminal || current.confirmed || current.released
+        || current.cancellation_status === 'CANCELLED') return;
       const next = await client(current.profile).release(current);
       if (valid(g)) released(next);
     }),
     reset() {
-      if (state.comparison && !state.comparison.released && !state.comparison.confirmed) return;
+      if (state.comparison && !state.comparison.released && !state.comparison.confirmed
+        && state.comparison.cancellation_status !== 'CANCELLED') return;
       clearWork();
     },
   };

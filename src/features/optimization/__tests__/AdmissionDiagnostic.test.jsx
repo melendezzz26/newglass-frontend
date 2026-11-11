@@ -15,3 +15,13 @@ test.each([createComparisonApi, createComparisonV2Api])('solo conserva campos pe
     expect(JSON.stringify(error.admissionDiagnostic)).not.toContain('do-not-show');
   }
 });
+
+test.each([createComparisonApi, createComparisonV2Api])('preflight resource rejection preserves the not-accepted flag', async create => {
+  const response = { ok: false, status: 503, body: null, json: async () => ({ detail: {
+    code: 'RESOURCE_UNAVAILABLE', message: 'Reintenta.', request_accepted: false,
+  } }) };
+  const api = create({ fetchImpl: vi.fn().mockResolvedValue(response) });
+  await expect(api.start([1], 'test-key-0001')).rejects.toMatchObject({
+    status: 503, code: 'RESOURCE_UNAVAILABLE', requestAccepted: false,
+  });
+});

@@ -144,7 +144,7 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
           .filter(source => state.placements.some(placement => stockKey(placement) === stockKey(source))),
         residual_regions: state.snapshot.residuals ?? [], placed_units: state.placed_units,
         unplaced_units: state.unplaced_units, completo: state.completo,
-      }} />}
+      }} confirmed={state.confirmed} />}
       {state.metrics_available && state.metrics && <section aria-labelledby="result-title"><h2 id="result-title">Resultado del corte</h2>
         <dl className="optimization-facts">{[
           ['Piezas colocadas', `${state.placed_units} / ${state.total_units}`], ['Pedidos', state.snapshot.orders.length], ['Vidrios utilizados', state.snapshot.groups.length],

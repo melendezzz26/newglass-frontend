@@ -9,8 +9,9 @@ import { withPermissions } from '../../authentication/__tests__/permissionFixtur
 const user = withPermissions({ id_usuario: 1, usuario: 'Operario', rol: 'Operario' });
 beforeEach(() => localStorage.clear());
 
-function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false } = {}) {
+function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false, separation } = {}) {
   const current = structuredClone(partial ? comparisonV2.mixed : comparisonV2.completed);
+  if (separation !== undefined) current.configuration.separacion_mm = separation;
   if (beamStatistics) Object.assign(current.executions.find(e => e.method === 'M6-BS').diagnostic.statistics, beamStatistics);
   if (notStarted) {
     const execution = current.executions.find(e => e.method === 'HF');
@@ -64,6 +65,14 @@ async function startV2() {
   fireEvent.click(screen.getByRole('button', { name: 'Comparar con los seis motores' }));
   await screen.findByRole('tab', { name: 'Comparación' });
 }
+
+test.each(['0', '0.01'])('shows the applied separation %s mm across all six methods and comparison', async separation => {
+  setupV2({ separation }); await startV2();
+  for (const label of ['FF', 'BF', 'WF', 'HF', 'BRF', 'BS-2', 'Comparación']) {
+    fireEvent.click(screen.getByRole('tab', { name: new RegExp(label) }));
+    expect(screen.getByText(`Separación de corte: ${separation} mm`)).toBeVisible();
+  }
+});
 
 test('comparison-v2 reuses seven dynamic tabs and requires a manual choice before confirmation', async () => {
   const { apiV2, v1 } = setupV2(); await startV2();

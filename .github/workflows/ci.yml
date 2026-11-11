@@ -96,24 +96,47 @@ jobs:
         run: |
           python -m pip install -r ../backend/requirements.txt
           npm ci
-      - name: Install isolated PostgreSQL binaries
+      - name: Locate isolated PostgreSQL binaries
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql libpq-dev
-          pg_bin="$(pg_config --bindir)"
+          # ubuntu-24.04 runners include PostgreSQL 16. Avoid apt network/DNS
+          # unless the required server binaries really are absent.
+          pg_bin="$(pg_config --bindir 2>/dev/null || true)"
+          if [[ -z "$pg_bin" || ! -x "$pg_bin/initdb" || ! -x "$pg_bin/pg_ctl" ]]; then
+            for candidate in /usr/lib/postgresql/*/bin; do
+              if [[ -x "$candidate/initdb" && -x "$candidate/pg_ctl" ]]; then
+                pg_bin="$candidate"
+                break
+              fi
+            done
+          fi
+          if [[ -z "$pg_bin" || ! -x "$pg_bin/initdb" || ! -x "$pg_bin/pg_ctl" ]]; then
+            echo "Server binaries unavailable; installing PostgreSQL with apt retries."
+            sudo apt-get -o Acquire::Retries=3 update
+            sudo apt-get -o Acquire::Retries=3 install -y postgresql libpq-dev
+            pg_bin="$(pg_config --bindir)"
+          fi
           test -x "$pg_bin/initdb"
           test -x "$pg_bin/pg_ctl"
+          echo "Using verified PostgreSQL server binaries: $pg_bin"
           echo "NEWGLASS_TEST_PG_BIN=$pg_bin" >> "$GITHUB_ENV"
       - name: Install managed Chromium
-        run: npx playwright install --with-deps chromium
+        # The ubuntu-24.04 runner already includes Chromium OS libraries.
+        # --with-deps re-runs apt against azure.archive.ubuntu.com and can
+        # fail on unrelated DNS outages before any browser test executes.
+        # A missing library still fails when Playwright launches the browser.
+        run: npx playwright install chromium
       - name: E2E desktop and mobile
+        id: e2e_tests
         # The B02 migration smoke must start with an empty isolated database:
         # its --prepare downgrade intentionally rejects existing v2 rows.
         # Run it once in a fresh Playwright server, then run every other
         # critical E2E test in a second fresh server.
         run: node scripts/run-e2e-phases.js
       - name: Preserve E2E phase reports and diagnostics
-        if: always()
+        # On a setup failure there are no test artifacts to upload.
+        # Still fail hard when E2E ran but did not produce its evidence.
+        if: ${{ always() && (steps.e2e_tests.outcome == 'success' || steps.e2e_tests.outcome == 'failure') }}
         uses: actions/upload-artifact@v4
         with:
           name: e2e-phases-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}

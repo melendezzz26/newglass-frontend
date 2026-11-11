@@ -399,6 +399,8 @@ test('EN-UX-004 shows a cancelled engine as an intentional stop, not a technical
   completeCancellation();
   fireEvent.click(screen.getByRole('button', { name: 'Actualizar resultado' }));
   await screen.findByText(/Cancelación confirmada. Se verificó/);
+  expect(screen.getByText(/6 cancelados por solicitud/)).toBeVisible();
+  expect(screen.queryByText('Comparación parcialmente completada.')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('tab', { name: /^FF/ }));
   const panel = screen.getByRole('region', { name: 'Ejecución First Fit' });
   expect(within(panel).getByText('Cancelado', { selector: '.comparison-status' })).toHaveClass('is-cancelled');

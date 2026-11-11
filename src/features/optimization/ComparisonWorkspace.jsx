@@ -26,8 +26,11 @@ const PHASES = ['Máscaras', 'Orden de piezas', 'Giros y colocación', 'Resultad
 const metricRows = [['aprovechamiento_pct', 'Aprovechamiento', '%'], ['merma_mm2', 'Merma', 'mm²'],
   ['retazo_recuperable_mm2', 'Recuperable potencial', 'mm²'], ['planchas_nuevas_usadas', 'Planchas comerciales', ''], ['tiempo_computacional_ms', 'Tiempo de cálculo', 'ms']];
 const methodName = method => METHOD_NAMES[method] ?? CATALOG_V2.find(item => item.code === method)?.name ?? method;
-const methodLabel = (method, profile) => profile === 'comparison-v2'
-  ? CATALOG_V2.find(item => item.code === method)?.label ?? method : METHOD_NAMES[method] ?? method;
+const methodLabel = (method, profile) => {
+  if (profile !== 'comparison-v2') return METHOD_NAMES[method] ?? method;
+  const item = CATALOG_V2.find(entry => entry.code === method);
+  return item && item.label !== item.code ? `${item.label} (${item.code})` : item?.label ?? method;
+};
 const executionStatus = execution => {
   const reason = execution.diagnostic?.termination_reason;
   if (execution.diagnostic?.statistics?.runtime_not_started_global === 1) return 'No ejecutado por interrupción global';

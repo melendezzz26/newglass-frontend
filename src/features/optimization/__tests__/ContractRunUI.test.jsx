@@ -15,6 +15,23 @@ function mount(name = 'complete', permissions = view, adapter = {}) {
 }
 beforeEach(() => vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ fillRect: vi.fn(), setTransform: vi.fn() }));
 
+test('individual result exposes the real remnant code and its placed pieces', () => {
+  const result = scenarioFixture('complete');
+  const source = result.materials_used[0];
+  const originalId = source.material_id;
+  source.material_source = 'RETAZO'; source.material_id = 77; source.codigo = 'RTZ-real';
+  result.placements.filter(p => p.material_source === 'PLANCHA' && p.material_id === originalId && p.stock_unit_index === source.stock_unit_index).forEach(p => {
+    p.material_source = 'RETAZO'; p.material_id = 77;
+  });
+  result.residual_regions.filter(r => r.material_source === 'PLANCHA' && r.material_id === originalId && r.stock_unit_index === source.stock_unit_index).forEach(r => {
+    r.material_source = 'RETAZO'; r.material_id = 77;
+  });
+  render(<OptimizationPage user={user(view)} result={result} source={createFixturePendingOrdersSource([])} adapter={{}} />);
+  expect(screen.getByText(/Retazo RTZ-real · unidad 1/)).toBeInTheDocument();
+  fireEvent.click(screen.getByText(/Retazo RTZ-real · unidad 1/));
+  expect(screen.getByLabelText('Piezas en Retazo RTZ-real, unidad 1').children.length).toBeGreaterThan(0);
+});
+
 test.each(['0', '0.01'])('individual result shows its applied separation %s mm in 2D and 3D', separation => {
   const result = scenarioFixture('complete');
   result.configuracion.separacion_mm = separation;

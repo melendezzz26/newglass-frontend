@@ -1,7 +1,8 @@
 import { stockKey } from './runContract';
 
 const number = value => new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 }).format(Number(value));
-const sourceName = source => `${source.material_source === 'PLANCHA' ? 'Plancha comercial' : 'Retazo de inventario'} #${source.material_id}`;
+const sourceName = source => source.material_source === 'PLANCHA' ? `Plancha #${source.material_id}`
+  : source.codigo ? `Retazo ${source.codigo}` : `Retazo de inventario #${source.material_id}`;
 
 function SourceDetail({ source, result, pieces, requested }) {
   const units = result.groups.flatMap(group => group.units);
@@ -33,7 +34,7 @@ function SourceDetail({ source, result, pieces, requested }) {
   </details>;
 }
 
-export function MaterialTrace({ result, requested = [], compact = false }) {
+export function MaterialTrace({ result, requested = [], compact = false, confirmed = false }) {
   if (!result) return <p>El detalle de materiales se mostrará al cargar el resultado guardado.</p>;
   const sources = [...new Map(result.materials_used.map(s => [stockKey(s), s])).values()];
   const sheets = sources.filter(s => s.material_source === 'PLANCHA').length;
@@ -42,8 +43,9 @@ export function MaterialTrace({ result, requested = [], compact = false }) {
     <p>{sheets} planchas comerciales · {sources.length - sheets} retazos de inventario reutilizados</p>
     <p>{result.placed_units} piezas colocadas · {result.unplaced_units.length} pendientes.
       {!result.completo && ' Propuesta parcial: no puede confirmarse.'}</p>
-    <p>La simulación no descuenta existencias. Los sobrantes recuperables son potenciales;
-      solo se registran como nuevos retazos al confirmar.</p>
+    {confirmed ? <p>El corte fue confirmado. Consulta los retazos registrados en el recibo de inventario.</p>
+      : <p>La simulación no descuenta existencias. Los sobrantes recuperables son potenciales;
+        solo se registran como nuevos retazos al confirmar.</p>}
     {!sources.length && <p>Este resultado no propone consumir materiales.</p>}
     {compact ? <ul>{sources.map(s => <li key={stockKey(s)}>{sourceName(s)} · unidad {s.stock_unit_index}
       {' '}· vidrio #{s.id_tipo_vidrio} · {s.espesor_mm} mm</li>)}</ul>
@@ -62,7 +64,7 @@ export function InventoryReceipt({ confirmation }) {
     </li>)}</ul>
     <h4>Nuevos retazos registrados</h4>
     {receipt.remnants_created.length ? <ul>{receipt.remnants_created.map(r => <li key={r.remnant_id}>
-      Retazo #{r.remnant_id} · {number(r.area_mm2)} mm² · de {sourceName({ ...r.source, material_source: r.source.source })}
+      Retazo {r.codigo || `#${r.remnant_id}`} · {number(r.area_mm2)} mm² · de {sourceName({ ...r.source, material_source: r.source.source })}
       {' '}· unidad {r.source.physical_unit_index}
     </li>)}</ul> : <p>No se registraron nuevos retazos.</p>}
   </section>;

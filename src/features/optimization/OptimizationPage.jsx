@@ -19,6 +19,8 @@ import { parseConfirmation } from './runContract.js';
 import { Hu015Rasterization } from './Hu015Rasterization';
 import { OriginalMeasuresTable } from './OriginalMeasuresTable';
 import { CutSeparation } from './CutSeparation';
+import { MaterialTrace } from './MaterialTrace';
+import { stockKey } from './runContract';
 
 import { useGlassCatalog, glassGroups } from './useGlassCatalog';
 import { calculationState } from './workLabels';
@@ -136,6 +138,13 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
         order => (order.piezas ?? []).map(piece => ({ ...piece, id_pedido: order.id_pedido }))
       )} />}
       {['completed', 'no_solution'].includes(state.status) && !state.metrics_available && <p>El resumen del corte no está disponible.</p>}
+      {['completed', 'no_solution'].includes(state.status) && <MaterialTrace result={{
+        groups: state.snapshot.groups, placements: state.placements,
+        materials_used: state.snapshot.groups.flatMap(group => group.containers)
+          .filter(source => state.placements.some(placement => stockKey(placement) === stockKey(source))),
+        residual_regions: state.snapshot.residuals ?? [], placed_units: state.placed_units,
+        unplaced_units: state.unplaced_units, completo: state.completo,
+      }} confirmed={state.confirmed} />}
       {state.metrics_available && state.metrics && <section aria-labelledby="result-title"><h2 id="result-title">Resultado del corte</h2>
         <dl className="optimization-facts">{[
           ['Piezas colocadas', `${state.placed_units} / ${state.total_units}`], ['Pedidos', state.snapshot.orders.length], ['Vidrios utilizados', state.snapshot.groups.length],

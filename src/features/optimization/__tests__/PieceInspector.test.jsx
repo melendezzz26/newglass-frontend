@@ -118,7 +118,7 @@ test('dos unidades físicas de la misma plancha no comparten selección aunque t
   fireEvent.click(document.querySelector('[data-placement]'));
   const inspector = screen.getByRole('complementary', { name: 'Inspector de pieza' });
   expect(inspector).toHaveTextContent('Unidad física');
-  expect(inspector).toHaveTextContent('Plancha comercial #5');
+  expect(inspector).toHaveTextContent('Plancha #5');
   fireEvent.change(screen.getByLabelText('Plancha o retazo'), { target: { value: 'PLANCHA:5:2' } });
   expect(inspector).toHaveTextContent('Selecciona una pieza del patrón');
   fireEvent.click(document.querySelector('[data-placement]'));

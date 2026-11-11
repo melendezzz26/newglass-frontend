@@ -3,7 +3,7 @@ import './PieceInspection.css';
 
 const format = value => value === null || value === undefined ? 'No disponible'
   : new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 }).format(Number(value));
-const sourceLabel = value => value === 'RETAZO' ? 'Retazo' : value === 'PLANCHA' ? 'Plancha comercial' : 'Fuente';
+const sourceLabel = value => value === 'RETAZO' ? 'Retazo' : value === 'PLANCHA' ? 'Plancha' : 'Fuente';
 
 export function PieceInspector({ piece }) {
   return <aside className="piece-inspector" aria-label="Inspector de pieza">

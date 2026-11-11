@@ -110,7 +110,11 @@ export function parseComparisonV2(data) {
   const status = !terminal ? 'EN_EJECUCION' : data.executions.some(e => e.complete) ? 'COMPLETADA'
     : data.executions.some(e => e.status === 'FALLIDA') ? 'FALLIDA' : 'SIN_SOLUCION';
   check(data.status === status);
-  const editable = terminal && !data.released && !data.confirmed;
+  const cancellation = data.cancellation_status ?? 'NONE';
+  check(['NONE', 'REQUESTED', 'CANCELLED', 'COMPLETED_BEFORE_CANCEL'].includes(cancellation)
+    && (cancellation !== 'CANCELLED' || terminal)
+    && (cancellation !== 'REQUESTED' || !terminal));
+  const editable = terminal && !data.released && !data.confirmed && cancellation !== 'CANCELLED';
   for (const e of data.executions) check(e.eligible === (editable && e.complete && e.result_available));
   const selected = data.executions.find(e => e.execution_id === data.selected_execution_id);
   check(data.selected_execution_id === null || selected && terminal && !data.released && selected.complete && selected.result_available);
@@ -119,6 +123,18 @@ export function parseComparisonV2(data) {
     && data.incomplete === data.executions.some(e => ['PARTIAL', 'FAILED'].includes(e.outcome))
     && data.confirmed === (data.confirmation !== null));
   if (data.confirmed) check(selected && data.confirmation.execution_id === selected.execution_id && data.confirmation.method === selected.method);
+  return structuredClone(data);
+}
+
+export function parseCancellationV2(data, comparisonId) {
+  check(object(data) && Object.keys(data).every(key => [
+    'profile', 'schema_version', 'comparison_id', 'version', 'cancel_state', 'terminal', 'supervisor_stopped',
+  ].includes(key)) && data.profile === 'comparison-v2' && data.schema_version === 2
+    && data.comparison_id === comparisonId && id(data.version)
+    && ['NONE', 'REQUESTED', 'CANCELLED', 'COMPLETED_BEFORE_CANCEL'].includes(data.cancel_state)
+    && bool(data.terminal) && bool(data.supervisor_stopped)
+    && (data.cancel_state !== 'CANCELLED' || data.terminal && data.supervisor_stopped)
+    && (data.cancel_state !== 'REQUESTED' || !data.terminal));
   return structuredClone(data);
 }
 

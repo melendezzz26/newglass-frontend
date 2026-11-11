@@ -8,6 +8,7 @@ export const CRITICAL_E2E_SPECS = Object.freeze([
   'hu015-rasterization.spec.js',
   'hu017-unified-flow.spec.js',
   'hu018-bulk-import.spec.js',
+  'en-ux-004-cancel.spec.js',
   'optimization-comparison.spec.js',
   'optimization-policy-audit.spec.js',
   's1-optimization-ui.spec.js',

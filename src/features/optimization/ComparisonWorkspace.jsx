@@ -124,21 +124,16 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
   const available = useMemo(() => [hasMasks, hasOrder, hasTurn, hasResult], [hasMasks, hasOrder, hasTurn, hasResult]);
   const target = hasResult ? 3 : hasTurn ? 2 : hasOrder ? 1 : 0;
   useEffect(() => {
-    // Una consulta histórica puede conservar el resultado y perder las
-    // máscaras/eventos temporales. No reproducir fases inexistentes antes
-    // de permitir al operario inspeccionar las colocaciones persistidas.
-    if (hasResult && !hasMasks && !hasOrder && !hasTurn) {
-      if (presented !== 3) setPresented(3);
-      return undefined;
-    }
     if (presented >= target) return undefined;
     const next = [1, 2, 3].find(i => i > presented && i <= target && available[i]);
     if (next === undefined) return undefined;
     const reduced = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const timer = setTimeout(() => setPresented(next), reduced ? 0 : 550);
     return () => clearTimeout(timer);
-  }, [presented, target, available, hasResult, hasMasks, hasOrder, hasTurn]);
-  const phase = paused?.phase ?? inspection ?? presented;
+  }, [presented, target, available]);
+  // Derivar la fase visible del snapshot, sin setState dentro de un efecto.
+  // Un resultado histórico persistido no depende de máscaras temporales.
+  const phase = paused?.phase ?? inspection ?? (hasResult && !hasMasks && !hasOrder && !hasTurn ? 3 : presented);
   const shownVisual = paused?.visual ?? visual;
   const shownMasks = Object.values(shownVisual.descriptors).filter(m => m.kind === 'PIECE' && Number(m.rotation_deg) === 0);
   const base = shownMasks[0];

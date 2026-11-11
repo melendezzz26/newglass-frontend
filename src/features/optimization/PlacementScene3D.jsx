@@ -1,8 +1,9 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPlacementScene, clampYaw, DEFAULT_YAW, extrudedSides, projectPoint, projectedPath } from './placementScene';
 import './PlacementScene3D.css';
 import { ZoomControls } from './InspectionViewport';
 import { getGeometryBounds } from './visualizationGeometry';
+import { pieceSelectionKey } from './pieceInspectionModel';
 
 function pieceDimensions(placement, snapshot) {
   const unit = snapshot.groups.flatMap(group => group.units ?? []).find(unit => unit.id_pedido === placement.id_pedido && unit.id_pieza === placement.id_pieza && unit.unit_index === placement.unit_index);
@@ -26,11 +27,31 @@ function Dimension({ start, end, label, scene, yaw, camera }) {
   </g>;
 }
 
-export function PlacementScene3D({ snapshot, container, placements, yaw, onYawChange, zoom = 1, onZoomChange = () => {}, camera = { elevation: 48, panX: 0, panY: 0 }, onCameraChange = () => {} }) {
+const ProjectedPiece3D = memo(function ProjectedPiece3D({ piece, snapshot, scene, yaw, camera, selectionId, selected, showAllLabels, onSelect }) {
+  const center = piece.points.reduce(([x, y], point) =>
+    [x + point[0] / piece.points.length, y + point[1] / piece.points.length], [0, 0]);
+  const anchor = selected || showAllLabels ? projectPoint(center, PIECE_TOP, scene, yaw, camera) : null;
+  return <g data-piece-3d={piece.key} data-selected={selected}
+    className="placement-3d-piece"
+    onClick={event => { event.stopPropagation(); onSelect(selectionId); }}>
+    {extrudedSides(piece.points, SURFACE, PIECE_TOP, scene, yaw, camera).map(side => <path key={side.key} d={side.path} fill={piece.edge} />)}
+    <path className="placement-3d-piece-surface" d={projectedPath(piece.points, PIECE_TOP, scene, yaw, camera)}
+      fill={piece.color} stroke={selected ? '#b64c0c' : piece.edge} strokeWidth={selected ? 9 : 2} />
+    {anchor && <text className="placement-3d-piece-label" x={anchor.x} y={anchor.y}
+      textAnchor="middle" dominantBaseline="middle">
+      <tspan x={anchor.x}>#{piece.placement.id_pieza}{selected ? ` · u.${piece.placement.unit_index}` : ''}</tspan>
+      {selected && <tspan x={anchor.x} dy="1.3em">{pieceDimensions(piece.placement, snapshot)}</tspan>}
+    </text>}
+  </g>;
+});
+
+export function PlacementScene3D({ snapshot, container, placements, scope = {}, selectedKey = null, onSelect = () => {}, yaw, onYawChange, zoom = 1, onZoomChange = () => {}, camera = { elevation: 48, panX: 0, panY: 0 }, onCameraChange = () => {} }) {
   const id = useId();
   const drag = useRef(null);
+  const suppressSelectionAfterDrag = useRef(false);
   const viewport = useRef(null);
   const [interaction, setInteraction] = useState('orbit');
+  const [showAllLabels, setShowAllLabels] = useState(false);
   useEffect(() => {
     const element = viewport.current;
     if (!element) return undefined;
@@ -41,10 +62,14 @@ export function PlacementScene3D({ snapshot, container, placements, yaw, onYawCh
   const moveCamera = changes => onCameraChange({ ...camera, ...changes });
   const reset = () => { onYawChange(DEFAULT_YAW); onZoomChange(1); onCameraChange({ elevation: 48, panX: 0, panY: 0 }); };
   const scene = useMemo(() => createPlacementScene(snapshot, container, placements), [snapshot, container, placements]);
+  const sorted = useMemo(() => {
+    if (!scene) return [];
+    const depth = piece => piece.points.reduce((sum, point) =>
+      sum + projectPoint(point, PIECE_TOP, scene, yaw, camera).depth, 0) / piece.points.length;
+    return [...scene.pieces].sort((a, b) => depth(a) - depth(b));
+  }, [scene, yaw, camera]);
   if (!scene) return <p role="status">No hay geometría válida para mostrar este contenedor en 3D. Consulta la vista 2D.</p>;
   const surfacePath = projectedPath(scene.outline, SURFACE, scene, yaw, camera);
-  const pieceDepth = piece => piece.points.reduce((sum, p) => sum + projectPoint(p, PIECE_TOP, scene, yaw, camera).depth, 0) / piece.points.length;
-  const sorted = [...scene.pieces].sort((a, b) => pieceDepth(a) - pieceDepth(b));
   const grid = [];
   const origin = projectPoint([0, 0], SURFACE, scene, yaw, camera);
   const axes = [
@@ -72,6 +97,7 @@ export function PlacementScene3D({ snapshot, container, placements, yaw, onYawCh
       <button type="button" className="ng-button" onClick={() => { moveCamera({ panX: 0, panY: 0 }); onZoomChange(1); }}>Centrar corte</button>
       <button type="button" className="ng-button" aria-pressed={interaction === 'orbit'} onClick={() => setInteraction('orbit')}>Orbitar</button>
       <button type="button" className="ng-button" aria-pressed={interaction === 'pan'} onClick={() => setInteraction('pan')}>Desplazar</button>
+      <button type="button" className="ng-button" aria-pressed={showAllLabels} onClick={() => setShowAllLabels(value => !value)}>{showAllLabels ? 'Ocultar etiquetas generales' : 'Mostrar IDs generales'}</button>
       <label>Altura de cámara (Z)<input type="range" min="5" max="90" value={camera.elevation}
         onChange={event => moveCamera({ elevation: Number(event.target.value) })} /></label>
       <output aria-label="Elevación de cámara">{camera.elevation}° · Z ≈ {Math.round(Math.sin(camera.elevation * Math.PI / 180) * Math.max(scene.width, scene.height) * 2.4)} mm</output>
@@ -94,13 +120,20 @@ export function PlacementScene3D({ snapshot, container, placements, yaw, onYawCh
       onPointerDown={event => {
         if (event.isPrimary === false || ![0, 2].includes(event.button)) return;
         event.currentTarget.focus({ preventScroll: true });
+        suppressSelectionAfterDrag.current = false;
         drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, yaw, camera, pan: interaction === 'pan' || event.shiftKey || event.button === 2, width: event.currentTarget.getBoundingClientRect().width || 600 };
-        event.currentTarget.setPointerCapture?.(event.pointerId);
+        // Capturing on pointerdown retargets the ensuing click to the viewport,
+        // so ordinary clicks on SVG pieces never reach their selection handler.
+        // Capture only once a real drag has started.
       }}
       onPointerMove={event => {
         const start = drag.current;
         if (start?.id !== event.pointerId) return;
         const dx = (event.clientX - start.x) / start.width, dy = (event.clientY - start.y) / start.width;
+        if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) {
+          suppressSelectionAfterDrag.current = true;
+          if (!event.currentTarget.hasPointerCapture?.(event.pointerId)) event.currentTarget.setPointerCapture?.(event.pointerId);
+        }
         if (start.pan) moveCamera({ panX: Math.max(-700, Math.min(700, start.camera.panX + dx * 1600)), panY: Math.max(-700, Math.min(700, start.camera.panY + dy * 1600)) });
         else { onYawChange(clampYaw(Math.round(start.yaw + dx * 360))); moveCamera({ elevation: Math.max(5, Math.min(90, start.camera.elevation + dy * 120)) }); }
       }} onContextMenu={event => event.preventDefault()} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={() => { drag.current = null; }}>
@@ -119,16 +152,10 @@ export function PlacementScene3D({ snapshot, container, placements, yaw, onYawCh
           return <line key={i} x1={first.x} y1={first.y} x2={last.x} y2={last.y} />;
         })}</g>
         {sorted.map(piece => {
-          const center = piece.points.reduce(([x, y], p) => [x + p[0] / piece.points.length, y + p[1] / piece.points.length], [0, 0]);
-          const anchor = projectPoint(center, PIECE_TOP, scene, yaw, camera);
-          return <g key={piece.key} data-piece-3d={piece.key}>
-            {extrudedSides(piece.points, SURFACE, PIECE_TOP, scene, yaw, camera).map(side => <path key={side.key} d={side.path} fill={piece.edge} />)}
-            <path d={projectedPath(piece.points, PIECE_TOP, scene, yaw, camera)} fill={piece.color} stroke={piece.edge} strokeWidth="2" />
-            <text className="placement-3d-piece-label" x={anchor.x} y={anchor.y} textAnchor="middle" dominantBaseline="middle">
-              <tspan x={anchor.x}>#{piece.placement.id_pieza}</tspan>
-              <tspan x={anchor.x} dy="1.3em">{pieceDimensions(piece.placement, snapshot)}</tspan>
-            </text>
-          </g>;
+          const selectionId = pieceSelectionKey(scope, piece.placement);
+          return <ProjectedPiece3D key={piece.key} piece={piece} snapshot={snapshot} scene={scene} yaw={yaw} camera={camera}
+            selectionId={selectionId} selected={selectedKey === selectionId} showAllLabels={showAllLabels}
+            onSelect={key => { if (!suppressSelectionAfterDrag.current) onSelect(key); }} />;
         })}
         <g aria-hidden="true">{axes.map(([label, end, color]) => <g key={label}>
           <line x1={origin.x} y1={origin.y} x2={end.x} y2={end.y} stroke={color} strokeWidth="4" />
@@ -143,12 +170,7 @@ export function PlacementScene3D({ snapshot, container, placements, yaw, onYawCh
     </div>
     <div className="placement-3d-caption"><span>Grilla de referencia · {scene.gridStep} mm</span><span>{scene.pieces.length} piezas en este contenedor</span></div>
     <p className="placement-3d-note">La superficie descubierta representa área libre visual, no retazos reutilizables calculados. Consulta medidas y posiciones precisas en 2D.</p>
-    <ul className="placement-3d-legend" aria-label="Piezas en la vista 3D">{scene.pieces.map(piece => <li key={piece.key}>
-      <span className="placement-3d-swatch" style={{ backgroundColor: piece.color, borderColor: piece.edge }} aria-hidden="true" />
-      <span><strong>Pieza #{piece.placement.id_pieza} · unidad {piece.placement.unit_index}</strong>
-        <small>{pieceDimensions(piece.placement, snapshot)}</small>
-        <small>Pedido #{piece.placement.id_pedido} · rotación aplicada: {piece.placement.rotation_deg}°</small></span>
-    </li>)}</ul>
+    <p className="placement-3d-note">Para consultar una unidad, pulsa la superficie de la pieza o selecciónala en el listado junto al inspector. Los nombres y las dimensiones se muestran solo al seleccionar.</p>
     {!scene.pieces.length && <p>No hay piezas colocadas todavía en este contenedor.</p>}
   </section>;
 }

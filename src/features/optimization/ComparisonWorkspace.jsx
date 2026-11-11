@@ -159,11 +159,12 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
   const processed = result ? result.placed_units + result.unplaced_units.length : visual.processed ?? 0;
   const search = visual.searchProgress;
   const fallback = beamFallbackSummary(execution.diagnostic);
+  const cancelled = execution.diagnostic?.termination_reason === 'CANCELLED';
   return <section className="comparison-engine" aria-label={`Ejecución ${methodName(execution.method)}`}>
     <header><div><span className="comparison-eyebrow">Motor {execution.method}</span><h2>{methodName(execution.method)}</h2></div>
-      <span className={`comparison-status ${execution.status === 'FALLIDA' || execution.outcome === 'FAILED' ? 'is-failed' : ''}`}>{executionStatus(execution)}</span></header>
-    {(execution.status === 'FALLIDA' || execution.outcome === 'FAILED') && <FeedbackMessage variant="error">{terminationLabel(execution.diagnostic?.termination_reason ?? execution.failure_code)}</FeedbackMessage>}
-    {execution.diagnostic && <p className="comparison-diagnostic" role="status">{terminationLabel(execution.diagnostic.termination_reason)}</p>}
+      <span className={`comparison-status ${cancelled ? 'is-cancelled' : execution.status === 'FALLIDA' || execution.outcome === 'FAILED' ? 'is-failed' : ''}`}>{executionStatus(execution)}</span></header>
+    {(execution.status === 'FALLIDA' || execution.outcome === 'FAILED') && <FeedbackMessage variant={cancelled ? 'info' : 'error'}>{terminationLabel(execution.diagnostic?.termination_reason ?? execution.failure_code)}</FeedbackMessage>}
+    {execution.diagnostic && !cancelled && <p className="comparison-diagnostic" role="status">{terminationLabel(execution.diagnostic.termination_reason)}</p>}
     {beamSearch && search && !result && <><p role="status">Buscando una distribución. Las piezas se mostrarán cuando haya un resultado guardado.</p>
       <details><summary>Detalles de búsqueda</summary><div className="comparison-search-progress">Búsqueda provisional · nivel {search.completed_levels} · {search.expansions} expansiones · {search.geometry_probes} sondeos geométricos · frente {search.frontier_size}.<small>Estos estados no representan colocaciones finales.</small></div></details></>}
     {execution.diagnostic && <details><summary>Detalles del método</summary><code>{execution.diagnostic.origin} · {execution.diagnostic.termination_reason}</code>{fallback && <p>{fallback}</p>}</details>}
@@ -173,13 +174,14 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
       <button type="button" aria-current={phase === index ? 'step' : undefined} disabled={!available[index] && index !== 0}
         onClick={() => { setInspection(index); setPaused(null); }}><span>{index + 1}</span>{label}</button>
     </li>)}</ol>
-    <div className="comparison-phase-tools"><p role="status">{execution.status !== 'EN_EJECUCION' && phase < 3 ? 'Cálculo terminado · mostrando pasos observados' : PHASES[phase]}</p>
-      <button type="button" className="ng-button" onClick={() => setPaused(value => value ? null : { phase, visual, snapshot, placements })}>{paused ? 'Reanudar vista' : 'Pausar vista'}</button>
+    <div className="comparison-phase-tools"><p role="status">{cancelled ? 'Ejecución cancelada · consulta de pasos registrados' : execution.status !== 'EN_EJECUCION' && phase < 3 ? 'Cálculo terminado · mostrando pasos observados' : PHASES[phase]}</p>
+      {(!cancelled || paused) && <button type="button" className="ng-button" onClick={() => setPaused(value => value ? null : { phase, visual, snapshot, placements })}>{paused ? 'Reanudar vista' : 'Pausar vista'}</button>}
       {inspection !== null && <button type="button" className="ng-button" onClick={() => { setInspection(null); setPaused(null); }}>Seguir avance</button>}</div>
     {paused && <p role="status">Vista pausada; los motores y la recepción de resultados continúan.</p>}
     <div className="comparison-phase-body" data-phase={phase}>
       {phase === 0 && <><h3>Máscaras de las piezas</h3><p>Representación raster utilizada por este motor.</p>
-        <RunMaskInspection runId={comparison.comparison_id} adapter={adapter} visual={preparation} onSessionExpired={onSessionExpired} /></>}
+        {cancelled && !hasMasks ? <p role="status">No se registraron máscaras de piezas antes de cancelar este motor.</p>
+          : <RunMaskInspection runId={comparison.comparison_id} adapter={adapter} visual={preparation} onSessionExpired={onSessionExpired} />}</>}
       {phase === 1 && <><h3>Orden de procesamiento</h3><p>Primero mayor área y lado mayor; los empates siguen pedido, pieza y unidad. Este es el orden calculado por el motor.</p>
         <ol className="comparison-order">{shownVisual.order.map(u => <li key={`${u.id_pieza}:${u.unit_index}`}>Pedido #{u.id_pedido} · Pieza #{u.id_pieza} · unidad {u.unit_index}</li>)}</ol></>}
       {phase === 2 && <><h3>Giros y colocación</h3>{piece && current?.mask && <TurningPiece key={piece.id_pieza} piece={piece} angle={current.mask.rotation_deg} />}
@@ -295,6 +297,8 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
   const activeTab = tabs.includes(tab) ? tab : tabs[0] ?? 'comparison';
   const locked = state.busy || current && !current.released && !current.confirmed;
   const completeCount = current?.executions.filter(e => e.complete).length ?? 0;
+  const cancelledCount = current?.executions.filter(e => e.diagnostic?.termination_reason === 'CANCELLED').length ?? 0;
+  const failedCount = current?.executions.filter(e => e.outcome === 'FAILED' && e.diagnostic?.termination_reason !== 'CANCELLED').length ?? 0;
   const cancellation = current?.cancellation_status ?? 'NONE';
   const canCancel = execute && current?.profile === 'comparison-v2' && !current.terminal && cancellation === 'NONE';
   return <PageCard className="comparison-workspace">
@@ -369,8 +373,8 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
     {current && <>
       <OriginalRequest comparison={current} />
       <p role="status">{completeCount} de {current.executions.length} métodos completaron todas las piezas.
-        {' '}{current.executions.filter(e => e.outcome === 'PARTIAL').length} parciales · {current.executions.filter(e => e.outcome === 'FAILED').length} interrumpidos o con error.
-        {current.terminal && completeCount !== current.executions.length ? ' Comparación parcialmente completada.' : ''}</p>
+        {' '}{current.executions.filter(e => e.outcome === 'PARTIAL').length} parciales · {failedCount} interrumpidos o con error{cancelledCount ? ` · ${cancelledCount} cancelados por solicitud` : ''}.
+        {current.terminal && cancellation !== 'CANCELLED' && completeCount !== current.executions.length ? ' Comparación parcialmente completada.' : ''}</p>
       {current.confirmed && <InventoryReceipt confirmation={current.confirmation} />}
       <CutSeparation configuration={current.configuration} />
       <details className="comparison-configuration"><summary>Configuración y unidades aplicadas</summary><p>Resolución {current.configuration.resolucion_raster_mm} mm/celda · margen {current.configuration.margen_mm} mm · separación {current.configuration.separacion_mm} mm · paso angular {current.configuration.paso_angular_grados}°.</p></details>

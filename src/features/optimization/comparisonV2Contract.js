@@ -128,8 +128,8 @@ export function parseComparisonV2(data) {
 
 export function parseCancellationV2(data, comparisonId) {
   check(object(data) && Object.keys(data).every(key => [
-    'profile', 'comparison_id', 'version', 'cancel_state', 'terminal', 'supervisor_stopped',
-  ].includes(key)) && data.profile === 'comparison-v2'
+    'profile', 'schema_version', 'comparison_id', 'version', 'cancel_state', 'terminal', 'supervisor_stopped',
+  ].includes(key)) && data.profile === 'comparison-v2' && data.schema_version === 2
     && data.comparison_id === comparisonId && id(data.version)
     && ['NONE', 'REQUESTED', 'CANCELLED', 'COMPLETED_BEFORE_CANCEL'].includes(data.cancel_state)
     && bool(data.terminal) && bool(data.supervisor_stopped)

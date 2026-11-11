@@ -32,7 +32,7 @@ const ProjectedPiece3D = memo(function ProjectedPiece3D({ piece, snapshot, scene
     [x + point[0] / piece.points.length, y + point[1] / piece.points.length], [0, 0]);
   const anchor = selected || showAllLabels ? projectPoint(center, PIECE_TOP, scene, yaw, camera) : null;
   return <g data-piece-3d={piece.key} data-selected={selected}
-    className="placement-3d-piece" onPointerDown={event => { if (event.button === 0) event.stopPropagation(); }}
+    className="placement-3d-piece"
     onClick={event => { event.stopPropagation(); onSelect(selectionId); }}>
     {extrudedSides(piece.points, SURFACE, PIECE_TOP, scene, yaw, camera).map(side => <path key={side.key} d={side.path} fill={piece.edge} />)}
     <path className="placement-3d-piece-surface" d={projectedPath(piece.points, PIECE_TOP, scene, yaw, camera)}
@@ -48,6 +48,7 @@ const ProjectedPiece3D = memo(function ProjectedPiece3D({ piece, snapshot, scene
 export function PlacementScene3D({ snapshot, container, placements, scope = {}, selectedKey = null, onSelect = () => {}, yaw, onYawChange, zoom = 1, onZoomChange = () => {}, camera = { elevation: 48, panX: 0, panY: 0 }, onCameraChange = () => {} }) {
   const id = useId();
   const drag = useRef(null);
+  const suppressSelectionAfterDrag = useRef(false);
   const viewport = useRef(null);
   const [interaction, setInteraction] = useState('orbit');
   const [showAllLabels, setShowAllLabels] = useState(false);
@@ -119,6 +120,7 @@ export function PlacementScene3D({ snapshot, container, placements, scope = {}, 
       onPointerDown={event => {
         if (event.isPrimary === false || ![0, 2].includes(event.button)) return;
         event.currentTarget.focus({ preventScroll: true });
+        suppressSelectionAfterDrag.current = false;
         drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, yaw, camera, pan: interaction === 'pan' || event.shiftKey || event.button === 2, width: event.currentTarget.getBoundingClientRect().width || 600 };
         event.currentTarget.setPointerCapture?.(event.pointerId);
       }}
@@ -126,6 +128,7 @@ export function PlacementScene3D({ snapshot, container, placements, scope = {}, 
         const start = drag.current;
         if (start?.id !== event.pointerId) return;
         const dx = (event.clientX - start.x) / start.width, dy = (event.clientY - start.y) / start.width;
+        if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) suppressSelectionAfterDrag.current = true;
         if (start.pan) moveCamera({ panX: Math.max(-700, Math.min(700, start.camera.panX + dx * 1600)), panY: Math.max(-700, Math.min(700, start.camera.panY + dy * 1600)) });
         else { onYawChange(clampYaw(Math.round(start.yaw + dx * 360))); moveCamera({ elevation: Math.max(5, Math.min(90, start.camera.elevation + dy * 120)) }); }
       }} onContextMenu={event => event.preventDefault()} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={() => { drag.current = null; }}>
@@ -146,7 +149,8 @@ export function PlacementScene3D({ snapshot, container, placements, scope = {}, 
         {sorted.map(piece => {
           const selectionId = pieceSelectionKey(scope, piece.placement);
           return <ProjectedPiece3D key={piece.key} piece={piece} snapshot={snapshot} scene={scene} yaw={yaw} camera={camera}
-            selectionId={selectionId} selected={selectedKey === selectionId} showAllLabels={showAllLabels} onSelect={onSelect} />;
+            selectionId={selectionId} selected={selectedKey === selectionId} showAllLabels={showAllLabels}
+            onSelect={key => { if (!suppressSelectionAfterDrag.current) onSelect(key); }} />;
         })}
         <g aria-hidden="true">{axes.map(([label, end, color]) => <g key={label}>
           <line x1={origin.x} y1={origin.y} x2={end.x} y2={end.y} stroke={color} strokeWidth="4" />

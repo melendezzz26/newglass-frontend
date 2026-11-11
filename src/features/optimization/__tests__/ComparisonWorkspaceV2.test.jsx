@@ -359,3 +359,32 @@ test('EN-UX-004 preserves a cancellation after reload without new optimization o
   expect(apiV2.cancel).toHaveBeenCalledOnce();
   expect(screen.queryByRole('button', { name: 'Cancelar optimización' })).not.toBeInTheDocument();
 });
+
+
+test('EN-UX-004 retries a stale supervisor version with one stable cancellation key', async () => {
+  const { apiV2 } = setupV2({ active: true });
+  await startV2();
+  const actual = apiV2.cancel.getMockImplementation();
+  const versions = [], keys = [];
+  apiV2.cancel.mockImplementation(async (current, key) => {
+    versions.push(current.version); keys.push(key);
+    if (versions.length === 1) {
+      // A committed worker lifecycle transition outran the rendered summary.
+      const live = await apiV2.load();
+      const changed = { ...live, version: live.version + 1 };
+      apiV2.load.mockImplementation(async () => structuredClone(changed));
+      throw Object.assign(new Error('La versión del trabajo cambió.'), {
+        status: 409, code: 'STATE_CONFLICT',
+      });
+    }
+    return actual(current, key);
+  });
+  fireEvent.click(await screen.findByRole('button', { name: 'Cancelar optimización' }));
+  fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' }));
+  await waitFor(() => expect(apiV2.cancel).toHaveBeenCalledTimes(2));
+  expect(versions[1]).toBeGreaterThan(versions[0]);
+  expect(keys[0]).toBe(keys[1]);
+  expect(keys[0]).toMatch(/^[A-Za-z0-9_-]{8,64}$/);
+  await screen.findByText(/El backend está deteniendo los motores/);
+  expect(screen.queryByText(/Cancelación confirmada. Se verificó/)).not.toBeInTheDocument();
+});

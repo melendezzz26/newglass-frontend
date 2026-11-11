@@ -1,6 +1,6 @@
 # HU-MAT-001 — Trazabilidad del material optimizado
 
-Estado: IN REVIEW. [PR backend #5](https://github.com/melendezzz26/newglass-backend/pull/5) integrado en `a45120d2dd388aa9a66c767240dc65acbd146df5`; implementación frontend basada en `d8ec96e4dc052fb1a64b16760b5f9a2b2c171d32`.
+Estado: IN REVIEW. [PR backend #5](https://github.com/melendezzz26/newglass-backend/pull/5) integrado en `a45120d2dd388aa9a66c767240dc65acbd146df5`; frontend actualizado con `main` `7ac91f811e0aca82378d8ca4d862b3ebd080d290`.
 
 ## Objetivo y alcance
 
@@ -32,6 +32,6 @@ Se usa `Plancha #<id_plancha>` como identificador visual basado en la clave pers
 - CA-06 cambio de motor actualiza la trazabilidad; CA-07 resultado individual según alcance.
 - CA-08 desktop; CA-09 acceso mobile; CA-10 pruebas automatizadas y evidencia real.
 
-La ejecución sintética real, capturas y límites están registrados en `docs/evidence/HU-MAT-001/README.md`. EN-UX-002 está en PR #7 y no forma parte de la base `main` auditada.
+La ejecución sintética real, capturas y límites están registrados en `docs/evidence/HU-MAT-001/README.md`. La base actual integra EN-UX-002 y EN-UX-004.
 
 La validación de dos fuentes usa una plancha y un retazo con una pieza por fuente; el selector se contrasta con cada referencia de colocación. Antes de confirmar se muestran áreas potenciales sin código de sobrante. Después de confirmar, el recibo muestra los códigos persistidos y su origen, verificados contra inventario; el historial distingue expresamente el corte confirmado de una simulación. Desktop y mobile acceden a la misma información. El backend #5 está fusionado y el smoke sobre su `main` pasó; el PR frontend queda sujeto a CI y revisión independiente.

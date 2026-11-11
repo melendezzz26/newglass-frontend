@@ -7,6 +7,6 @@ No se consultó Notion; estas tareas no se presentan como oficiales.
 - [x] T03 Relacionar fuente y piezas con las referencias existentes.
 - [x] T04 Mostrar sobrante potencial y código persistido, con evidencia real de confirmación.
 - [x] T05 Validar seis motores; múltiples fuentes mediante componentes e integración.
-- [x] T06 Validar desktop/mobile, regresión y evidencia real; smoke post-merge backend `a45120d` aprobado.
+- [x] T06 Validar desktop/mobile, regresión y evidencia real; smoke post-merge backend `2afa9d7` aprobado.
 
 Backend #5 integrado; pendiente CI final y revisión del PR frontend. No se consultó Notion; la definición oficial de tareas aún no está verificada.

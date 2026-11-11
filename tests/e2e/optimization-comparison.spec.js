@@ -638,7 +638,7 @@ test('TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL
     await tab.click();
     const panel = page.locator(`[id="${await tab.getAttribute('aria-controls')}"]`);
     await expect(panel).toBeVisible();
-    await panel.getByRole('button', { name: 'Resultado', exact: true }).click();
+    await panel.getByRole('button', { name: /Resultado/ }).click();
     await expect(panel.locator('[data-placement]')).toHaveCount(1);
     await capture(page, info, `b02-history-${name.replaceAll(' ', '-')}`, panel);
   }

@@ -246,6 +246,7 @@ test('E2E11 comercial: pedido UI, 8/8 a 1 mm, cámara XYZ, merma, confirmación 
   expect(Number(result.metrics.merma_mm2)).toBe(1296000);
   await expect(page.locator('[data-placement]')).toHaveCount(8);
   await expect(page.locator('[data-recoverable-region]')).toHaveCount(1);
+  await page.getByText('Leyenda y precisión del patrón', { exact: true }).click();
   await expect(page.getByRole('list', { name: 'Leyenda de aprovechamiento' })).toContainText('aproximada');
   await expect(page.getByText('Área aprovechada', { exact: true })).toBeVisible();
   await expect(page.getByText('Retazo reutilizable', { exact: true })).toBeVisible();

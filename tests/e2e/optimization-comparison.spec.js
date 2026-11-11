@@ -39,7 +39,7 @@ test('HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen
   let panel = page.getByRole('tabpanel').filter({ visible: true });
   await expect(panel.getByText(/La simulación no descuenta existencias/)).toBeVisible();
   for (const source of sources) {
-    const identity = source.material_source === 'PLANCHA' ? `Plancha comercial #${source.material_id}` : `Retazo ${source.codigo}`;
+    const identity = source.material_source === 'PLANCHA' ? `Plancha #${source.material_id}` : `Retazo ${source.codigo}`;
     const summary = panel.getByText(identity, { exact: false }).first(); await expect(summary).toBeVisible(); await summary.click();
     const expected = payload.result.placements.filter(p => p.material_source === source.material_source && p.material_id === source.material_id && p.stock_unit_index === source.stock_unit_index);
     expect(expected).toHaveLength(1);
@@ -70,7 +70,7 @@ test('HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen
   panel = page.getByRole('tabpanel').filter({ visible: true });
   await expect(panel.getByText(/El corte fue confirmado/)).toBeVisible();
   for (const source of sources) {
-    const identity = source.material_source === 'PLANCHA' ? `Plancha comercial #${source.material_id}` : `Retazo ${source.codigo}`;
+    const identity = source.material_source === 'PLANCHA' ? `Plancha #${source.material_id}` : `Retazo ${source.codigo}`;
     await panel.getByText(identity, { exact: false }).first().click();
   }
   await capture(page, info, 'sobrante-confirmado');
@@ -101,7 +101,7 @@ for (const scenario of ['single', 'remnant']) {
       const source = result.materials_used.find(s => s.material_source === (scenario === 'single' ? 'PLANCHA' : 'RETAZO'));
       expect(source).toBeTruthy();
       if (scenario === 'remnant') expect(source.codigo).toBeTruthy();
-      const identity = scenario === 'single' ? `Plancha comercial #${source.material_id}` : `Retazo ${source.codigo}`;
+      const identity = scenario === 'single' ? `Plancha #${source.material_id}` : `Retazo ${source.codigo}`;
       await page.getByRole('tab', { name: new RegExp(`^${labels[index]}(?:\\s|$)`) }).click();
       const panel = page.getByRole('tabpanel').filter({ visible: true });
       await expect(panel.getByText(identity, { exact: false }).first()).toBeVisible();
@@ -263,7 +263,7 @@ test('TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real', async 
   await capture(page, info, 'b08-manual-choice');
   await page.getByRole('button', { name: 'Confirmar distribución elegida' }).click();
   await expect(page.getByRole('alertdialog')).toContainText('Best Residual Fit');
-  await expect(page.getByRole('alertdialog').getByRole('region', { name: 'Materiales propuestos' })).toContainText(`Plancha comercial #${data.sheets[0]}`);
+  await expect(page.getByRole('alertdialog').getByRole('region', { name: 'Materiales propuestos' })).toContainText(`Plancha #${data.sheets[0]}`);
   await capture(page, info, 'b08-confirmation-dialog');
   const confirmationResponse = page.waitForResponse(r => r.url() === `${endpoint}/confirm` && r.request().method() === 'POST');
   await page.getByRole('alertdialog').getByRole('button', { name: 'Confirmar corte', exact: true }).click();
@@ -274,7 +274,7 @@ test('TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real', async 
   const consumed = receipt.receipt.materials_consumed;
   expect(consumed).toHaveLength(1);
   expect(consumed[0].material_id).toBe(data.sheets[0]);
-  await expect(page.getByRole('region', { name: 'Inventario registrado' })).toContainText(`Plancha comercial #${data.sheets[0]}`);
+  await expect(page.getByRole('region', { name: 'Inventario registrado' })).toContainText(`Plancha #${data.sheets[0]}`);
   await page.getByRole('button', { name: 'Ver comparaciones anteriores' }).click();
   await page.getByRole('button', { name: `Ver comparación #${current.comparison_id}`, exact: true }).click();
   await expect(page.getByText('Corte confirmado', { exact: true })).toBeVisible();

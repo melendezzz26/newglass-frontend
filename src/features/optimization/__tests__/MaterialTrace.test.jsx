@@ -9,10 +9,10 @@ test('physical sources are counted once and show inventory IDs, pieces and real 
   const value = result();
   render(<MaterialTrace result={value} />);
   expect(screen.getByRole('region', { name: 'Materiales propuestos' })).toHaveTextContent('1 planchas comerciales');
-  const source = screen.getByText(/Plancha comercial #1 · unidad 1/);
+  const source = screen.getByText(/Plancha #1 · unidad 1/);
   fireEvent.click(source);
   expect(screen.getByText('12 × 8 mm')).toBeInTheDocument();
-  expect(screen.getByLabelText('Piezas en Plancha comercial #1, unidad 1').children).toHaveLength(value.placements.length);
+  expect(screen.getByLabelText('Piezas en Plancha #1, unidad 1').children).toHaveLength(value.placements.length);
   expect(screen.getByText('Área residual total')).toBeInTheDocument();
   expect(screen.queryByRole('region', { name: 'Distribución de piezas' })).not.toBeInTheDocument();
   expect(screen.getByText(/solo se registran como nuevos retazos al confirmar/)).toBeInTheDocument();
@@ -79,12 +79,12 @@ test('multiple sources are distinct and switching results replaces their identit
   first.materials_used.push(remnant);
   first.placements.push({ ...first.placements[0], material_source: 'RETAZO', material_id: 77, unit_index: 3 });
   const view = render(<MaterialTrace result={first} />);
-  expect(screen.getByText(/Plancha comercial #1 · unidad 1/)).toBeInTheDocument();
+  expect(screen.getByText(/Plancha #1 · unidad 1/)).toBeInTheDocument();
   expect(screen.getByText(/Retazo R-77 · unidad 1/)).toBeInTheDocument();
   const second = result();
   second.materials_used[0].material_id = 99;
   second.placements.forEach(p => { p.material_id = 99; });
   view.rerender(<MaterialTrace result={second} />);
-  expect(screen.getByText(/Plancha comercial #99 · unidad 1/)).toBeInTheDocument();
+  expect(screen.getByText(/Plancha #99 · unidad 1/)).toBeInTheDocument();
   expect(screen.queryByText(/Retazo R-77/)).not.toBeInTheDocument();
 });

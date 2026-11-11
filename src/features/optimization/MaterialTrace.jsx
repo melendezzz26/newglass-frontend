@@ -1,7 +1,7 @@
 import { stockKey } from './runContract';
 
 const number = value => new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 }).format(Number(value));
-const sourceName = source => source.material_source === 'PLANCHA' ? `Plancha comercial #${source.material_id}`
+const sourceName = source => source.material_source === 'PLANCHA' ? `Plancha #${source.material_id}`
   : source.codigo ? `Retazo ${source.codigo}` : `Retazo de inventario #${source.material_id}`;
 
 function SourceDetail({ source, result, pieces, requested }) {

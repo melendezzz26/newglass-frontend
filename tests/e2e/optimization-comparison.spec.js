@@ -540,7 +540,9 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
   const historicalTab = page.getByRole('tab', { name: /^FF/ });
   await historicalTab.click();
   const historicalPanel = page.locator(`[id="${await historicalTab.getAttribute('aria-controls')}"]`);
-  await historicalPanel.getByRole('button', { name: /Resultado/ }).click();
+  // La consulta histórica debe llegar al patrón persistido incluso si caducan
+  // máscaras y eventos temporales, sin exigir navegar manualmente por fases vacías.
+  await expect(historicalPanel.getByRole('heading', { name: 'Resultado de First Fit' })).toBeVisible();
   const historicalCanvas = historicalPanel.getByRole('region', { name: 'Distribución de piezas', exact: true });
   const historicalSelection = historicalCanvas.getByRole('list', { name: 'Colocaciones consultables' }).getByRole('button').first();
   await historicalSelection.click();

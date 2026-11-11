@@ -392,3 +392,21 @@ test('EN-UX-004 retries a stale supervisor version with one stable cancellation 
   await screen.findByText(/El backend está deteniendo los motores/);
   expect(screen.queryByText(/Cancelación confirmada. Se verificó/)).not.toBeInTheDocument();
 });
+
+test('EN-UX-004 shows a cancelled engine as an intentional stop, not a technical error or live replay', async () => {
+  const { completeCancellation } = setupV2({ active: true });
+  await startV2();
+  completeCancellation();
+  fireEvent.click(screen.getByRole('button', { name: 'Actualizar resultado' }));
+  await screen.findByText(/Cancelación confirmada. Se verificó/);
+  fireEvent.click(screen.getByRole('tab', { name: /^FF/ }));
+  const panel = screen.getByRole('region', { name: 'Ejecución First Fit' });
+  expect(within(panel).getByText('Cancelado', { selector: '.comparison-status' })).toHaveClass('is-cancelled');
+  expect(within(panel).getByText('La ejecución fue cancelada.')).toBeVisible();
+  expect(within(panel).queryByText('Error', { exact: true })).not.toBeInTheDocument();
+  expect(within(panel).getByText('Ejecución cancelada · consulta de pasos registrados')).toBeVisible();
+  expect(within(panel).queryByText('Cálculo terminado · mostrando pasos observados')).not.toBeInTheDocument();
+  expect(within(panel).queryByRole('button', { name: 'Pausar vista' })).not.toBeInTheDocument();
+  expect(within(panel).getByText('No se registraron máscaras de piezas antes de cancelar este motor.')).toBeVisible();
+  expect(screen.getByText(/Cancelación confirmada. Se verificó el cierre de procesos/)).toBeVisible();
+});

@@ -4,7 +4,7 @@ import { admissionDiagnostic } from './admissionDiagnostic';
 import { getAccessToken } from '../authentication/authApi';
 import { RunContractError, parseConfirmation } from './runContract';
 import { parseMaskDescriptor, parseVisualMask } from './visualContract';
-import { CATALOG_V2, METHODS_V2, parseComparisonEventV2, parseComparisonV2, parseExecutionV2 } from './comparisonV2Contract';
+import { CATALOG_V2, METHODS_V2, parseComparisonEventV2, parseComparisonV2, parseExecutionV2, parseCancellationV2 } from './comparisonV2Contract';
 
 const check = value => { if (!value) throw new RunContractError(); };
 const id = value => Number.isSafeInteger(value) && value > 0;
@@ -92,6 +92,15 @@ export function createComparisonV2Api({ token, fetchImpl = globalThis.fetch } = 
         && id(data.version) && data.version === operation.version + 1);
       parseConfirmation(data.receipt, current.comparison_id);
       return data;
+    },
+    cancel: async (current, key) => {
+      check(current.profile === 'comparison-v2' && !current.terminal);
+      return parseCancellationV2(await request(`/${current.comparison_id}/cancel`, {
+        method: 'POST', key, body: { expected_version: current.version } }), current.comparison_id);
+    },
+    cancellation: async (comparisonId, signal) => {
+      check(id(comparisonId));
+      return parseCancellationV2(await request(`/${comparisonId}/cancel`, { signal }), comparisonId);
     },
     release: async current => parseComparisonV2(await request(`/${current.comparison_id}/release`, {
       method: 'POST', body: { expected_version: current.version } })),

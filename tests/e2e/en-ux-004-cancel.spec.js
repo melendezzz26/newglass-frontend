@@ -102,6 +102,8 @@ test('EN-UX-004: confirmación operario, parada real, pedidos e histórico durab
     expect(current.selection_allowed && current.confirmable).toBe(false);
     expect(current.executions.some(e => e.diagnostic?.termination_reason === 'CANCELLED')).toBe(true);
     await expect(page.getByText(/Cancelación confirmada. Se verificó el cierre de procesos/)).toBeVisible();
+    await expect(page.locator('.ng-feedback__title', { hasText: 'Cancelación confirmada' })).toBeVisible();
+    await expect(page.locator('.ng-feedback__title', { hasText: 'Operación completada' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Cancelar optimización' })).toHaveCount(0);
     expect(await stock(page, data)).toEqual(before);
     expect(await orderStates(page, data)).toEqual(['PENDIENTE']);

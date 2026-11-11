@@ -399,6 +399,8 @@ test('EN-UX-004 shows a cancelled engine as an intentional stop, not a technical
   completeCancellation();
   fireEvent.click(screen.getByRole('button', { name: 'Actualizar resultado' }));
   await screen.findByText(/Cancelación confirmada. Se verificó/);
+  expect(screen.getByText('Cancelación confirmada', { selector: '.ng-feedback__title' })).toBeVisible();
+  expect(screen.queryByText('Operación completada', { selector: '.ng-feedback__title' })).not.toBeInTheDocument();
   expect(screen.getByText(/6 cancelados por solicitud/)).toBeVisible();
   expect(screen.queryByText('Comparación parcialmente completada.')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('tab', { name: /^FF/ }));

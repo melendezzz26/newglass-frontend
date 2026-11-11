@@ -410,3 +410,38 @@ test('EN-UX-004 shows a cancelled engine as an intentional stop, not a technical
   expect(within(panel).getByText('No se registraron máscaras de piezas antes de cancelar este motor.')).toBeVisible();
   expect(screen.getByText(/Cancelación confirmada. Se verificó el cierre de procesos/)).toBeVisible();
 });
+
+test('EN-UX-004 double confirmation click sends only one cancellation request', async () => {
+  const { apiV2 } = setupV2({ active: true });
+  await startV2();
+  fireEvent.click(screen.getByRole('button', { name: 'Cancelar optimización' }));
+  const submit = within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' });
+  fireEvent.doubleClick(submit);
+  await waitFor(() => expect(apiV2.cancel).toHaveBeenCalledTimes(1));
+  await screen.findByText(/El backend está deteniendo los motores/);
+  expect(screen.queryByText(/Cancelación confirmada. Se verificó/)).not.toBeInTheDocument();
+});
+
+test('EN-UX-004 network failure keeps one operation key and never invents a cancelled terminal', async () => {
+  const { apiV2 } = setupV2({ active: true });
+  const actual = apiV2.cancel.getMockImplementation();
+  const keys = [];
+  apiV2.cancel.mockImplementationOnce(async (_current, key) => {
+    keys.push(key);
+    throw Object.assign(new Error('No se pudo conectar.'), { status: 0, code: 'NETWORK_ERROR' });
+  }).mockImplementationOnce(async (current, key) => {
+    keys.push(key);
+    return actual(current, key);
+  });
+  await startV2();
+  fireEvent.click(screen.getByRole('button', { name: 'Cancelar optimización' }));
+  fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' }));
+  await screen.findByText('No se pudo conectar.');
+  expect(screen.queryByText(/Cancelación confirmada. Se verificó/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Cancelar optimización' }));
+  fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' }));
+  await waitFor(() => expect(apiV2.cancel).toHaveBeenCalledTimes(2));
+  expect(keys).toHaveLength(2);
+  expect(keys[0]).toBe(keys[1]);
+  await screen.findByText(/El backend está deteniendo los motores/);
+});

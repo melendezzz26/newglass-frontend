@@ -109,19 +109,26 @@ test('pointer drag orbits, changes elevation and stops on cancel', () => {
 test('dragging from a piece orbits without selecting, while a normal click still inspects it', () => {
   render(<PlacementCanvas {...data()} />);
   const camera = open3D();
+  const capture = vi.fn();
+  camera.setPointerCapture = capture;
+  camera.hasPointerCapture = () => false;
   const piece = document.querySelector('[data-piece-3d]');
   const inspector = screen.getByRole('complementary', { name: 'Inspector de pieza' });
   expect(inspector).toHaveTextContent('Selecciona una pieza del patrón');
 
   // Pointer-down must bubble from the SVG piece to the viewport's camera handler.
   fireEvent.pointerDown(piece, { pointerId: 11, isPrimary: true, button: 0, clientX: 100, clientY: 100 });
+  expect(capture).not.toHaveBeenCalled();
   fireEvent.pointerMove(camera, { pointerId: 11, clientX: 130, clientY: 160 });
+  expect(capture).toHaveBeenCalledWith(11);
   expect(screen.getByLabelText('Altura de cámara (Z)')).not.toHaveValue('48');
   fireEvent.pointerUp(camera, { pointerId: 11 });
   fireEvent.click(piece);
   expect(inspector).toHaveTextContent('Selecciona una pieza del patrón');
 
+  capture.mockClear();
   fireEvent.pointerDown(piece, { pointerId: 12, isPrimary: true, button: 0, clientX: 100, clientY: 100 });
+  expect(capture).not.toHaveBeenCalled();
   fireEvent.pointerUp(camera, { pointerId: 12 });
   fireEvent.click(piece);
   expect(inspector).toHaveTextContent('Pieza #101');

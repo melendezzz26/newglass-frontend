@@ -9,8 +9,23 @@ import { withPermissions } from '../../authentication/__tests__/permissionFixtur
 const user = withPermissions({ id_usuario: 1, usuario: 'Operario', rol: 'Operario' });
 beforeEach(() => localStorage.clear());
 
-function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false, separation } = {}) {
+function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false, separation, active = false } = {}) {
   const current = structuredClone(partial ? comparisonV2.mixed : comparisonV2.completed);
+  if (active) {
+    current.status = 'EN_EJECUCION';
+    current.terminal = false;
+    current.supervisor_stopped = false;
+    current.incomplete = false;
+    current.selection_allowed = false;
+    current.confirmable = false;
+    current.selected_execution_id = null;
+    current.cancellation_status = 'NONE';
+    current.executions.forEach(execution => Object.assign(execution, {
+      status: 'EN_EJECUCION', dispatch_state: 'QUEUED', outcome: null,
+      result_available: false, complete: false, eligible: false, placed_units: 0,
+      metrics: null, computation_time_ms: null, diagnostic: null,
+    }));
+  }
   if (separation !== undefined) current.configuration.separacion_mm = separation;
   if (beamStatistics) Object.assign(current.executions.find(e => e.method === 'M6-BS').diagnostic.statistics, beamStatistics);
   if (notStarted) {
@@ -52,11 +67,29 @@ function setupV2({ partial = false, lostResponse = false, conflict = false, acti
     observe: vi.fn(async () => {}),
     forExecution: vi.fn(() => ({ loadVisualMask: vi.fn() })),
     release: vi.fn(async value => ({ ...structuredClone(value), version: value.version + 1, released: true })),
+    cancel: vi.fn(async (_current, key) => {
+      current.cancellation_status = 'REQUESTED'; current.version++;
+      return { profile: 'comparison-v2', comparison_id: current.comparison_id,
+        version: current.version, cancel_state: 'REQUESTED', terminal: false, supervisor_stopped: false, key };
+    }),
+    cancellation: vi.fn(async () => ({
+      profile: 'comparison-v2', comparison_id: current.comparison_id, version: current.version,
+      cancel_state: current.cancellation_status ?? 'NONE',
+      terminal: current.terminal, supervisor_stopped: current.supervisor_stopped })),
   };
   const v1 = { start: vi.fn(), load: vi.fn(), lookup: vi.fn(), observe: vi.fn(), result: vi.fn(), manifest: vi.fn(),
     forExecution: vi.fn(), choose: vi.fn(), confirm: vi.fn(), release: vi.fn() };
   const view = render(<OptimizationPage user={actingUser} source={source} comparisonAdapter={v1} comparisonV2Adapter={apiV2} />);
-  return { apiV2, v1, view };
+  const completeCancellation = () => {
+    current.cancellation_status = 'CANCELLED'; current.terminal = true;
+    current.supervisor_stopped = true; current.status = 'FALLIDA';
+    current.version++;
+    current.executions.forEach(execution => Object.assign(execution, {
+      status: 'FALLIDA', dispatch_state: 'TERMINATED', outcome: 'FAILED',
+      diagnostic: { origin: 'SUPERVISOR', termination_reason: 'CANCELLED', statistics: {} },
+    }));
+  };
+  return { apiV2, v1, view, completeCancellation };
 }
 
 async function startV2() {
@@ -287,4 +320,75 @@ test('confirmation waits for the selected material proposal to load', async () =
     expect(apiV2.confirm).not.toHaveBeenCalled();
   } finally { release(); }
   await waitFor(() => expect(screen.getByRole('button', { name: 'Confirmar distribución elegida' })).toBeEnabled());
+});
+
+
+test('EN-UX-004 requires explicit confirmation and never claims worker closure on HTTP 202', async () => {
+  const { apiV2, completeCancellation } = setupV2({ active: true });
+  await startV2();
+  const cancel = await screen.findByRole('button', { name: 'Cancelar optimización' });
+  expect(apiV2.cancel).not.toHaveBeenCalled();
+  fireEvent.click(cancel);
+  expect(screen.getByRole('alertdialog')).toHaveTextContent(/trabajo #43/i);
+  expect(screen.getByRole('alertdialog')).toHaveTextContent('ningún proceso sigue ejecutándose');
+  fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' }));
+  await waitFor(() => expect(apiV2.cancel).toHaveBeenCalledOnce());
+  await screen.findByText(/El backend está deteniendo los motores/);
+  expect(screen.queryByText(/Cancelación confirmada. Se verificó/)).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Cancelar optimización' })).not.toBeInTheDocument();
+  completeCancellation();
+  fireEvent.click(screen.getByRole('button', { name: 'Actualizar resultado' }));
+  await screen.findByText(/Cancelación confirmada. Se verificó/);
+  expect(screen.getByRole('button', { name: 'Preparar otro trabajo' })).toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Liberar pedidos sin confirmar' })).not.toBeInTheDocument();
+  expect(apiV2.confirm).not.toHaveBeenCalled();
+  expect(apiV2.release).not.toHaveBeenCalled();
+});
+
+test('EN-UX-004 preserves a cancellation after reload without new optimization or fake cancel', async () => {
+  const { apiV2, v1, view } = setupV2({ active: true });
+  await startV2();
+  fireEvent.click(screen.getByRole('button', { name: 'Cancelar optimización' }));
+  fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' }));
+  await screen.findByText(/El backend está deteniendo los motores/);
+  view.unmount();
+  render(<OptimizationPage user={user} source={createFixturePendingOrdersSource([])}
+    comparisonAdapter={v1} comparisonV2Adapter={apiV2} />);
+  await screen.findByText(/El backend está deteniendo los motores/);
+  expect(apiV2.start).toHaveBeenCalledOnce();
+  expect(apiV2.cancel).toHaveBeenCalledOnce();
+  expect(screen.queryByRole('button', { name: 'Cancelar optimización' })).not.toBeInTheDocument();
+});
+
+
+test('EN-UX-004 retries a stale supervisor version with one stable cancellation key', async () => {
+  const { apiV2 } = setupV2({ active: true });
+  await startV2();
+  const actual = apiV2.cancel.getMockImplementation();
+  const load = apiV2.load.getMockImplementation();
+  let durableVersion = 0;
+  apiV2.load.mockImplementation(async () => {
+    const snapshot = await load();
+    return { ...snapshot, version: Math.max(snapshot.version, durableVersion) };
+  });
+  const versions = [], keys = [];
+  apiV2.cancel.mockImplementation(async (current, key) => {
+    versions.push(current.version); keys.push(key);
+    if (versions.length === 1) {
+      // A committed worker lifecycle transition outran the rendered summary.
+      durableVersion = current.version + 1;
+      throw Object.assign(new Error('La versión del trabajo cambió.'), {
+        status: 409, code: 'STATE_CONFLICT',
+      });
+    }
+    return actual(current, key);
+  });
+  fireEvent.click(await screen.findByRole('button', { name: 'Cancelar optimización' }));
+  fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Solicitar cancelación' }));
+  await waitFor(() => expect(apiV2.cancel).toHaveBeenCalledTimes(2));
+  expect(versions[1]).toBeGreaterThan(versions[0]);
+  expect(keys[0]).toBe(keys[1]);
+  expect(keys[0]).toMatch(/^[A-Za-z0-9_-]{8,64}$/);
+  await screen.findByText(/El backend está deteniendo los motores/);
+  expect(screen.queryByText(/Cancelación confirmada. Se verificó/)).not.toBeInTheDocument();
 });

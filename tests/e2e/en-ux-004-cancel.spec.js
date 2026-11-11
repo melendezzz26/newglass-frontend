@@ -106,6 +106,16 @@ test('EN-UX-004: confirmación operario, parada real, pedidos e histórico durab
     expect(await stock(page, data)).toEqual(before);
     expect(await orderStates(page, data)).toEqual(['PENDIENTE']);
     await capture(page, info, 'cancelacion-confirmada');
+    // EN-UX-004 visual regression: an intentional cancellation is not
+    // a technical "Error", and a stopped engine must not offer live pause.
+    const ffTab = page.getByRole('tab', { name: /^FF/ });
+    await ffTab.click();
+    const ffPanel = page.locator(`[id="${await ffTab.getAttribute('aria-controls')}"]`);
+    await expect(ffPanel.getByRole('region', { name: 'Ejecución First Fit' })).toContainText(
+      'Ejecución cancelada · consulta de pasos registrados');
+    await expect(ffPanel.getByText('Error', { exact: true })).toHaveCount(0);
+    await expect(ffPanel.getByRole('button', { name: 'Pausar vista' })).toHaveCount(0);
+    await capture(page, info, 'cancelacion-motor-ff', ffPanel);
     await page.reload(); await open(page);
     await expect(page.getByText(/Cancelación confirmada. Se verificó el cierre de procesos/)).toBeVisible();
     await expect(page.getByRole('button', { name: 'Cancelar optimización' })).toHaveCount(0);

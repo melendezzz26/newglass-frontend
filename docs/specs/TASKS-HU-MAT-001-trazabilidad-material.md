@@ -3,10 +3,10 @@
 No se consultó Notion; estas tareas no se presentan como oficiales.
 
 - [x] T01 Auditar contrato de trazabilidad y documentar dependencia.
-- [ ] T02 Mostrar código real y tipo de fuente tras acordar contrato.
-- [ ] T03 Relacionar fuente y piezas, verificando las referencias existentes.
-- [ ] T04 Mostrar sobrante y código persistido cuando corresponda.
-- [ ] T05 Validar seis motores y múltiples fuentes.
-- [ ] T06 Validar desktop/mobile, regresión y evidencia real.
+- [x] T02 Mostrar código real y tipo de fuente con backend propuesto.
+- [x] T03 Relacionar fuente y piezas con las referencias existentes.
+- [x] T04 Mostrar sobrante potencial y código persistido cuando corresponda.
+- [x] T05 Validar seis motores; múltiples fuentes mediante componentes e integración.
+- [ ] T06 Completar E2E de CI y validación de integración de backend #5; evidencia real inicial disponible.
 
-Bloqueo: DEPENDENCIA BACKEND - COORDINAR CON MELENDEZ. No se iniciaron cambios funcionales sobre campos hipotéticos.
+Dependencia: integrar backend #5 antes de marcar el PR frontend como listo para review. No se consultó Notion; la definición oficial de tareas aún no está verificada.

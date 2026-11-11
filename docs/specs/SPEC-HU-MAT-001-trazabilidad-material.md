@@ -1,6 +1,6 @@
 # HU-MAT-001 — Trazabilidad del material optimizado
 
-Estado: DEPENDENCIA BACKEND - COORDINAR CON MELENDEZ. Auditoría sobre frontend `39faf930b2ae9057cd66635494275417ea40d9af` y backend `2a9653a74e8d6b7175df31f89f533f700f0422bc`.
+Estado: IN REVIEW, dependencia de integración del [PR backend #5](https://github.com/melendezzz26/newglass-backend/pull/5). Auditoría inicial sobre frontend `39faf930b2ae9057cd66635494275417ea40d9af` y backend `2a9653a74e8d6b7175df31f89f533f700f0422bc`; implementación basada en frontend `d8ec96e4dc052fb1a64b16760b5f9a2b2c171d32`.
 
 ## Objetivo y alcance
 
@@ -22,7 +22,7 @@ La clave compuesta diferencia fuentes dentro del resultado; no demuestra una ide
 
 ## Decisión y contrato pendiente
 
-Caso C: acordar con Melendez la identidad/código de planchas, exposición del código real de retazos y su conservación histórica, y exposición del código generado tras confirmación. No asumir migración, semántica ni retrocompatibilidad sin ese acuerdo. El contrato disponible permite la relación visual existente, pero no CA-01.
+Se usa `Plancha #<id_plancha>` como identificador visual basado en la clave persistente, sin crear un código de negocio. El PR backend captura el código real de retazo en snapshots nuevos, porque el inventario permite editarlo; los snapshots anteriores conservan su formato y muestran el ID si no incluyen código. Los sobrantes solo reciben código al crearse y confirmarse. No hay migración. El frontend requiere integrar el PR backend antes de quedar listo para revisión funcional conjunta.
 
 ## Criterios de aceptación
 
@@ -32,4 +32,4 @@ Caso C: acordar con Melendez la identidad/código de planchas, exposición del c
 - CA-06 cambio de motor actualiza la trazabilidad; CA-07 resultado individual según alcance.
 - CA-08 desktop; CA-09 acceso mobile; CA-10 pruebas automatizadas y evidencia real.
 
-Ninguno se declara verificado para esta historia hasta pruebas específicas sobre el contrato acordado. EN-UX-002 está en PR #7 y no forma parte de la base `main` auditada.
+La ejecución sintética real, capturas y límites están registrados en `docs/evidence/HU-MAT-001/README.md`. EN-UX-002 está en PR #7 y no forma parte de la base `main` auditada.

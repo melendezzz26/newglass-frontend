@@ -127,8 +127,12 @@ test('EN-UX-004: confirmación operario, parada real, pedidos e histórico durab
       if (comparisonId) await ensureScenarioClosed(page, comparisonId, data.headers);
       // Only restore the productive worker factory after all actual processes
       // have stopped. A failed test must not poison the other 148 scenarios.
-      const reset = await page.request.post(`${api}/__e2e__/comparison-worker/normal`);
-      expect(reset.status(), await reset.text()).toBe(200);
+      await expect.poll(async () => {
+        const reset = await page.request.post(`${api}/__e2e__/comparison-worker/normal`);
+        if (reset.status() === 409) return false; // Reaper still owns admission.
+        expect(reset.status(), await reset.text()).toBe(200);
+        return true;
+      }, { timeout: 12_000 }).toBe(true);
     } catch (cleanupError) {
       if (!primaryError) throw cleanupError;
       info.annotations.push({ type: 'cleanup-failure',

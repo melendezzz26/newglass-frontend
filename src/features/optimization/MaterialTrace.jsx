@@ -1,12 +1,9 @@
-import { useState } from 'react';
-import { PlacementCanvas } from './PlacementCanvas';
-import { resultSnapshot, stockKey, visualPlacement } from './runContract';
+import { stockKey } from './runContract';
 
 const number = value => new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 }).format(Number(value));
 const sourceName = source => `${source.material_source === 'PLANCHA' ? 'Plancha comercial' : 'Retazo de inventario'} #${source.material_id}`;
 
-function SourceDetail({ source, result, pieces, snapshot, requested }) {
-  const [open, setOpen] = useState(false);
+function SourceDetail({ source, result, pieces, requested }) {
   const units = result.groups.flatMap(group => group.units);
   const placedArea = pieces.reduce((sum, p) => sum + Number(units.find(u => u.id_pedido === p.id_pedido
     && u.id_pieza === p.id_pieza && u.unit_index === p.unit_index)?.area_mm2 ?? 0), 0);
@@ -15,10 +12,7 @@ function SourceDetail({ source, result, pieces, snapshot, requested }) {
   const material = requested.find(p => p.id_tipo_vidrio === source.id_tipo_vidrio)?.material_nombre
     ?? `Vidrio #${source.id_tipo_vidrio}`;
   const geometry = source.geometria;
-  const frame = { ...snapshot, groups: snapshot.groups.map(group => ({ ...group,
-    containers: group.containers.filter(s => stockKey(s) === stockKey(source)),
-  })).filter(group => group.containers.length) };
-  return <details className="comparison-source" onToggle={event => setOpen(event.currentTarget.open)}>
+  return <details className="comparison-source">
     <summary>{sourceName(source)} · unidad {source.stock_unit_index} · {pieces.length} piezas</summary>
     <p>{material} · espesor {source.espesor_mm} mm. La unidad identifica esta fuente dentro de la propuesta.</p>
     <p>{geometry.type === 'RECTANGULO' ? `${geometry.width_mm} × ${geometry.height_mm} mm`
@@ -30,11 +24,12 @@ function SourceDetail({ source, result, pieces, snapshot, requested }) {
       <div><dt>Área residual total</dt><dd>{number(Number(source.area_mm2) - placedArea)} mm²</dd></div>
       <div><dt>Recuperable potencial</dt><dd>{number(recovered)} mm²</dd></div>
     </dl>
-    <ul aria-label={`Piezas en ${sourceName(source)}, unidad ${source.stock_unit_index}`}>
-      {pieces.map(p => <li key={`${p.id_pedido}:${p.id_pieza}:${p.unit_index}`}>Pedido #{p.id_pedido} · pieza #{p.id_pieza}
-        {' '}· unidad {p.unit_index} · giro {p.rotation_deg}°</li>)}
-    </ul>
-    {open && <PlacementCanvas snapshot={frame} placements={pieces.map(visualPlacement)} />}
+    <div className="comparison-source-list" role="region" aria-label={`Unidades en ${sourceName(source)}, unidad ${source.stock_unit_index}`} tabIndex={0}>
+      <ul aria-label={`Piezas en ${sourceName(source)}, unidad ${source.stock_unit_index}`}>
+        {pieces.map(p => <li key={`${p.id_pedido}:${p.id_pieza}:${p.unit_index}`}>Pedido #{p.id_pedido} · pieza #{p.id_pieza}
+          {' '}· unidad {p.unit_index} · giro {p.rotation_deg}°</li>)}
+      </ul>
+    </div>
   </details>;
 }
 
@@ -42,7 +37,6 @@ export function MaterialTrace({ result, requested = [], compact = false }) {
   if (!result) return <p>El detalle de materiales se mostrará al cargar el resultado guardado.</p>;
   const sources = [...new Map(result.materials_used.map(s => [stockKey(s), s])).values()];
   const sheets = sources.filter(s => s.material_source === 'PLANCHA').length;
-  const snapshot = compact ? null : resultSnapshot(result);
   return <section className="comparison-material-trace" aria-label="Materiales propuestos">
     <h3>Materiales propuestos</h3>
     <p>{sheets} planchas comerciales · {sources.length - sheets} retazos de inventario reutilizados</p>
@@ -54,7 +48,7 @@ export function MaterialTrace({ result, requested = [], compact = false }) {
     {compact ? <ul>{sources.map(s => <li key={stockKey(s)}>{sourceName(s)} · unidad {s.stock_unit_index}
       {' '}· vidrio #{s.id_tipo_vidrio} · {s.espesor_mm} mm</li>)}</ul>
       : sources.map(source => <SourceDetail key={stockKey(source)} source={source} result={result}
-        snapshot={snapshot} requested={requested} pieces={result.placements.filter(p => stockKey(p) === stockKey(source))} />)}
+        requested={requested} pieces={result.placements.filter(p => stockKey(p) === stockKey(source))} />)}
   </section>;
 }
 

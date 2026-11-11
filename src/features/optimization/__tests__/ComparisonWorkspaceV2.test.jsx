@@ -194,7 +194,10 @@ test('partial M6 and failed HF remain independent and retain their actual diagno
   fireEvent.click(screen.getByRole('tab', { name: /BS-2/ }));
   const beamPanel = screen.getByRole('tabpanel', { name: /BS-2/ });
   fireEvent.click(within(beamPanel).getByRole('button', { name: /Resultado/ }));
-  expect(await within(beamPanel).findAllByText(/pendiente por límite de recursos/)).toHaveLength(2);
+  const pending = await within(beamPanel).findByRole('region', { name: 'Piezas sin colocar' });
+  expect(pending).toHaveTextContent('2 unidades');
+  fireEvent.click(within(pending).getAllByText(/Pendientes por límite de recursos/)[0]);
+  expect(pending).toHaveTextContent('Unidades exactas:');
   fireEvent.click(screen.getByRole('tab', { name: 'Comparación' }));
   expect(screen.getByRole('radio', { name: /Hole Filling/ })).toBeDisabled();
   expect(screen.getByRole('radio', { name: /Beam Search/ })).toBeDisabled();

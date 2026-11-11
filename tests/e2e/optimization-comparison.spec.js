@@ -5,6 +5,78 @@ import { fileURLToPath } from 'node:url';
 import { api, setup, login, loginApi, open, run, stock, capture, save } from './optimizationRealSupport.js';
 import { parseComparisonV2, parseExecutionV2, parseComparisonEventV2 } from '../../src/features/optimization/comparisonV2Contract.js';
 
+test('HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen', async ({ page }, info) => {
+  test.setTimeout(120_000);
+  const data = await setup(page, 'remnant', { createOrders: false });
+  const order = await page.request.post(`${api}/api/orders`, { headers: data.headers, data: {
+    id_cliente: 41, piezas: [{ ...data.materials[0], tipo_forma: 'RECTANGULO', cantidad: 2, width_mm: 60, height_mm: 50 }],
+  } });
+  expect(order.status()).toBe(201);
+  const orderId = (await order.json()).id_pedido;
+  await login(page, data.actors.all, { comparative: true }); await open(page);
+  await page.getByRole('checkbox', { name: new RegExp(`Pedido #${orderId}\\b`) }).check();
+  await page.getByLabel('Métodos').selectOption('comparison-v2');
+  const accepted = page.waitForResponse(r => new URL(r.url()).pathname === '/api/optimization/comparisons-v2' && r.request().method() === 'POST');
+  await page.getByRole('button', { name: 'Comparar con los seis motores', exact: true }).click();
+  const initial = parseComparisonV2(await (await accepted).json());
+  const endpoint = `${api}/api/optimization/comparisons-v2/${initial.comparison_id}`;
+  let current;
+  await expect.poll(async () => {
+    current = parseComparisonV2(await (await page.request.get(endpoint, { headers: data.headers })).json());
+    return current.terminal;
+  }, { timeout: 90_000 }).toBe(true);
+  const execution = current.executions.find(e => e.method === 'FF');
+  const payload = parseExecutionV2(await (await page.request.get(`${endpoint}/executions/${execution.execution_id}`, { headers: data.headers })).json(), current, execution);
+  const sources = payload.result.materials_used;
+  expect(sources).toHaveLength(2);
+  const sheet = sources.find(s => s.material_source === 'PLANCHA');
+  const remnant = sources.find(s => s.material_source === 'RETAZO');
+  expect(sheet.material_id).toBe(data.sheets[0]);
+  expect(remnant.material_id).toBe(data.remnants[0]); expect(remnant.codigo).toBeTruthy();
+  expect(payload.result.residual_regions.length).toBeGreaterThan(0);
+  await page.getByRole('button', { name: 'Actualizar resultado', exact: true }).click();
+  await page.getByRole('tab', { name: /^FF(?:\s|$)/ }).click();
+  let panel = page.getByRole('tabpanel').filter({ visible: true });
+  await expect(panel.getByText(/La simulación no descuenta existencias/)).toBeVisible();
+  for (const source of sources) {
+    const identity = source.material_source === 'PLANCHA' ? `Plancha comercial #${source.material_id}` : `Retazo ${source.codigo}`;
+    const summary = panel.getByText(identity, { exact: false }).first(); await expect(summary).toBeVisible(); await summary.click();
+    const expected = payload.result.placements.filter(p => p.material_source === source.material_source && p.material_id === source.material_id && p.stock_unit_index === source.stock_unit_index);
+    expect(expected).toHaveLength(1);
+    await expect(panel.getByLabel(`Piezas en ${identity}, unidad ${source.stock_unit_index}`)).toContainText(`unidad ${expected[0].unit_index}`);
+    await panel.getByLabel('Plancha o retazo').selectOption(`${source.material_source}:${source.material_id}:${source.stock_unit_index}`);
+    await expect(panel.getByLabel('Plancha o retazo')).toHaveValue(`${source.material_source}:${source.material_id}:${source.stock_unit_index}`);
+  }
+  await expect(page.getByRole('region', { name: 'Inventario registrado' })).toHaveCount(0);
+  await capture(page, info, 'fuentes-multiples');
+  await page.screenshot({ path: info.outputPath('fuentes-multiples-completo.png'), fullPage: true, animations: 'disabled' });
+  await page.getByRole('tab', { name: 'Comparación', exact: true }).click();
+  await page.getByRole('radio', { name: 'Elegir First Fit', exact: true }).check();
+  await page.getByRole('button', { name: 'Confirmar distribución elegida', exact: true }).click();
+  const confirmation = page.waitForResponse(r => r.url() === `${endpoint}/confirm` && r.request().method() === 'POST');
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Confirmar corte', exact: true }).click();
+  const confirmed = await confirmation; expect(confirmed.status()).toBe(200);
+  const receipt = (await confirmed.json()).receipt;
+  expect(receipt.remnants_created.length).toBeGreaterThan(0);
+  const inventory = await (await page.request.get(`${api}/api/inventory/retazos`, { headers: data.headers })).json();
+  for (const created of receipt.remnants_created) {
+    expect(created.codigo).toBeTruthy();
+    expect(inventory.find(r => r.id_retazo === created.id_retazo)?.codigo).toBe(created.codigo);
+    await expect(page.getByRole('region', { name: 'Inventario registrado' })).toContainText(created.codigo);
+  }
+  await page.getByRole('button', { name: 'Ver comparaciones anteriores', exact: true }).click();
+  await page.getByRole('button', { name: `Ver comparación #${initial.comparison_id}`, exact: true }).click();
+  await page.getByRole('tab', { name: /^FF(?:\s|$)/ }).click();
+  panel = page.getByRole('tabpanel').filter({ visible: true });
+  await expect(panel.getByText(/El corte fue confirmado/)).toBeVisible();
+  for (const source of sources) {
+    const identity = source.material_source === 'PLANCHA' ? `Plancha comercial #${source.material_id}` : `Retazo ${source.codigo}`;
+    await panel.getByText(identity, { exact: false }).first().click();
+  }
+  await capture(page, info, 'sobrante-confirmado');
+  await page.screenshot({ path: info.outputPath('sobrante-confirmado-completo.png'), fullPage: true, animations: 'disabled' });
+});
+
 for (const scenario of ['single', 'remnant']) {
   test(`HU-MAT-001: trazabilidad real para ${scenario} en seis motores`, async ({ page }, info) => {
     test.setTimeout(120_000);

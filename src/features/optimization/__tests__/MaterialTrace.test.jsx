@@ -67,6 +67,12 @@ test('registered remnant shows its real code only after confirmation', () => {
   expect(screen.getByText(/Retazo FF-123-P1-1/)).toBeInTheDocument();
 });
 
+test('confirmed history directs the operator to the registered inventory receipt', () => {
+  render(<MaterialTrace result={result()} confirmed />);
+  expect(screen.getByText(/El corte fue confirmado/)).toBeVisible();
+  expect(screen.queryByText(/La simulación no descuenta existencias/)).not.toBeInTheDocument();
+});
+
 test('multiple sources are distinct and switching results replaces their identities', () => {
   const first = result();
   const remnant = { ...first.materials_used[0], material_source: 'RETAZO', material_id: 77, codigo: 'R-77' };

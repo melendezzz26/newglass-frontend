@@ -121,7 +121,11 @@ jobs:
           echo "Using verified PostgreSQL server binaries: $pg_bin"
           echo "NEWGLASS_TEST_PG_BIN=$pg_bin" >> "$GITHUB_ENV"
       - name: Install managed Chromium
-        run: npx playwright install --with-deps chromium
+        # The ubuntu-24.04 runner already includes Chromium OS libraries.
+        # --with-deps re-runs apt against azure.archive.ubuntu.com and can
+        # fail on unrelated DNS outages before any browser test executes.
+        # A missing library still fails when Playwright launches the browser.
+        run: npx playwright install chromium
       - name: E2E desktop and mobile
         id: e2e_tests
         # The B02 migration smoke must start with an empty isolated database:

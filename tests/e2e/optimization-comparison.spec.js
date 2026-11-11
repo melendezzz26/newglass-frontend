@@ -40,7 +40,7 @@ test('HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen
   await expect(panel.getByText(/La simulación no descuenta existencias/)).toBeVisible();
   for (const source of sources) {
     const identity = source.material_source === 'PLANCHA' ? `Plancha #${source.material_id}` : `Retazo ${source.codigo}`;
-    const summary = panel.getByText(identity, { exact: false }).first(); await expect(summary).toBeVisible(); await summary.click();
+    const summary = panel.getByRole('region', { name: 'Materiales propuestos' }).getByText(identity, { exact: false }).first(); await expect(summary).toBeVisible(); await summary.click();
     const expected = payload.result.placements.filter(p => p.material_source === source.material_source && p.material_id === source.material_id && p.stock_unit_index === source.stock_unit_index);
     expect(expected).toHaveLength(1);
     await expect(panel.getByLabel(`Piezas en ${identity}, unidad ${source.stock_unit_index}`)).toContainText(`unidad ${expected[0].unit_index}`);
@@ -71,7 +71,7 @@ test('HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen
   await expect(panel.getByText(/El corte fue confirmado/)).toBeVisible();
   for (const source of sources) {
     const identity = source.material_source === 'PLANCHA' ? `Plancha #${source.material_id}` : `Retazo ${source.codigo}`;
-    await panel.getByText(identity, { exact: false }).first().click();
+    await panel.getByRole('region', { name: 'Materiales propuestos' }).getByText(identity, { exact: false }).first().click();
   }
   await capture(page, info, 'sobrante-confirmado');
   await page.screenshot({ path: info.outputPath('sobrante-confirmado-completo.png'), fullPage: true, animations: 'disabled' });
@@ -104,9 +104,9 @@ for (const scenario of ['single', 'remnant']) {
       const identity = scenario === 'single' ? `Plancha #${source.material_id}` : `Retazo ${source.codigo}`;
       await page.getByRole('tab', { name: new RegExp(`^${labels[index]}(?:\\s|$)`) }).click();
       const panel = page.getByRole('tabpanel').filter({ visible: true });
-      await expect(panel.getByText(identity, { exact: false }).first()).toBeVisible();
+      await expect(panel.getByRole('region', { name: 'Materiales propuestos' }).getByText(identity, { exact: false }).first()).toBeVisible();
       if (index === 0) {
-        await panel.getByText(identity, { exact: false }).first().click();
+        await panel.getByRole('region', { name: 'Materiales propuestos' }).getByText(identity, { exact: false }).first().click();
         await expect(panel.getByLabel(new RegExp(`Piezas en ${identity}`))).toBeVisible();
         await capture(page, info, `hu-mat-${scenario}`);
       }

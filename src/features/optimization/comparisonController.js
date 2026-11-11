@@ -290,10 +290,25 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         cancelOperation = { comparisonId: current.comparison_id, key: newKey() };
       }
       remember();
-      // 202 only acknowledges a durable request. The supervisor must still
-      // prove the workers stopped before the UI can claim cancellation.
-      await apiV2.cancel(current, cancelOperation.key);
-      if (valid(g)) await sync();
+      // Optimistic versions can change as FF starts/finishes between the
+      // summary render and the operator's click. Refresh the durable version
+      // and retry with the SAME idempotency key; never invent a stopped state.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const latest = state.comparison;
+        if (!valid(g) || latest?.comparison_id !== current.comparison_id) return;
+        if (latest.terminal || latest.cancellation_status === 'REQUESTED'
+            || latest.cancellation_status === 'CANCELLED') return;
+        try {
+          await apiV2.cancel(latest, cancelOperation.key);
+          if (valid(g)) await sync();
+          return;
+        } catch (error) {
+          if (error.status !== 409 || error.code !== 'STATE_CONFLICT' || attempt === 2) throw error;
+          await sync();
+          if (!valid(g)) return;
+          if (state.comparison?.cancellation_status !== 'NONE') throw error;
+        }
+      }
     }),
     release: () => action(async () => {
       const current = state.comparison, g = generation;

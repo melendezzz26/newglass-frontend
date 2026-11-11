@@ -180,8 +180,7 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
         {currentPlacement && <p>Posición aplicada: x {currentPlacement.x_mm} mm · y {currentPlacement.y_mm} mm.</p>}
         <RunVisualization state={{ optimizationId: comparison.comparison_id, visual: { ...shownVisual, current },
           total_units: execution.total_units, placed_units: placed, placements: viewPlacements }} adapter={adapter} onSessionExpired={onSessionExpired} showControls={false} />
-        {!!viewPlacements.length && <PlacementCanvas key={`${comparison.comparison_id}:${execution.execution_id}:progress`}
-          snapshot={viewSnapshot} placements={viewPlacements} visualContext={{ runId: comparison.comparison_id, executionId: execution.execution_id }} />}</>}
+        {!!viewPlacements.length && <PlacementCanvas snapshot={viewSnapshot} placements={viewPlacements} />}</>}
       {phase === 3 && result && <><h3>Resultado de {methodName(execution.method)}</h3><p>{result.placed_units} / {result.total_units} piezas colocadas</p>
         {!!unavailableGroups.length && <FeedbackMessage variant="warning">
           No hay planchas ni retazos compatibles para {unavailableGroups.map(group =>
@@ -191,9 +190,7 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
         {!result.completo && <p role="status">Hay piezas sin colocar; este resultado es parcial y no puede confirmarse.</p>}
         <div id={patternAnchor} className="comparison-result-visual">
           <h4>Patrón de corte · {execution.method}</h4>
-          <PlacementCanvas key={`${comparison.comparison_id}:${execution.execution_id}:result`}
-            snapshot={viewSnapshot} placements={viewPlacements}
-            visualContext={{ visual, runId: comparison.comparison_id, executionId: execution.execution_id, adapter }} />
+          <PlacementCanvas snapshot={viewSnapshot} placements={viewPlacements} visualContext={{ visual, runId: comparison.comparison_id, adapter }} />
         </div>
         <UnplacedSummary units={result.unplaced_units} />
         <MaterialTrace result={result} requested={comparison.requested_pieces} /></>}

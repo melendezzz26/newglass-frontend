@@ -57,8 +57,7 @@ test('groups, progressive placements, arbitrary rotations, metrics and honest co
   await act(async () => vi.advanceTimersByTimeAsync(1000));
   expect(screen.getByText('4 / 4 piezas colocadas')).toBeVisible();
   expect(screen.getByRole('heading', { name: 'Resultado del corte' })).toBeVisible();
-  fireEvent.click(within(screen.getByRole('list', { name: 'Colocaciones consultables' })).getByRole('button', { name: /Seleccionar pieza #102/ }));
-  expect(screen.getByRole('complementary', { name: 'Inspector de pieza' })).toHaveTextContent('90°');
+  expect(screen.getByRole('list', { name: 'Detalle de colocaciones' })).toHaveTextContent('rotación aplicada: 90°');
   expect(document.querySelector('[data-placement="22:104:1"]')).toHaveAttribute('transform', 'translate(2000 150)');
   fireEvent.change(screen.getByLabelText('Vidrio del resultado'), { target: { value: '2:5.5' } });
   expect(screen.getByRole('img', { name: 'Colocaciones en plancha #16' }).querySelector('circle')).toHaveAttribute('r', '240');

@@ -28,19 +28,6 @@ test('S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo du
   expect(saved.result.materials_used.every(s => s.material_id === data.sheets[0])).toBe(true);
   expect(new Set(saved.result.materials_used.map(s => s.stock_unit_index)).size).toBe(8);
   await page.getByRole('button', { name: 'Actualizar resultado' }).click();
-  // EN-UX-002: fuente física distinta debe limpiar selección en un trabajo real de 8 planchas, sin afectar inventario.
-  const wfTab = page.getByRole('tab', { name: /^WF/ });
-  await wfTab.click();
-  const wfPanel = page.locator(`[id="${await wfTab.getAttribute('aria-controls')}"]`);
-  await wfPanel.getByRole('button', { name: /Resultado/ }).click();
-  const wfCanvas = wfPanel.getByRole('region', { name: 'Distribución de piezas', exact: true });
-  const wfSources = wfCanvas.getByLabel('Plancha o retazo');
-  await expect(wfSources.locator('option')).toHaveCount(8);
-  await wfCanvas.locator('[data-placement]').first().click();
-  await expect(wfCanvas.getByRole('complementary', { name: 'Inspector de pieza' })).toContainText('Pieza #');
-  await wfSources.selectOption({ index: 1 });
-  await expect(wfCanvas.getByRole('complementary', { name: 'Inspector de pieza' })).toContainText('Selecciona una pieza del patrón');
-  await expect(wfCanvas.locator('[data-placement][data-selected="true"]')).toHaveCount(0);
   await page.getByRole('tab', { name: 'Comparación', exact: true }).click();
   await page.getByRole('radio', { name: 'Elegir Worst Fit', exact: true }).check();
   await page.getByRole('button', { name: 'Confirmar distribución elegida', exact: true }).click();
@@ -453,64 +440,12 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
     await expect(canvas.locator('[data-placement]')).toHaveCount(expectedKeys.length);
     const actualKeys = await canvas.locator('[data-placement]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-placement')).sort());
     expect(actualKeys).toEqual(expectedKeys);
-    // EN-UX-002: a real persisted placement can be inspected without recomputing the heuristic.
-    if (execution.method === 'FF') {
-      const first = results[execution.method].result.placements[0];
-      const key = `${first.id_pedido}:${first.id_pieza}:${first.unit_index}`;
-      await canvas.locator(`[data-placement="${key}"]`).click();
-      const inspector = canvas.getByRole('complementary', { name: 'Inspector de pieza' });
-      await expect(inspector).toContainText(`Pieza #${first.id_pieza}`);
-      await expect(inspector).toContainText(`unidad ${first.unit_index}`);
-      await expect(inspector).toContainText(`#${first.id_pedido}`);
-      await expect(canvas.locator('[data-placement][data-selected="true"]')).toHaveCount(1);
-      await canvas.getByRole('button', { name: 'Acercar 2D' }).click();
-      await expect(canvas.getByLabel('Ampliación 2D')).toContainText('150 %');
-      const second = results[execution.method].result.placements[1];
-      const list = canvas.getByRole('list', { name: 'Colocaciones consultables' });
-      const listButton = list.getByRole('button', {
-        name: `Seleccionar pieza #${second.id_pieza}, unidad ${second.unit_index}, pedido #${second.id_pedido}`,
-      });
-      await listButton.focus(); await listButton.press('Enter');
-      await expect(listButton).toBeFocused();
-      await expect(listButton).toHaveAttribute('aria-pressed', 'true');
-      await expect(inspector).toContainText(`Pieza #${second.id_pieza}`);
-      await expect(canvas.locator('[data-placement][data-selected="true"]')).toHaveCount(1);
-      // Viewports solicitados por la auditoría: verificar el inspector a la derecha y sin desbordar.
-      const originalViewport = page.viewportSize();
-      for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
-        await page.setViewportSize(viewport);
-        const geometry = await canvas.locator('.piece-inspection-layout').evaluate(node => {
-          const main = node.querySelector('.piece-inspection-main').getBoundingClientRect();
-          const inspector = node.querySelector('.piece-inspector').getBoundingClientRect();
-          return { mainRight: main.right, inspectorLeft: inspector.left, inspectorRight: inspector.right,
-            pageWidth: document.documentElement.scrollWidth, viewportWidth: window.innerWidth };
-        });
-        expect(geometry.inspectorLeft).toBeGreaterThanOrEqual(geometry.mainRight - 2);
-        expect(geometry.inspectorRight).toBeLessThanOrEqual(viewport.width + 2);
-        expect(geometry.pageWidth).toBeLessThanOrEqual(geometry.viewportWidth + 2);
-        await capture(page, info, `en-ux-002-${viewport.width}x${viewport.height}`, canvas);
-      }
-      await page.setViewportSize(originalViewport);
-      await capture(page, info, 'en-ux-002-2d-inspector', canvas);
-    }
     await capture(page, info, `${execution.method}-2d`, canvas);
     await canvas.getByRole('button', { name: 'Ver en 3D', exact: true }).click();
     const scene = canvas.getByRole('region', { name: 'Vista 3D del resultado', exact: true });
     await expect(scene.locator('[data-piece-3d]')).toHaveCount(expectedKeys.length);
     expect((await scene.locator('[data-piece-3d]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-piece-3d')).sort())))
       .toEqual(expectedKeys);
-    if (execution.method === 'FF') {
-      await expect(scene.locator('[data-piece-3d][data-selected="true"]')).toHaveCount(1);
-      const camera = scene.getByRole('slider', { name: 'Giro horizontal de la vista 3D' });
-      const yaw = await camera.getAttribute('aria-valuenow');
-      const third = results[execution.method].result.placements[2];
-      const key = `${third.id_pedido}:${third.id_pieza}:${third.unit_index}`;
-      await scene.locator(`[data-piece-3d="${key}"] .placement-3d-piece-surface`).click();
-      await expect(camera).toHaveAttribute('aria-valuenow', yaw);
-      await expect(scene.locator('[data-piece-3d][data-selected="true"]')).toHaveCount(1);
-      await expect(canvas.getByRole('complementary', { name: 'Inspector de pieza' })).toContainText(`Pieza #${third.id_pieza}`);
-      await capture(page, info, 'en-ux-002-3d-inspector', canvas);
-    }
     await capture(page, info, `${execution.method}-3d`, scene);
     visualEvidence[execution.method] = { expectedKeys, displayedKeys: actualKeys, pieces3d: expectedKeys.length };
     if (manifests[execution.method].items.length) {
@@ -536,16 +471,6 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
   expect(v2Posts).toHaveLength(1);
   const restored = await page.request.get(`${api}/api/optimization/comparisons-v2/${current.comparison_id}`, { headers: data.headers });
   expect(await restored.json()).toEqual(current);
-  // Inspector historical works from placements and original units, even when transient masks expire.
-  const historicalTab = page.getByRole('tab', { name: /^FF/ });
-  await historicalTab.click();
-  const historicalPanel = page.locator(`[id="${await historicalTab.getAttribute('aria-controls')}"]`);
-  await historicalPanel.getByRole('button', { name: /Resultado/ }).click();
-  const historicalCanvas = historicalPanel.getByRole('region', { name: 'Distribución de piezas', exact: true });
-  const historicalSelection = historicalCanvas.getByRole('list', { name: 'Colocaciones consultables' }).getByRole('button').first();
-  await historicalSelection.click();
-  await expect(historicalCanvas.getByRole('complementary', { name: 'Inspector de pieza' })).toContainText('Pedido de origen');
-  await expect(historicalCanvas.locator('[data-placement][data-selected="true"]')).toHaveCount(1);
   expect(await stock(page, data)).toEqual(stockBefore); expect(await allInventory()).toEqual(inventoryBefore);
   await capture(page, info, 'comparison-v2-restored');
   save(info, 'b07-six-engine-ui.json', { accepted, current, results, manifests, masks, events,
@@ -634,9 +559,8 @@ test('TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL
   await page.getByRole('button', { name: 'Consultar', exact: true }).click();
   await expect(page.getByRole('tab')).toHaveCount(4);
   for (const name of ['First Fit', 'Best Fit', 'Worst Fit']) {
-    const tab = page.getByRole('tab', { name: new RegExp(name) });
-    await tab.click();
-    const panel = page.locator(`[id="${await tab.getAttribute('aria-controls')}"]`);
+    await page.getByRole('tab', { name: new RegExp(name) }).click();
+    const panel = page.getByRole('tabpanel', { name: new RegExp(name) });
     await expect(panel).toBeVisible();
     await panel.getByRole('button', { name: /Resultado/ }).click();
     await expect(panel.locator('[data-placement]')).toHaveCount(1);

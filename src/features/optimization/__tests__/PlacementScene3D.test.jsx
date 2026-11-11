@@ -19,24 +19,19 @@ test('piece dimensions stay visible in mm for rectangles, polygons and circles w
   const props = data(), original = JSON.stringify(props);
   render(<PlacementCanvas {...props} />);
   const camera = open3D();
-  const list = screen.getByRole('list', { name: 'Colocaciones consultables' });
-  expect(list).toHaveTextContent('Pieza #101');
-  expect(list).toHaveTextContent('Pieza #102');
-  expect(list).toHaveTextContent('Pieza #104');
-  expect(document.querySelectorAll('.placement-3d-piece-label')).toHaveLength(0);
-  fireEvent.click(document.querySelector('[data-piece-3d]'));
+  const legend = screen.getByRole('list', { name: 'Piezas en la vista 3D' });
+  expect(legend).toHaveTextContent('800 × 600 mm');
+  expect(legend).toHaveTextContent('600 × 400 mm');
+  expect(legend).toHaveTextContent('Ancho × alto: 500 × 400 mm');
   expect(document.querySelector('[data-piece-3d]')).toHaveTextContent('800 × 600 mm');
-  expect(screen.getByRole('complementary', { name: 'Inspector de pieza' })).toHaveTextContent('800 × 600 mm');
   const guides = () => [...document.querySelectorAll('.placement-3d-dimension line')].map(line => line.outerHTML);
   const first = guides();
   fireEvent.keyDown(camera, { key: 'ArrowUp' });
   guides().forEach((line, i) => expect(line).not.toBe(first[i]));
   fireEvent.keyDown(camera, { key: 'ArrowRight', shiftKey: true });
-  expect(screen.getByRole('complementary', { name: 'Inspector de pieza' })).toHaveTextContent('800 × 600 mm');
+  expect(legend).toHaveTextContent('800 × 600 mm');
   fireEvent.change(screen.getByLabelText('Vidrio del resultado'), { target: { value: '2:5.5' } });
-  fireEvent.click(document.querySelector('[data-piece-3d]'));
-  expect(document.querySelector('[data-piece-3d]')).toHaveTextContent('Diámetro 480 mm');
-  expect(screen.getByRole('complementary', { name: 'Inspector de pieza' })).toHaveTextContent('Radio 240 mm');
+  expect(screen.getByRole('list', { name: 'Piezas en la vista 3D' })).toHaveTextContent('Diámetro 480 mm');
   expect(JSON.stringify(props)).toBe(original);
 });
 
@@ -77,7 +72,7 @@ test('switching view keeps material, yaw and immutable placements; each piece is
   fireEvent.change(screen.getByLabelText('Vidrio del resultado'), { target: { value: '2:5.5' } });
   const slider = open3D();
   expect(screen.getByLabelText('Plancha o retazo')).toHaveValue('PLANCHA:16:1');
-  expect(screen.getByRole('list', { name: 'Colocaciones consultables' })).toHaveTextContent('Pieza #103 · unidad 1');
+  expect(screen.getByRole('list', { name: 'Piezas en la vista 3D' })).toHaveTextContent('Pieza #103 · unidad 1');
   fireEvent.keyDown(slider, { key: 'ArrowRight' });
   fireEvent.click(screen.getByRole('button', { name: 'Ver en 2D' }));
   expect(screen.getByRole('img', { name: 'Colocaciones en plancha #16' }).querySelector('circle')).toHaveAttribute('r', '240');
@@ -106,45 +101,14 @@ test('pointer drag orbits, changes elevation and stops on cancel', () => {
   fireEvent.pointerCancel(slider, { pointerId: 1 });
   fireEvent.pointerMove(slider, { pointerId: 1, clientX: 400 }); expect(slider).toHaveAttribute('aria-valuenow', '-180');
 });
-test('dragging from a piece orbits without selecting, while a normal click still inspects it', () => {
-  render(<PlacementCanvas {...data()} />);
-  const camera = open3D();
-  const capture = vi.fn();
-  camera.setPointerCapture = capture;
-  camera.hasPointerCapture = () => false;
-  const piece = document.querySelector('[data-piece-3d]');
-  const inspector = screen.getByRole('complementary', { name: 'Inspector de pieza' });
-  expect(inspector).toHaveTextContent('Selecciona una pieza del patrón');
-
-  // Pointer-down must bubble from the SVG piece to the viewport's camera handler.
-  fireEvent.pointerDown(piece, { pointerId: 11, isPrimary: true, button: 0, clientX: 100, clientY: 100 });
-  expect(capture).not.toHaveBeenCalled();
-  fireEvent.pointerMove(camera, { pointerId: 11, clientX: 130, clientY: 160 });
-  expect(capture).toHaveBeenCalledWith(11);
-  expect(screen.getByLabelText('Altura de cámara (Z)')).not.toHaveValue('48');
-  fireEvent.pointerUp(camera, { pointerId: 11 });
-  fireEvent.click(piece);
-  expect(inspector).toHaveTextContent('Selecciona una pieza del patrón');
-
-  capture.mockClear();
-  fireEvent.pointerDown(piece, { pointerId: 12, isPrimary: true, button: 0, clientX: 100, clientY: 100 });
-  expect(capture).not.toHaveBeenCalled();
-  fireEvent.pointerUp(camera, { pointerId: 12 });
-  fireEvent.click(piece);
-  expect(inspector).toHaveTextContent('Pieza #101');
-});
-
 test('legend colors are stable across progressive updates and expose received rotations', () => {
   const props = data(); const view = render(<PlacementCanvas {...props} placements={props.placements.slice(0, 1)} />); open3D();
-  const firstColor = document.querySelector('.placement-3d-piece-surface').getAttribute('fill');
+  const firstColor = document.querySelector('.placement-3d-swatch').style.backgroundColor;
   view.rerender(<PlacementCanvas {...props} />);
-  const list = screen.getByRole('list', { name: 'Colocaciones consultables' });
-  expect(within(list).getAllByRole('listitem')).toHaveLength(3);
-  fireEvent.click(within(list).getByRole('button', { name: /Seleccionar pieza #102/ }));
-  const inspector = screen.getByRole('complementary', { name: 'Inspector de pieza' });
-  expect(inspector).toHaveTextContent('90°');
-  fireEvent.click(within(list).getByRole('button', { name: /Seleccionar pieza #104/ }));
-  expect(inspector).toHaveTextContent('30°');
-  expect(document.querySelector('.placement-3d-piece-surface').getAttribute('fill')).toBe(firstColor);
+  const legend = screen.getByRole('list', { name: 'Piezas en la vista 3D' });
+  expect(within(legend).getAllByRole('listitem')).toHaveLength(3);
+  expect(legend).toHaveTextContent('Pedido #21 · rotación aplicada: 90°');
+  expect(legend).toHaveTextContent('Pedido #22 · rotación aplicada: 30°');
+  expect(document.querySelector('.placement-3d-swatch').style.backgroundColor).toBe(firstColor);
   expect(screen.getByText(/no retazos reutilizables calculados/)).toBeVisible();
 });

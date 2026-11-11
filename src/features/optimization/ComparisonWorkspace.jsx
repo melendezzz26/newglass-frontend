@@ -135,7 +135,9 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
     const timer = setTimeout(() => setPresented(next), reduced ? 0 : 550);
     return () => clearTimeout(timer);
   }, [presented, target, available]);
-  const phase = paused?.phase ?? inspection ?? presented;
+  // Derivar la fase visible del snapshot, sin setState dentro de un efecto.
+  // Un resultado histórico persistido no depende de máscaras temporales.
+  const phase = paused?.phase ?? inspection ?? (hasResult && !hasMasks && !hasOrder && !hasTurn ? 3 : presented);
   const shownVisual = paused?.visual ?? visual;
   const shownMasks = Object.values(shownVisual.descriptors).filter(m => m.kind === 'PIECE' && Number(m.rotation_deg) === 0);
   const base = shownMasks[0];

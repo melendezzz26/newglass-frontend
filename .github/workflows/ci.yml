@@ -46,6 +46,12 @@ jobs:
         run: |
           npm run build:staging
           npm run check:staging
+      - name: Audit production dependencies (EN-SEC-001, V-20)
+        # Runs even if an earlier step failed, so both results are visible.
+        # Fails on high or critical advisories in the dependencies shipped in
+        # the bundle; devDependencies (test and build tooling) are excluded.
+        if: ${{ !cancelled() }}
+        run: npm audit --omit=dev --audit-level=high
 
   e2e:
     runs-on: ubuntu-24.04

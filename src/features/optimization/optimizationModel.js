@@ -62,6 +62,9 @@ export function runErrorFeedback({ error, errorKind, retryAfter }) {
 }
 function reduce(state, action) {
   switch (action.type) {
+    case 'durable_inaccessible': return { ...initialOptimization, orders: state.orders, connection: state.connection, status: 'selection_ready' };
+    case 'durable_accepted': return { ...state, optimizationId: action.id, status: 'running', confirmable: false,
+      placements: [], metrics: null, metrics_available: false, confirmed: false, estado: null, method: 'FF' };
     case 'accepted': return state.status === 'running' && action.runId === state.runId
       ? { ...state, optimizationId: action.optimizationId } : state;
     case 'loading_result': return { ...initialOptimization, orders: state.orders, connection: state.connection, status: 'loading_result' };

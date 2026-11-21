@@ -24,10 +24,12 @@ import { stockKey } from './runContract';
 
 import { useGlassCatalog, glassGroups } from './useGlassCatalog';
 import { calculationState } from './workLabels';
+import { ownerStorageKey, progressLabel } from './distributedProgress.js';
 import './OptimizationPage.css';
 
-function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result, catalog }) {
-  const flow = useFirstFit({ source, adapter, onSessionExpired, result });
+function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result, catalog, durableKey, readOnly = false }) {
+  const flow = useFirstFit({ source, adapter, onSessionExpired, result, durableKey });
+  const durable = flow.durable;
   const state = { ...flow.state, snapshot: flow.state.snapshot && {
     ...flow.state.snapshot, groups: glassGroups(flow.state.snapshot.groups, catalog),
   } };
@@ -40,9 +42,10 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
   const feedbackRef = useRef(null);
   useEffect(() => { if (feedback?.kind) feedbackRef.current?.focus(); }, [feedback?.kind, state.error]);
   const [lookupId, setLookupId] = useState('');
-  const canExecute = canExecuteOptimization(user);
+  const canExecute = !readOnly && canExecuteOptimization(user);
   const canConfirm = hasPermission(user, 'optimization.confirm');
-  const locked = !canExecute || confirming || ['preparing', 'running', 'loading_result'].includes(state.status);
+  const durableActive = durable?.pending || durable?.id && durable.progress?.state !== 'TERMINAL';
+  const locked = !canExecute || confirming || durableActive || ['preparing', 'running', 'loading_result'].includes(state.status);
   const fresh = state.runId ? state.orders.filter(o => !state.availableAtStart?.includes(o.id_pedido)).length : 0;
   const detected = detectMaterialGroups(state.orders.filter(o => state.selected.includes(o.id_pedido)), adapter.resolveMaterial);
   const preview = { ...detected, groups: glassGroups(detected.groups, catalog) };
@@ -59,6 +62,18 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
       setConfirmation('Corte confirmado correctamente.');
     } catch (error) {
       if (error.status === 401) onSessionExpired?.();
+      if (durableKey && [0, 409, 502, 503, 504].includes(error.status)) {
+        try {
+          const saved = await adapter.loadResult(state.optimizationId);
+          if (saved.id_optimizacion === state.optimizationId && saved.confirmed) {
+            flow.confirmed();
+            source.refresh?.();
+            setConfirmation('El corte ya está confirmado. Se recuperó su resultado guardado.');
+            return;
+          }
+        } catch { /* The server still decides confirmation eligibility. */ }
+        if (error.status !== 409) setConfirmationConflict(true);
+      }
       if (error.status === 409) setConfirmationConflict(true);
       setConfirmation(error.status === 409
         ? error.code === 'ALREADY_CONFIRMED' ? 'Este corte ya fue confirmado. Consulta el resultado actualizado.'
@@ -69,15 +84,29 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
   }
   function reset(action) { setConfirmation(''); setConfirmationConflict(false); action(); }
   return <>
-    <OptimizationStages state={state} />
+    {!durableKey && <OptimizationStages state={state} />}
     {state.method && <p>Método aplicado: {({ FF: 'Primer ajuste (First Fit)', BF: 'Mejor ajuste (Best Fit)', WF: 'Peor ajuste (Worst Fit)' })[state.method] ?? state.method}</p>}
     <CutSeparation configuration={state.config} />
     {state.config && <details><summary>Configuración aplicada</summary><dl className="optimization-facts">
       {Object.entries({ resolucion_raster_mm: 'Resolución (mm/celda)', margen_mm: 'Margen (mm)',
         separacion_mm: 'Separación (mm)', paso_angular_grados: 'Paso angular (grados)' }).map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{state.config[key]}</dd></div>)}
     </dl></details>}
-    {state.optimizationId && adapter.loadVisualMask && <RunVisualization key={state.optimizationId} state={state} adapter={adapter} onSessionExpired={onSessionExpired} />}
-    {adapter.loadResult && <form className="first-fit-result-lookup" onSubmit={event => { event.preventDefault(); if (Number.isSafeInteger(Number(lookupId)) && Number(lookupId) > 0) reset(() => flow.load(Number(lookupId))); }}>
+    {!durableKey && !readOnly && state.optimizationId && adapter.loadVisualMask && <RunVisualization key={state.optimizationId} state={state} adapter={adapter} onSessionExpired={onSessionExpired} />}
+    {durable && (durable.id || durable.pending || durable.error) && <section className="first-fit-section" aria-label="Progreso de FF individual">
+      <h3>{durable.id ? 'FF individual · Trabajo #' + durable.id : 'Solicitud FF individual'}</h3>
+      {durable.progress && <p role="status">{durable.progress.state === 'TERMINAL' && durable.progress.result_state === 'COMPLETADA'
+        ? 'Optimización terminada' : progressLabel(durable.progress)}
+        {durable.progress.state === 'RUNNING' && durable.progress.current_engine?.method === 'FF' ? ' · Motor FF' : ''}</p>}
+      {durable.progress?.state === 'WAITING' && <p>El trabajo comenzará cuando haya una plaza de cálculo disponible.</p>}
+      {durable.progress?.state === 'RECOVERY_BLOCKED' && <FeedbackMessage variant="warning">El servidor aún debe verificar el cierre. Los pedidos siguen reservados.</FeedbackMessage>}
+      {durable.reconnecting && <div className="optimization-refresh-status" role="status">Reconectando al progreso guardado…</div>}
+      {durable.partial && <p>Se recuperó el estado actual. Parte de los hitos anteriores venció.</p>}
+      {durable.error && <FeedbackMessage variant="warning">{durable.error}</FeedbackMessage>}
+      {canExecute && durable.pending && <button className="ng-button" disabled={durable.posting}
+        onClick={() => durable.start()}>Recuperar solicitud FF</button>}
+      {durable.id && durable.error && <button className="ng-button" onClick={durable.recover}>Retomar seguimiento</button>}
+    </section>}
+    {!durableActive && adapter.loadResult && <form className="first-fit-result-lookup" onSubmit={event => { event.preventDefault(); if (Number.isSafeInteger(Number(lookupId)) && Number(lookupId) > 0) reset(() => flow.load(Number(lookupId))); }}>
       <label>Número de trabajo<input className="ng-control" type="number" min="1" step="1" value={lookupId} onChange={event => setLookupId(event.target.value)} /></label>
       <button className="ng-button" disabled={['running', 'preparing', 'loading_result'].includes(state.status) || confirming || !Number.isSafeInteger(Number(lookupId)) || Number(lookupId) <= 0}>Consultar resultado</button>
     </form>}
@@ -115,9 +144,9 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
     {state.snapshot && <section className="first-fit-section" aria-labelledby="groups-title">
       <h2 id="groups-title">Resumen del trabajo</h2>
       <p>Pedidos: {state.snapshot.orders.map(o => `#${o.id_pedido}`).join(', ')} · Piezas: {state.snapshot.total} · Vidrios del pedido: {state.snapshot.groups.length}</p>
-      {state.status === 'prepared' && <ActionBar><button className="ng-button ng-button--primary" disabled={!canExecute || (adapter.isFixture && !rasterReady)} onClick={flow.run}>Calcular distribución</button>
+      {state.status === 'prepared' && !durableActive && canExecute && <ActionBar><button className="ng-button ng-button--primary" disabled={!canExecute || (adapter.isFixture && !rasterReady)} onClick={flow.run}>Calcular distribución</button>
         {adapter.isFixture && !rasterReady && <p role="status">Falta completar la vista previa de algunas piezas.</p>}</ActionBar>}
-      {(state.runId || state.optimizationId) && <>
+      {(state.runId || state.optimizationId) && (!durableKey || ['completed', 'no_solution', 'failed'].includes(state.status)) && <>
         <h2>Progreso de optimización</h2>
         {state.snapshot.fixture && <p>Distribución ilustrativa con piezas de ejemplo.</p>}
         {state.optimizationId && <p>Trabajo #{state.optimizationId}</p>}
@@ -152,7 +181,7 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
           ['Merma no reutilizable', `${state.metrics.merma_mm2} mm² · ${(Number(state.metrics.merma_mm2) / Number(state.metrics.area_material_total_mm2) * 100).toFixed(3)} %`], ['Retazo reutilizable', `${state.metrics.retazo_recuperable_mm2} mm² · ${(Number(state.metrics.retazo_recuperable_mm2) / Number(state.metrics.area_material_total_mm2) * 100).toFixed(3)} %`], ['Tiempo', `${state.metrics.tiempo_computacional_ms} ms`],
         ].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>}
       <ActionBar>
-        <button className="ng-button" disabled={(!adapter.isFixture && state.status === 'running') || confirming} onClick={() => reset(flow.discard)}>Descartar</button>
+        <button className="ng-button" disabled={(!adapter.isFixture && state.status === 'running') || confirming || durableActive} onClick={() => reset(flow.discard)}>Descartar</button>
         {canExecute && ['completed', 'failed', 'no_solution'].includes(state.status) && <button className="ng-button" onClick={() => reset(() => { if (adapter.isFixture) flow.run(); else { flow.discard(); source.refresh?.(); } })}>Preparar otro corte</button>}
         {canConfirm && state.confirmable && !state.confirmed && <button className="ng-button ng-button--primary" disabled={confirming || confirmationConflict} onClick={() => setDialog(true)}>Confirmar corte</button>}
         {state.optimizationId && adapter.loadResult && <button className="ng-button" onClick={flow.recover}>Recuperar resultado</button>}
@@ -167,8 +196,8 @@ function OptimizationWorkspace({ source, adapter, onSessionExpired, user, result
   </>;
 }
 
-function OptimizationContent({ user, result, initialRunId, token, source: providedSource, adapter: providedAdapter, onSessionExpired }) {
-  const source = useMemo(() => providedSource ?? (canExecuteOptimization(user) ? createPendingOrdersSource({ token }) : { load() {}, refresh() {}, subscribe() { return () => {}; }, dispose() {} }), [providedSource, token, user]);
+function OptimizationContent({ user, result, initialRunId, token, source: providedSource, adapter: providedAdapter, onSessionExpired, durable = false, readOnly = false }) {
+  const source = useMemo(() => providedSource ?? (!readOnly && canExecuteOptimization(user) ? createPendingOrdersSource({ token }) : { load() {}, refresh() {}, subscribe() { return () => {}; }, dispose() {} }), [providedSource, readOnly, token, user]);
   const adapter = useMemo(() => providedAdapter ?? createBackendRunAdapter({ token, streamProfile: 'visual-v2' }), [providedAdapter, token]);
   const [originResult, setOriginResult] = useState(null);
   const [originError, setOriginError] = useState('');
@@ -181,6 +210,7 @@ function OptimizationContent({ user, result, initialRunId, token, source: provid
     return () => { active = false; };
   }, [adapter, initialRunId, onSessionExpired]);
   const catalog = useGlassCatalog({ token, enabled: !providedAdapter, onSessionExpired });
+  const durableKey = durable ? ownerStorageKey(user, 'ff-durable') : null;
   return <PageCard className="optimization-page">
     <header className="optimization-section-heading"><h2>Distribución de corte</h2>
       <p>Selecciona los pedidos, revisa sus vidrios y calcula cómo cortar las piezas.</p>
@@ -190,22 +220,33 @@ function OptimizationContent({ user, result, initialRunId, token, source: provid
     {!providedSource && canExecuteOptimization(user) && <p>La lista de pedidos se actualiza automáticamente. Las existencias se descuentan al confirmar el corte.</p>}
     {originError && <FeedbackMessage variant="error">{originError}</FeedbackMessage>}
     {initialRunId && !originResult && !originError ? <LoadingState>Consultando corte de origen...</LoadingState>
-      : <OptimizationWorkspace key={token} source={source} adapter={adapter} onSessionExpired={onSessionExpired} user={user} result={originResult ?? result} catalog={catalog} />}
+      : <OptimizationWorkspace key={token} source={source} adapter={adapter} onSessionExpired={onSessionExpired} user={user} result={originResult ?? result} catalog={catalog} readOnly={readOnly || durable && !durableKey}
+        durableKey={durableKey} />}
   </PageCard>;
 }
-export function OptimizationPage({ user, toolbar, initialMode = 'first-fit', ...props }) {
+export function OptimizationPage({ user, toolbar, initialMode = 'first-fit',
+  distributed = import.meta.env.VITE_OPTIMIZATION_MODE === 'distributed', ...props }) {
   const [legacyOrigin, setLegacyOrigin] = useState(null);
+  const [individual, setIndividual] = useState(initialMode === 'legacy-first-fit');
   const legacy = legacyOrigin || props.adapter || props.result || initialMode === 'legacy-first-fit';
+  const durable = distributed && individual && !legacyOrigin && !props.initialRunId && !props.adapter && !props.result;
   const showLegacy = useCallback(id => setLegacyOrigin(id), []);
   return <AppShell activeItem="optimization" user={user}>{toolbar}
     {canViewResults(user) ? <>
       <div className="ng-ui optimization-workspace">
         <PageHeader title="Optimización de corte" context="Trabajo de vidriería" icon={ScanLine}
-          description={legacy ? 'Selecciona pedidos → revisa vidrios y piezas → calcula la distribución → confirma el corte.' : 'Compara distribuciones → revisa los materiales → elige y confirma un corte.'} />
+          description={legacy || durable ? 'Selecciona pedidos → revisa vidrios y piezas → calcula la distribución → confirma el corte.' : 'Compara distribuciones → revisa los materiales → elige y confirma un corte.'} />
       </div>
+      {distributed && initialMode !== 'hu015' && !legacyOrigin && !props.initialRunId && !props.adapter && !props.result
+        && initialMode !== 'legacy-first-fit' && <nav className="ng-ui optimization-mode" aria-label="Modo de optimización">
+          <button className="ng-button" type="button" aria-pressed={!individual} onClick={() => setIndividual(false)}>Comparación de motores</button>
+          <button className="ng-button" type="button" aria-pressed={individual} onClick={() => setIndividual(true)}>FF individual</button>
+        </nav>}
       {legacyOrigin && <div className="ng-ui"><button type="button" className="ng-button" onClick={() => setLegacyOrigin(false)}>Volver a comparación de motores</button></div>}
-      {initialMode !== 'hu015' ? legacy ? <OptimizationContent {...props} initialRunId={typeof legacyOrigin === 'number' ? legacyOrigin : props.initialRunId} user={user} />
-        : <ComparisonWorkspace {...props} initialRunId={legacyOrigin === false ? undefined : props.initialRunId} user={user} onLegacy={showLegacy} />
+      {initialMode !== 'hu015' ? legacy || durable ? <OptimizationContent {...props} durable={durable}
+        readOnly={distributed && !durable && !props.adapter && !props.result}
+        initialRunId={typeof legacyOrigin === 'number' ? legacyOrigin : props.initialRunId} user={user} />
+        : <ComparisonWorkspace {...props} distributed={distributed} initialRunId={legacyOrigin === false ? undefined : props.initialRunId} user={user} onLegacy={showLegacy} />
         : canExecuteOptimization(user) ? <Hu015Rasterization {...props} />
           : <FeedbackMessage variant="error">No tienes permiso para preparar la vista previa de piezas.</FeedbackMessage>}
     </> : <FeedbackMessage variant="error">No tienes permiso para consultar la optimización.</FeedbackMessage>}

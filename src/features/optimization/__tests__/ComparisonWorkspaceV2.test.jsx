@@ -9,7 +9,7 @@ import { withPermissions } from '../../authentication/__tests__/permissionFixtur
 const user = withPermissions({ id_usuario: 1, usuario: 'Operario', rol: 'Operario' });
 beforeEach(() => localStorage.clear());
 
-function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false, separation, active = false } = {}) {
+function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false, separation, active = false, distributed = false } = {}) {
   const current = structuredClone(partial ? comparisonV2.mixed : comparisonV2.completed);
   if (active) {
     current.status = 'EN_EJECUCION';
@@ -65,6 +65,8 @@ function setupV2({ partial = false, lostResponse = false, conflict = false, acti
       revision: 0, execution_sequence: 0, preparation_completed: false, processed_units: 0, evaluations: 0,
       phase: 'TERMINAL', current: null, last_orientation: null, ordered_units: [], total: 0, next_offset: null, items: [] })),
     observe: vi.fn(async () => {}),
+    progress: vi.fn(async () => ({ state: 'WAITING', cancellation: 'NONE', current_engine: null, events: [],
+      version: current.version, poll_after_ms: 1000, next_sequence: 1, has_more: false })),
     forExecution: vi.fn(() => ({ loadVisualMask: vi.fn() })),
     release: vi.fn(async value => ({ ...structuredClone(value), version: value.version + 1, released: true })),
     cancel: vi.fn(async (_current, key) => {
@@ -79,7 +81,7 @@ function setupV2({ partial = false, lostResponse = false, conflict = false, acti
   };
   const v1 = { start: vi.fn(), load: vi.fn(), lookup: vi.fn(), observe: vi.fn(), result: vi.fn(), manifest: vi.fn(),
     forExecution: vi.fn(), choose: vi.fn(), confirm: vi.fn(), release: vi.fn() };
-  const view = render(<OptimizationPage user={actingUser} source={source} comparisonAdapter={v1} comparisonV2Adapter={apiV2} />);
+  const view = render(<OptimizationPage user={actingUser} source={source} comparisonAdapter={v1} comparisonV2Adapter={apiV2} distributed={distributed} />);
   const completeCancellation = () => {
     current.cancellation_status = 'CANCELLED'; current.terminal = true;
     current.supervisor_stopped = true; current.status = 'FALLIDA';
@@ -91,6 +93,34 @@ function setupV2({ partial = false, lostResponse = false, conflict = false, acti
   };
   return { apiV2, v1, view, completeCancellation };
 }
+
+test('distributed V2 displays a queued work, polls once per cycle and retains ownership on remount', async () => {
+  const { apiV2, v1, view } = setupV2({ active: true, distributed: true });
+  await startV2();
+  expect(await screen.findByText('El trabajo está guardado. Comenzará cuando haya una plaza de cálculo disponible.')).toBeVisible();
+  expect(apiV2.progress).toHaveBeenCalledTimes(1);
+  expect(apiV2.observe).not.toHaveBeenCalled();
+  expect(apiV2.manifest).not.toHaveBeenCalled();
+  expect(localStorage.getItem('newglass:comparison:1:v2:progress:43')).toBe('1');
+  const previousSignal = apiV2.progress.mock.calls[0][2];
+  view.unmount();
+  expect(previousSignal.aborted).toBe(true);
+  const another = withPermissions({ id_usuario: 8, usuario: 'Otro', rol: 'Administrador' });
+  render(<OptimizationPage user={another} source={createFixturePendingOrdersSource([])} comparisonAdapter={v1}
+    comparisonV2Adapter={apiV2} distributed />);
+  await screen.findByText('No hay pedidos pendientes.');
+  expect(apiV2.load.mock.calls.filter(([id]) => id === 43)).toHaveLength(1);
+  expect(screen.queryByText('#43')).not.toBeInTheDocument();
+});
+
+test('a 410 visual stream switches to persisted snapshots without retrying the visual stream', async () => {
+  const { apiV2 } = setupV2({ active: true });
+  apiV2.observe.mockRejectedValue(Object.assign(new Error('Visual no disponible'), { status: 410 }));
+  await startV2();
+  expect(await screen.findByText('El detalle visual temporal no está disponible. Los resultados guardados se conservan.')).toBeVisible();
+  await waitFor(() => expect(apiV2.load.mock.calls.length).toBeGreaterThanOrEqual(2), { timeout: 2500 });
+  expect(apiV2.observe).toHaveBeenCalledTimes(1);
+});
 
 async function startV2() {
   fireEvent.click(await screen.findByRole('checkbox', { name: /Pedido #1/ }));

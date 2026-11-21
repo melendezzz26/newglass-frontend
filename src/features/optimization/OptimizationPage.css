@@ -2,6 +2,29 @@
 .first-fit-result-lookup { display: flex; flex-wrap: wrap; align-items: end; gap: var(--ng-space-3); margin-block: var(--ng-space-4); }
 .first-fit-result-lookup label { display: grid; gap: var(--ng-space-2); max-width: 100%; }
 .optimization-columns > section { min-width: 0; }
+.optimization-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 0.75rem;
+}
+
+.optimization-mode button[aria-pressed='true'],
+.comparison-tabs .comparison-current-engine {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+.optimization-refresh-status {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 1;
+  padding: 0.5rem 0.75rem;
+  background: var(--ng-surface, #fff);
+  border: 1px solid currentColor;
+  border-radius: 0.375rem;
+}
+
 .optimization-page h2 { font-size: 20px; margin: 0 0 var(--ng-space-4); }
 .optimization-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ng-space-2); margin: var(--ng-space-4) 0; }
 .optimization-actions .ng-button { padding-inline: var(--ng-space-3); }

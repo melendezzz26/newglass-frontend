@@ -1,17 +1,19 @@
 import { useEffect, useReducer, useRef } from 'react';
 import { buildRunRequest } from './runContract.js';
+import { useDurableRun } from './useDurableRun.js';
 import { initialOptimization, optimizationReducer } from './optimizationModel';
 
 let runSequence = 0;
 // TA-037: a 4xx or a 503 OPTIMIZER_BUSY never created a run; keep the reviewed work.
 const rejection = error => ({ message: error.message, code: error.code ?? null, retryAfter: error.retryAfter ?? null,
   rejected: (error.status >= 400 && error.status < 500) || error.code === 'OPTIMIZER_BUSY' });
-export function useFirstFit({ source, adapter, onSessionExpired, result }) {
+export function useFirstFit({ source, adapter, onSessionExpired, result, durableKey }) {
   const [state, dispatch] = useReducer(optimizationReducer, initialOptimization);
   const lifecycle = useRef(0);
   const stream = useRef(null);
   const activeRun = useRef(null);
   const busy = useRef(false);
+  const durable = useDurableRun({ storageKey: durableKey, adapter, dispatch, onSessionExpired });
   useEffect(() => {
     const invalidate = () => { lifecycle.current++; };
     const unsubscribe = source.subscribe(event => {
@@ -40,6 +42,7 @@ export function useFirstFit({ source, adapter, onSessionExpired, result }) {
   }
   function run() {
     if (!state.snapshot || state.status === 'running') return;
+    if (durableKey) return durable.start(state.snapshot.orders.map(order => order.id_pedido));
     stream.current?.dispose();
     const runId = `first-fit-${++runSequence}`;
     activeRun.current = runId;
@@ -66,7 +69,10 @@ export function useFirstFit({ source, adapter, onSessionExpired, result }) {
       });
     } catch (error) { dispatch({ type: 'connection_failed', ...rejection(error) }); }
   }
-  function discard() { activeRun.current = null; stream.current?.dispose(); lifecycle.current++; busy.current = false; dispatch({ type: 'discard' }); }
+  function discard() {
+    if (durableKey && !durable.discard()) return;
+    activeRun.current = null; stream.current?.dispose(); lifecycle.current++; busy.current = false; dispatch({ type: 'discard' });
+  }
   async function recover() {
     const version = lifecycle.current, run = activeRun.current;
     try {
@@ -93,7 +99,7 @@ export function useFirstFit({ source, adapter, onSessionExpired, result }) {
   }
   useEffect(() => {
     const id = state.optimizationId;
-    if (!id || !adapter.loadVisualManifest || state.status === 'running' && state.runId) return undefined;
+    if (durableKey || !id || !adapter.loadVisualManifest || state.status === 'running' && state.runId) return undefined;
     const controller = new AbortController();
     (async () => {
       try {
@@ -115,6 +121,6 @@ export function useFirstFit({ source, adapter, onSessionExpired, result }) {
       }
     })();
     return () => controller.abort();
-  }, [adapter, state.optimizationId, state.status, state.runId, onSessionExpired]);
-  return { state, prepare, run, discard, recover, load, confirmed: () => dispatch({ type: 'confirmed' }), select: ids => dispatch({ type: 'select', ids }) };
+  }, [adapter, durableKey, state.optimizationId, state.status, state.runId, onSessionExpired]);
+  return { state, prepare, run, discard, recover, load, durable: durableKey ? durable : null, confirmed: () => dispatch({ type: 'confirmed' }), select: ids => dispatch({ type: 'select', ids }) };
 }

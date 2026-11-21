@@ -1,0 +1,29 @@
+# EN-CONC-001 · Frontend multiusuario
+
+El modo `VITE_OPTIMIZATION_MODE=distributed` se habilita cuando el backend dispone del piloto mixto API y worker. V2 se abre con los seis motores y conserva V1 en el selector. FF individual usa la admisión durable. El modo histórico, que se conserva por defecto, usa la observación NDJSON que ya soportaba el frontend. La selección de modo es operativa y no altera el número de plazas.
+
+V2 y FF durable guardan la identidad de admisión y el último cursor aplicado en el navegador, por propietario y tipo de trabajo, sin guardar tokens ni resultados en esos registros. V2 recupera una admisión ambigua por su clave. FF durable permite reintentar el mismo cuerpo con la misma clave porque su contrato no define una consulta por clave. Cuando la identidad es conocida, la reconexión solo consulta estado. La cancelación V2 y la confirmación requieren una acción explícita y conservan las garantías del servidor.
+
+La interfaz obtiene hitos mediante peticiones finitas de hasta 16 eventos. Recupera las páginas retenidas al expirar el cursor, respeta el intervalo del servidor y se detiene tras leer el cierre. Ante 429 o 503 aplica `Retry-After` si el navegador puede leerlo. El backend #20 entrega un segundo para las rutas de progreso y el cliente aplica ese intervalo cuando CORS no expone la cabecera. Para que el navegador lea un valor diferente en el futuro, servir `/api` en el mismo origen con el proxy existente de la instalación, o exponer `Retry-After` mediante CORS en el backend. `VITE_API_URL=/` usa las rutas API del origen del frontend.
+
+El inspector abre las distribuciones guardadas en el contrato comercial. Las máscaras temporales y el stream visual en vivo quedan fuera del piloto. La interfaz muestra el estado del motor acreditado y las métricas persistidas. FF durable no dispone de una ruta pública para pedir cancelación.
+
+## Pruebas
+
+`npm run test:unit` valida el contrato de progreso, cursores, parada y reintentos. `npm run test:component` incluye el flujo de cancelación EN-UX-004, la recuperación V2 y el aislamiento entre propietarios. Validar también con `npm run lint` y `npm run build`.
+
+La prueba Playwright que simula 429, 503, cursor vencido, recuperación bloqueada y 401 se ejecuta sin base de datos.
+
+```sh
+npx playwright test -c tests/multiuser/playwright.config.js progress-mock.spec.js
+```
+
+La prueba integrada utiliza el backend fusionado por PR #20. En una copia aislada del backend, copiar `tests/multiuser/lab.py` del frontend como `tests/integration/optimization/test_browser_frontend_lab.py`. El laboratorio requiere Linux con systemd de usuario, cgroup v2, Python del backend y binarios locales de PostgreSQL. Desde la raíz de esa copia, crear un directorio vacío accesible por WSL y por Playwright, y fijar el mismo directorio en `NEWGLASS_BROWSER_LAB` en ambas terminales, con la ruta apropiada a cada sistema. Usar un directorio nuevo para cada prueba. La capacidad `NEWGLASS_BROWSER_CAPACITY` puede ser `1` o `2`.
+
+```sh
+export NEWGLASS_REQUIRE_POSTGRES=1
+export NEWGLASS_TEST_PG_BIN="$(pg_config --bindir)"
+python -m pytest tests/integration/optimization/test_browser_frontend_lab.py -q
+```
+
+Desde el frontend, al aparecer `ready.json`, ejecutar `npx playwright test -c tests/multiuser/playwright.config.js multiuser.spec.js`. El navegador inicia sesión contra FastAPI. El adaptador Playwright reenvía las solicitudes a las instancias de loopback y permite cambiar de instancia sin cambiar el origen del navegador. La pérdida de la primera respuesta de FF ocurre después de la admisión real. Los permisos, eventos, geometría y stock llegan del backend real. El arnés verifica el número de intentos de ejecución y los movimientos de inventario directamente en PostgreSQL temporal. Los trabajos quedan sin confirmar. Ante un fallo del navegador, marcar `abort` en el directorio del ensayo para cerrar el laboratorio. Al terminar, retirar `ready.json`, que contiene solo credenciales efímeras de los usuarios sintéticos. Las capturas están en `test-results/multiuser-<capacidad>/`.

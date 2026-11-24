@@ -1,4 +1,4 @@
-name: Frontend CI and pinned backend E2E
+name: Frontend CI and backend integration E2E
 
 on:
   pull_request:
@@ -6,6 +6,12 @@ on:
     branches: [main]
   workflow_call:
   workflow_dispatch:
+    inputs:
+      backend:
+        description: Backend ref for the isolated E2E suite
+        type: choice
+        options: [main, pinned]
+        default: main
 
 permissions:
   contents: read
@@ -69,23 +75,38 @@ jobs:
         with:
           persist-credentials: false
           path: frontend
-      - name: Validate pinned backend SHA
+      - name: Select backend ref
         id: backend_ref
         shell: bash
+        env:
+          BACKEND_SELECTION: ${{ inputs.backend || 'main' }}
         run: |
-          sha="$(tr -d '\r\n' < .github/backend-e2e.sha)"
-          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          case "$BACKEND_SELECTION" in
+            main) ref=refs/heads/main ;;
+            pinned)
+              ref="$(tr -d '\r\n' < .github/backend-e2e.sha)"
+              [[ "$ref" =~ ^[0-9a-f]{40}$ ]]
+              ;;
+            *) exit 2 ;;
+          esac
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
       - name: Checkout backend for E2E
         uses: actions/checkout@v7
         with:
           persist-credentials: false
           repository: melendezzz26/newglass-backend
-          ref: ${{ steps.backend_ref.outputs.sha }}
+          ref: ${{ steps.backend_ref.outputs.ref }}
           path: backend
-      - name: Verify checked-out backend SHA
+      - name: Record exact backend commit
         shell: bash
-        run: test "$(git -C ../backend rev-parse HEAD)" = "${{ steps.backend_ref.outputs.sha }}"
+        env:
+          BACKEND_REF: ${{ steps.backend_ref.outputs.ref }}
+        run: |
+          sha="$(git -C ../backend rev-parse HEAD)"
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$BACKEND_REF" != refs/heads/main ]]; then test "$sha" = "$BACKEND_REF"; fi
+          mkdir -p test-results/e2e-phases
+          printf '%s\n' "$sha" | tee test-results/e2e-phases/backend-sha.txt
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -134,10 +155,8 @@ jobs:
         run: npx playwright install chromium
       - name: E2E desktop and mobile
         id: e2e_tests
-        # The B02 migration smoke must start with an empty isolated database:
-        # its --prepare downgrade intentionally rejects existing v2 rows.
-        # Run it once in a fresh Playwright server, then run every other
-        # critical E2E test in a second fresh server.
+        # B02 creates FF/V1 history at head, then checks a round-trip while
+        # the isolated API is idle. Keep the phase free of incompatible V2 rows.
         run: node scripts/run-e2e-phases.js
       - name: Preserve E2E phase reports and diagnostics
         # On a setup failure there are no test artifacts to upload.

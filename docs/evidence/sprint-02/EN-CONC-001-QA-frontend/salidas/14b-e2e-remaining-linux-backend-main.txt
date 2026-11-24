@@ -1,0 +1,267 @@
+Linux WSL2 | frontend 5cb33bb | backend 806cde3 (main) | fase remaining sin B02
+
+Running 154 tests using 1 worker
+
+  ✓    1 [chromium-desktop] › tests/e2e/en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables (4.6s)
+  ✓    2 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:61:3 › 5 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (1.5s)
+  ✓    3 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:61:3 › 6 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (1.5s)
+  ✓    4 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:86:1 › lados independientes: triángulo 50/70/65 y rechazo de 10/10/30 (771ms)
+  ✓    5 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:99:1 › lados independientes: ángulo fijado cambia cuadrilátero sin cambiar lados (839ms)
+  ✓    6 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:115:1 › lados independientes: pentágono irregular con restricción cíclica explícita (767ms)
+  ✓    7 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:125:1 › TA-036: longitudes independientes y selección accesible en el lienzo único (944ms)
+  ✓    8 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:147:1 › TA-036: multiplicar explícitamente todos los lados conserva los ángulos (875ms)
+  ✓    9 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 0 muestra error y se recupera (672ms)
+  ✓   10 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida -1 muestra error y se recupera (811ms)
+  ✓   11 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 1e muestra error y se recupera (840ms)
+  ✓   12 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:178:1 › T01-T02-E04: reiniciar invalida medidas; deshacer abierto elimina el último vértice (1.1s)
+  ✓   13 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:201:1 › T03-E05: dimensiones completas validan convexidad automáticamente y borrar retira el éxito (747ms)
+  ✓   14 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:219:1 › TA-036: escalar un contorno cóncavo conserva su rechazo (756ms)
+  ✓   15 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:236:1 › T03-E07: bow-tie simétrico completo se rechaza por autointersección (751ms)
+  ✓   16 [chromium-desktop] › tests/e2e/hu007-custom-piece.spec.js:245:1 › T03-E08: estado accesible conserva el motivo actual del bloqueo (1.2s)
+  ✓   17 [chromium-desktop] › tests/e2e/hu007-order-integration.spec.js:57:1 › lados independientes: POST y lectura real conservan triángulo, cuadrilátero angular y pentágono (3.0s)
+  ✓   18 [chromium-desktop] › tests/e2e/hu007-order-integration.spec.js:88:1 › T04: login JWT real, múltiples piezas locales, POST único y 201 (2.4s)
+  ✓   19 [chromium-desktop] › tests/e2e/hu007-order-integration.spec.js:117:1 › T04: error de red conserva pieza y reintento llega al backend real (2.0s)
+  ✓   20 [chromium-desktop] › tests/e2e/hu012-client-order.spec.js:24:1 › T03: alta contextual, bloqueo sin cliente, persistencia y lectura real (1.6s)
+  ✓   21 [chromium-desktop] › tests/e2e/hu012-client-order.spec.js:60:1 › T03: duplicado controlado, búsqueda documental y cambio a cliente inactivo (1.9s)
+  ✓   22 [chromium-desktop] › tests/e2e/hu012-client-order.spec.js:89:1 › vidrios plegables conservan piezas, edición contraída, teclado y footer visible (2.3s)
+  ✓   23 [chromium-desktop] › tests/e2e/hu014-inventory-writeoff.spec.js:15:1 › HU-014: Almacenero registra una baja y consulta el movimiento persistido (1.8s)
+  ✓   24 [chromium-desktop] › tests/e2e/hu014-inventory-writeoff.spec.js:105:1 › HU-014: Operario consulta inventario, pero no ve acciones de gestión (1.2s)
+  ✓   25 [chromium-desktop] › tests/e2e/hu015-rasterization.spec.js:52:1 › HU-015: flujo real de pieza cantidad 5, raster, recuperación, resolución y responsive (2.8s)
+  ✓   26 [chromium-desktop] › tests/e2e/hu015-rasterization.spec.js:209:1 › HU-015: CIRCUNFERENCIA se compara con la máscara real del backend (1.7s)
+  ✓   27 [chromium-desktop] › tests/e2e/hu015-rasterization.spec.js:236:1 › HU-015: POLIGONO_CONVEXO conserva vertices_mm negativos y columnas sobre 53 (1.7s)
+  ✓   28 [chromium-desktop] › tests/e2e/hu017-unified-flow.spec.js:4:1 › HU-017 T01: multipedido unificado, inspección honesta y simulación sin consumo (3.9s)
+  ✓   29 [chromium-desktop] › tests/e2e/hu017-unified-flow.spec.js:50:1 › HU-017: máscara orientada, controles por teclado y recuperación sin recalcular (4.8s)
+  ✓   30 [chromium-desktop] › tests/e2e/hu017-unified-flow.spec.js:89:1 › HU-017: el POST sin perfil conserva V1 y sus permisos de consulta (1.9s)
+  ✓   31 [chromium-desktop] › tests/e2e/hu017-unified-flow.spec.js:102:1 › HU-017 T01: SIN_SOLUCION conserva resultado parcial sin certificar etapas no observadas (3.5s)
+  ✓   32 [chromium-desktop] › tests/e2e/hu018-bulk-import.spec.js:27:1 › importación con corrección: el pedido queda con exactamente las piezas del archivo (2.3s)
+  ✓   33 [chromium-desktop] › tests/e2e/hu018-bulk-import.spec.js:81:1 › un archivo no admitido muestra el error sin registrar nada (1.3s)
+  ✓   34 [chromium-desktop] › tests/e2e/hu018-bulk-import.spec.js:92:1 › una observación bloquea guardar piezas manuales hasta corregirla (1.8s)
+  ✓   35 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen (9.4s)
+  ✓   36 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores (7.6s)
+  ✓   37 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores (7.9s)
+  ✓   38 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado (8.7s)
+  ✓   39 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real (11.2s)
+  ✓   40 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real (10.5s)
+  ✓   41 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real (20.8s)
+  ✓   42 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock (5.7s)
+  ✓   43 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez (8.5s)
+  ✓   44 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado (4.8s)
+  ✓   45 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas (6.1s)
+  ✘   46 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo (8.5s)
+  ✓   47 [chromium-desktop] › tests/e2e/optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend (8.4s)
+  ✓   48 [chromium-desktop] › tests/e2e/optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend (10.1s)
+  ✓   49 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:15:1 › S1-01 vista previa real conserva pendiente, permite First Fit y confirma con trazabilidad (6.5s)
+  ✓   50 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:52:1 › E2E1 N=1 real: progreso, placements, métricas, confirmación, stock y pedido (5.5s)
+  ✓   51 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:82:1 › E2E2 multipedido real: una corrida confirma todos (4.4s)
+  ✓   52 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:89:1 › E2E3 multimaterial real: layouts y métricas separados (4.8s)
+  ✓   53 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:100:1 › E2E4 plancha multiunidad real: 3 placements consumen 2 unidades (4.9s)
+  ✓   54 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:118:1 › E2E5 retazo primero real: dos piezas consumen un retazo una sola vez (4.5s)
+  ✓   55 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:125:1 › E2E6 SIN_SOLUCION real: diagnóstico, pedidos PENDIENTE y stock intacto (4.2s)
+  ✓   56 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:136:1 › E2E7 409 real: stock cambiado, feedback y ninguna confirmación parcial (4.4s)
+  ✘   57 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes (11.0s)
+  ✓   58 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:185:1 › E2E9 rotación real: contorno orientado se traduce una sola vez en 2D y 3D (4.8s)
+  ✓   59 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:201:1 › E2E10 CA-28 conjunto: dos pedidos, dos materiales, cantidad y unidades físicas reales (4.7s)
+  ✓   60 [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:216:1 › E2E11 comercial: pedido UI, 8/8 a 1 mm, cámara XYZ, merma, confirmación y origen del retazo (6.9s)
+  ✓   61 [chromium-desktop] › tests/e2e/s1-post-review.spec.js:21:1 › editar tres veces conserva ID, cantidad de pedidos y selección en optimización (5.3s)
+  ✓   62 [chromium-desktop] › tests/e2e/s1-post-review.spec.js:84:1 › crear polígono actualiza medidas parciales y mantiene referencia provisional (2.4s)
+  ✓   63 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:123:3 › Dashboard real para Administrador: datos, permisos y navegación (4.0s)
+  ✓   64 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:123:3 › Dashboard real para Operario: datos, permisos y navegación (3.1s)
+  ✓   65 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:123:3 › Dashboard real para Almacenero: datos, permisos y navegación (2.7s)
+  ✓   66 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:185:1 › refresh conserva sesión real mediante GET /api/auth/me (2.6s)
+  ✓   67 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:202:1 › logout elimina la sesión real y devuelve al login (1.7s)
+  ✓   68 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 1440px: sin overflow y Sidebar utilizable (2.1s)
+  ✓   69 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 1024px: sin overflow y Sidebar utilizable (2.1s)
+  ✓   70 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 800px: sin overflow y Sidebar utilizable (2.0s)
+  ✓   71 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 390px: sin overflow y Sidebar utilizable (2.2s)
+  ✓   72 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:243:1 › sesión real sin permisos conserva Inicio y logout sin consultar módulos restringidos (2.5s)
+  ✓   73 [chromium-desktop] › tests/e2e/ta-dashboard.spec.js:275:1 › CONTROLLED FAILURE SCENARIO — NOT REAL BACKEND FAILURE: muestra error parcial conservando otras fuentes reales (1.8s)
+  ✓   74 [chromium-desktop] › tests/e2e/ta036-retazo-personalizado.spec.js:4:1 › retazo personalizado: editor compartido, POST real sin Decimal no serializable y lectura numérica (2.4s)
+  ✓   75 [chromium-desktop] › tests/e2e/ta037-load-feedback.spec.js:5:1 › TA037 pedido sobre el límite: aviso comprensible, selección conservada, pedido pendiente y stock intacto (3.5s)
+  ✓   76 [chromium-desktop] › tests/e2e/ta046-keyboard.spec.js:17:1 › registro de pedido completo solo con teclado, sin mouse (2.0s)
+  ✓   77 [chromium-desktop] › tests/e2e/ta046-keyboard.spec.js:61:1 › al eliminar un vidrio el foco sigue en el diálogo y Escape lo cierra (1.8s)
+  ✓   78 [chromium-mobile] › tests/e2e/en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables (5.7s)
+  ✓   79 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:61:3 › 5 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (1.5s)
+  ✓   80 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:61:3 › 6 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (1.8s)
+  ✓   81 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:86:1 › lados independientes: triángulo 50/70/65 y rechazo de 10/10/30 (979ms)
+  ✓   82 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:99:1 › lados independientes: ángulo fijado cambia cuadrilátero sin cambiar lados (1.0s)
+  ✓   83 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:115:1 › lados independientes: pentágono irregular con restricción cíclica explícita (997ms)
+  ✓   84 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:125:1 › TA-036: longitudes independientes y selección accesible en el lienzo único (1.2s)
+  ✓   85 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:147:1 › TA-036: multiplicar explícitamente todos los lados conserva los ángulos (1.2s)
+  ✓   86 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 0 muestra error y se recupera (1.1s)
+  ✓   87 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida -1 muestra error y se recupera (1.2s)
+  ✓   88 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 1e muestra error y se recupera (1.2s)
+  ✓   89 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:178:1 › T01-T02-E04: reiniciar invalida medidas; deshacer abierto elimina el último vértice (1.6s)
+  ✓   90 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:201:1 › T03-E05: dimensiones completas validan convexidad automáticamente y borrar retira el éxito (1.2s)
+  ✓   91 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:219:1 › TA-036: escalar un contorno cóncavo conserva su rechazo (1.1s)
+  ✓   92 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:236:1 › T03-E07: bow-tie simétrico completo se rechaza por autointersección (951ms)
+  ✓   93 [chromium-mobile] › tests/e2e/hu007-custom-piece.spec.js:245:1 › T03-E08: estado accesible conserva el motivo actual del bloqueo (1.6s)
+  ✓   94 [chromium-mobile] › tests/e2e/hu007-order-integration.spec.js:57:1 › lados independientes: POST y lectura real conservan triángulo, cuadrilátero angular y pentágono (3.5s)
+  ✓   95 [chromium-mobile] › tests/e2e/hu007-order-integration.spec.js:88:1 › T04: login JWT real, múltiples piezas locales, POST único y 201 (2.7s)
+  ✓   96 [chromium-mobile] › tests/e2e/hu007-order-integration.spec.js:117:1 › T04: error de red conserva pieza y reintento llega al backend real (2.3s)
+  ✓   97 [chromium-mobile] › tests/e2e/hu012-client-order.spec.js:24:1 › T03: alta contextual, bloqueo sin cliente, persistencia y lectura real (1.9s)
+  ✓   98 [chromium-mobile] › tests/e2e/hu012-client-order.spec.js:60:1 › T03: duplicado controlado, búsqueda documental y cambio a cliente inactivo (2.2s)
+  ✓   99 [chromium-mobile] › tests/e2e/hu012-client-order.spec.js:89:1 › vidrios plegables conservan piezas, edición contraída, teclado y footer visible (2.6s)
+  ✓  100 [chromium-mobile] › tests/e2e/hu014-inventory-writeoff.spec.js:15:1 › HU-014: Almacenero registra una baja y consulta el movimiento persistido (2.4s)
+  ✓  101 [chromium-mobile] › tests/e2e/hu014-inventory-writeoff.spec.js:105:1 › HU-014: Operario consulta inventario, pero no ve acciones de gestión (1.4s)
+  ✓  102 [chromium-mobile] › tests/e2e/hu015-rasterization.spec.js:52:1 › HU-015: flujo real de pieza cantidad 5, raster, recuperación, resolución y responsive (3.5s)
+  ✓  103 [chromium-mobile] › tests/e2e/hu015-rasterization.spec.js:209:1 › HU-015: CIRCUNFERENCIA se compara con la máscara real del backend (2.1s)
+  ✓  104 [chromium-mobile] › tests/e2e/hu015-rasterization.spec.js:236:1 › HU-015: POLIGONO_CONVEXO conserva vertices_mm negativos y columnas sobre 53 (2.0s)
+  ✓  105 [chromium-mobile] › tests/e2e/hu017-unified-flow.spec.js:4:1 › HU-017 T01: multipedido unificado, inspección honesta y simulación sin consumo (4.5s)
+  ✓  106 [chromium-mobile] › tests/e2e/hu017-unified-flow.spec.js:50:1 › HU-017: máscara orientada, controles por teclado y recuperación sin recalcular (5.3s)
+  ✓  107 [chromium-mobile] › tests/e2e/hu017-unified-flow.spec.js:89:1 › HU-017: el POST sin perfil conserva V1 y sus permisos de consulta (2.1s)
+  ✓  108 [chromium-mobile] › tests/e2e/hu017-unified-flow.spec.js:102:1 › HU-017 T01: SIN_SOLUCION conserva resultado parcial sin certificar etapas no observadas (4.0s)
+  ✓  109 [chromium-mobile] › tests/e2e/hu018-bulk-import.spec.js:27:1 › importación con corrección: el pedido queda con exactamente las piezas del archivo (2.5s)
+  ✓  110 [chromium-mobile] › tests/e2e/hu018-bulk-import.spec.js:81:1 › un archivo no admitido muestra el error sin registrar nada (1.7s)
+  ✓  111 [chromium-mobile] › tests/e2e/hu018-bulk-import.spec.js:92:1 › una observación bloquea guardar piezas manuales hasta corregirla (2.1s)
+  ✓  112 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen (10.2s)
+  ✓  113 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores (9.1s)
+  ✓  114 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores (9.2s)
+  ✓  115 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado (10.9s)
+  ✓  116 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real (14.0s)
+  ✓  117 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real (16.9s)
+  ✓  118 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real (29.7s)
+  ✓  119 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock (5.6s)
+  ✓  120 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez (8.9s)
+  ✓  121 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado (5.0s)
+  ✓  122 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas (5.4s)
+  ✘  123 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo (8.4s)
+  ✓  124 [chromium-mobile] › tests/e2e/optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend (8.1s)
+  ✓  125 [chromium-mobile] › tests/e2e/optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend (8.3s)
+  ✓  126 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:15:1 › S1-01 vista previa real conserva pendiente, permite First Fit y confirma con trazabilidad (5.7s)
+  ✓  127 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:52:1 › E2E1 N=1 real: progreso, placements, métricas, confirmación, stock y pedido (5.2s)
+  ✓  128 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:82:1 › E2E2 multipedido real: una corrida confirma todos (4.6s)
+  ✓  129 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:89:1 › E2E3 multimaterial real: layouts y métricas separados (4.6s)
+  ✓  130 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:100:1 › E2E4 plancha multiunidad real: 3 placements consumen 2 unidades (4.7s)
+  ✓  131 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:118:1 › E2E5 retazo primero real: dos piezas consumen un retazo una sola vez (4.5s)
+  ✓  132 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:125:1 › E2E6 SIN_SOLUCION real: diagnóstico, pedidos PENDIENTE y stock intacto (4.2s)
+  ✓  133 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:136:1 › E2E7 409 real: stock cambiado, feedback y ninguna confirmación parcial (4.7s)
+  ✘  134 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes (11.6s)
+  ✓  135 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:185:1 › E2E9 rotación real: contorno orientado se traduce una sola vez en 2D y 3D (4.7s)
+  ✓  136 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:201:1 › E2E10 CA-28 conjunto: dos pedidos, dos materiales, cantidad y unidades físicas reales (4.6s)
+  ✓  137 [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:216:1 › E2E11 comercial: pedido UI, 8/8 a 1 mm, cámara XYZ, merma, confirmación y origen del retazo (7.2s)
+  ✓  138 [chromium-mobile] › tests/e2e/s1-post-review.spec.js:21:1 › editar tres veces conserva ID, cantidad de pedidos y selección en optimización (5.2s)
+  ✓  139 [chromium-mobile] › tests/e2e/s1-post-review.spec.js:84:1 › crear polígono actualiza medidas parciales y mantiene referencia provisional (1.5s)
+  ✓  140 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:123:3 › Dashboard real para Administrador: datos, permisos y navegación (2.5s)
+  ✓  141 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:123:3 › Dashboard real para Operario: datos, permisos y navegación (2.4s)
+  ✓  142 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:123:3 › Dashboard real para Almacenero: datos, permisos y navegación (1.8s)
+  ✓  143 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:185:1 › refresh conserva sesión real mediante GET /api/auth/me (1.6s)
+  ✓  144 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:202:1 › logout elimina la sesión real y devuelve al login (1.0s)
+  ✓  145 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 1440px: sin overflow y Sidebar utilizable (1.5s)
+  ✓  146 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 1024px: sin overflow y Sidebar utilizable (1.5s)
+  ✓  147 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 800px: sin overflow y Sidebar utilizable (1.5s)
+  ✓  148 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:215:3 › Dashboard real a 390px: sin overflow y Sidebar utilizable (1.9s)
+  ✓  149 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:243:1 › sesión real sin permisos conserva Inicio y logout sin consultar módulos restringidos (2.2s)
+  ✓  150 [chromium-mobile] › tests/e2e/ta-dashboard.spec.js:275:1 › CONTROLLED FAILURE SCENARIO — NOT REAL BACKEND FAILURE: muestra error parcial conservando otras fuentes reales (1.9s)
+  ✓  151 [chromium-mobile] › tests/e2e/ta036-retazo-personalizado.spec.js:4:1 › retazo personalizado: editor compartido, POST real sin Decimal no serializable y lectura numérica (2.0s)
+  ✓  152 [chromium-mobile] › tests/e2e/ta037-load-feedback.spec.js:5:1 › TA037 pedido sobre el límite: aviso comprensible, selección conservada, pedido pendiente y stock intacto (2.8s)
+  ✓  153 [chromium-mobile] › tests/e2e/ta046-keyboard.spec.js:17:1 › registro de pedido completo solo con teclado, sin mouse (1.5s)
+  ✓  154 [chromium-mobile] › tests/e2e/ta046-keyboard.spec.js:61:1 › al eliminar un vidrio el foco sigue en el diálogo y Escape lo cierra (1.6s)
+
+
+  1) [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Comparación finalizada', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Comparación finalizada', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Comparación finalizada', { exact: true })
+
+
+      1009 |   await page.getByLabel('Consultar trabajo guardado').fill(String(comparison.comparison_id));
+      1010 |   await page.getByRole('button', { name: 'Consultar', exact: true }).click();
+    > 1011 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+           |                                                                           ^
+      1012 |   await page.getByRole('tab', { name: 'Comparación', exact: true }).click();
+      1013 |   await expect(page.getByRole('radio')).toHaveCount(3);
+      1014 |   for (const radio of await page.getByRole('radio').all()) await expect(radio).toBeDisabled();
+        at ~/newglass-qa/e2e/frontend/tests/e2e/optimization-comparison.spec.js:1011:75
+
+    Error Context: test-results/optimization-comparison-co-f9ec9-ermitir-elección-ni-consumo-chromium-desktop/error-context.md
+
+  2) [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Estado del trabajo: Distribución lista', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Estado del trabajo: Distribución lista', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Estado del trabajo: Distribución lista', { exact: true })
+
+
+      173 |   await page.getByLabel('Número de trabajo', { exact: true }).fill(String(result.id_optimizacion));
+      174 |   await page.getByRole('button', { name: 'Consultar resultado', exact: true }).click();
+    > 175 |   await expect(page.getByText('Estado del trabajo: Distribución lista', { exact: true })).toBeVisible();
+          |                                                                                           ^
+      176 |   const view = await loginApi(page.request, data.actors.view);
+      177 |   expect((await page.request.post(`${api}/api/optimization/runs`, { headers: view, data: { order_ids: data.orders } })).status()).toBe(403);
+      178 |   await capture(page, info, 'view-only');
+        at ~/newglass-qa/e2e/frontend/tests/e2e/s1-optimization-ui.spec.js:175:91
+
+    Error Context: test-results/s1-optimization-ui-E2E8-RB-e6bf8-te-y-confirm-independientes-chromium-desktop/error-context.md
+
+  3) [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Comparación finalizada', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Comparación finalizada', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Comparación finalizada', { exact: true })
+
+
+      1009 |   await page.getByLabel('Consultar trabajo guardado').fill(String(comparison.comparison_id));
+      1010 |   await page.getByRole('button', { name: 'Consultar', exact: true }).click();
+    > 1011 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+           |                                                                           ^
+      1012 |   await page.getByRole('tab', { name: 'Comparación', exact: true }).click();
+      1013 |   await expect(page.getByRole('radio')).toHaveCount(3);
+      1014 |   for (const radio of await page.getByRole('radio').all()) await expect(radio).toBeDisabled();
+        at ~/newglass-qa/e2e/frontend/tests/e2e/optimization-comparison.spec.js:1011:75
+
+    Error Context: test-results/optimization-comparison-co-f9ec9-ermitir-elección-ni-consumo-chromium-mobile/error-context.md
+
+  4) [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Estado del trabajo: Distribución lista', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Estado del trabajo: Distribución lista', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Estado del trabajo: Distribución lista', { exact: true })
+
+
+      173 |   await page.getByLabel('Número de trabajo', { exact: true }).fill(String(result.id_optimizacion));
+      174 |   await page.getByRole('button', { name: 'Consultar resultado', exact: true }).click();
+    > 175 |   await expect(page.getByText('Estado del trabajo: Distribución lista', { exact: true })).toBeVisible();
+          |                                                                                           ^
+      176 |   const view = await loginApi(page.request, data.actors.view);
+      177 |   expect((await page.request.post(`${api}/api/optimization/runs`, { headers: view, data: { order_ids: data.orders } })).status()).toBe(403);
+      178 |   await capture(page, info, 'view-only');
+        at ~/newglass-qa/e2e/frontend/tests/e2e/s1-optimization-ui.spec.js:175:91
+
+    Error Context: test-results/s1-optimization-ui-E2E8-RB-e6bf8-te-y-confirm-independientes-chromium-mobile/error-context.md
+
+  4 failed
+    [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+    [chromium-desktop] › tests/e2e/s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes 
+    [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+    [chromium-mobile] › tests/e2e/s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes 
+  150 passed (10.6m)
+EXIT=1

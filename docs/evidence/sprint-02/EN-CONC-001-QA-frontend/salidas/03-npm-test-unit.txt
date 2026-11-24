@@ -1,0 +1,1342 @@
+﻿
+> frontend@0.0.0 test:unit
+> node --test tests/unit/*.test.js
+
+TAP version 13
+# Subtest: M6 completed with First Fit reports the units each part decided
+ok 1 - M6 completed with First Fit reports the units each part decided
+  ---
+  duration_ms: 1.5995
+  type: 'test'
+  ...
+# Subtest: without the fallback counter there is no fallback label
+ok 2 - without the fallback counter there is no fallback label
+  ---
+  duration_ms: 0.1721
+  type: 'test'
+  ...
+# Subtest: describe las medidas de cada forma en mm y sin medidas en filas observadas
+ok 3 - describe las medidas de cada forma en mm y sin medidas en filas observadas
+  ---
+  duration_ms: 1.5759
+  type: 'test'
+  ...
+# Subtest: CA-07: con filas observadas o sin material no se puede agregar al pedido
+ok 4 - CA-07: con filas observadas o sin material no se puede agregar al pedido
+  ---
+  duration_ms: 2.4199
+  type: 'test'
+  ...
+# Subtest: las filas válidas pasan al formato del formulario sin conversiones
+ok 5 - las filas válidas pasan al formato del formulario sin conversiones
+  ---
+  duration_ms: 1.684
+  type: 'test'
+  ...
+# Subtest: la revalidación envía todas las filas con su número original y el texto corregido
+ok 6 - la revalidación envía todas las filas con su número original y el texto corregido
+  ---
+  duration_ms: 0.2144
+  type: 'test'
+  ...
+# Subtest: el borrador vacío del formulario se reemplaza por el grupo importado
+ok 7 - el borrador vacío del formulario se reemplaza por el grupo importado
+  ---
+  duration_ms: 0.2197
+  type: 'test'
+  ...
+# Subtest: con el mismo vidrio y espesor las piezas se suman a ese grupo, sin duplicarlo
+ok 8 - con el mismo vidrio y espesor las piezas se suman a ese grupo, sin duplicarlo
+  ---
+  duration_ms: 0.22
+  type: 'test'
+  ...
+# Subtest: un grupo con datos escritos no se descarta aunque le falte el material
+ok 9 - un grupo con datos escritos no se descarta aunque le falte el material
+  ---
+  duration_ms: 0.1269
+  type: 'test'
+  ...
+# Subtest: EN-UX-004 cancellation status is strict, versioned and never claims early closure
+ok 10 - EN-UX-004 cancellation status is strict, versioned and never claims early closure
+  ---
+  duration_ms: 3.2068
+  type: 'test'
+  ...
+# Subtest: EN-UX-004 durable cancellation prevents eligibility even for completed FF
+ok 11 - EN-UX-004 durable cancellation prevents eligibility even for completed FF
+  ---
+  duration_ms: 2.3535
+  type: 'test'
+  ...
+# Subtest: partial measurements rebuild a convex preview without inventing savable geometry
+ok 12 - partial measurements rebuild a convex preview without inventing savable geometry
+  ---
+  duration_ms: 11.6811
+  type: 'test'
+  ...
+# Subtest: triangle 50/70/65 closes all three editable sides and derives angles by cosine law
+ok 13 - triangle 50/70/65 closes all three editable sides and derives angles by cosine law
+  ---
+  duration_ms: 1.1187
+  type: 'test'
+  ...
+# Subtest: impossible or degenerate sides 10,10,30 cannot produce vertices
+ok 14 - impossible or degenerate sides 10,10,30 cannot produce vertices
+  ---
+  duration_ms: 0.4148
+  type: 'test'
+  ...
+# Subtest: impossible or degenerate sides 10,10,20 cannot produce vertices
+ok 15 - impossible or degenerate sides 10,10,20 cannot produce vertices
+  ---
+  duration_ms: 0.2024
+  type: 'test'
+  ...
+# Subtest: impossible or degenerate sides 1,1,1,4 cannot produce vertices
+ok 16 - impossible or degenerate sides 1,1,1,4 cannot produce vertices
+  ---
+  duration_ms: 0.115
+  type: 'test'
+  ...
+# Subtest: fixed quadrilateral angle changes disposition but never any of its four sides
+ok 17 - fixed quadrilateral angle changes disposition but never any of its four sides
+  ---
+  duration_ms: 0.7799
+  type: 'test'
+  ...
+# Subtest: incompatible fixed angle fails as configuration, not as impossible lengths
+ok 18 - incompatible fixed angle fails as configuration, not as impossible lengths
+  ---
+  duration_ms: 0.3773
+  type: 'test'
+  ...
+# Subtest: irregular pentagon uses an explicit cyclic constraint and satisfies every closing edge
+ok 19 - irregular pentagon uses an explicit cyclic constraint and satisfies every closing edge
+  ---
+  duration_ms: 0.3773
+  type: 'test'
+  ...
+# Subtest: cyclic construction handles the longest chord major-arc case
+ok 20 - cyclic construction handles the longest chord major-arc case
+  ---
+  duration_ms: 0.8865
+  type: 'test'
+  ...
+# Subtest: small positive dimensions and large scales preserve corresponding angles
+ok 21 - small positive dimensions and large scales preserve corresponding angles
+  ---
+  duration_ms: 1.1739
+  type: 'test'
+  ...
+# Subtest: non-finite, non-positive, boolean and incomplete dimensions never become saved geometry
+ok 22 - non-finite, non-positive, boolean and incomplete dimensions never become saved geometry
+  ---
+  duration_ms: 0.2682
+  type: 'test'
+  ...
+# Subtest: invalid angles and unsupported configurations are explicit errors
+ok 23 - invalid angles and unsupported configurations are explicit errors
+  ---
+  duration_ms: 0.1792
+  type: 'test'
+  ...
+# Subtest: construction does not mutate deeply frozen measurements
+ok 24 - construction does not mutate deeply frozen measurements
+  ---
+  duration_ms: 0.3342
+  type: 'test'
+  ...
+# Subtest: 3 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+ok 25 - 3 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+  ---
+  duration_ms: 0.4218
+  type: 'test'
+  ...
+# Subtest: 4 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+ok 26 - 4 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+  ---
+  duration_ms: 0.5254
+  type: 'test'
+  ...
+# Subtest: 5 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+ok 27 - 5 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+  ---
+  duration_ms: 1.5051
+  type: 'test'
+  ...
+# Subtest: 6 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+ok 28 - 6 lados: límite n-3, ángulos fijados, lados y suma angular verificados
+  ---
+  duration_ms: 0.922
+  type: 'test'
+  ...
+# Subtest: cuadrilátero 75→100 conserva cuatro lados y satisface exactamente el ángulo solicitado
+ok 29 - cuadrilátero 75→100 conserva cuatro lados y satisface exactamente el ángulo solicitado
+  ---
+  duration_ms: 0.9853
+  type: 'test'
+  ...
+# Subtest: vértices no consecutivos y V1 también admiten restricciones; liberar no altera lados
+ok 30 - vértices no consecutivos y V1 también admiten restricciones; liberar no altera lados
+  ---
+  duration_ms: 2.3472
+  type: 'test'
+  ...
+# Subtest: ángulos inválidos, repetidos o incompatibles no producen geometría guardable
+ok 31 - ángulos inválidos, repetidos o incompatibles no producen geometría guardable
+  ---
+  duration_ms: 1.3592
+  type: 'test'
+  ...
+# Subtest: boceto es initial guess, no medida: distintas formas equivalentes, orientación y lados exactos
+ok 32 - boceto es initial guess, no medida: distintas formas equivalentes, orientación y lados exactos
+  ---
+  duration_ms: 3.4154
+  type: 'test'
+  ...
+# Subtest: el resultado siempre pasa política convexa y simplicidad, aun con guesses cóncavos/cruzados
+ok 33 - el resultado siempre pasa política convexa y simplicidad, aun con guesses cóncavos/cruzados
+  ---
+  duration_ms: 2.1197
+  type: 'test'
+  ...
+# Subtest: T03-U: accepts triangle CW in SVG Y-down coordinates
+ok 34 - T03-U: accepts triangle CW in SVG Y-down coordinates
+  ---
+  duration_ms: 4.0867
+  type: 'test'
+  ...
+# Subtest: T03-U: accepts triangle CCW in SVG Y-down coordinates
+ok 35 - T03-U: accepts triangle CCW in SVG Y-down coordinates
+  ---
+  duration_ms: 0.4589
+  type: 'test'
+  ...
+# Subtest: T03-U: accepts rectangle CW in SVG Y-down coordinates
+ok 36 - T03-U: accepts rectangle CW in SVG Y-down coordinates
+  ---
+  duration_ms: 0.8563
+  type: 'test'
+  ...
+# Subtest: T03-U: accepts rectangle CCW in SVG Y-down coordinates
+ok 37 - T03-U: accepts rectangle CCW in SVG Y-down coordinates
+  ---
+  duration_ms: 0.3167
+  type: 'test'
+  ...
+# Subtest: T03-U: accepts pentagon CW in SVG Y-down coordinates
+ok 38 - T03-U: accepts pentagon CW in SVG Y-down coordinates
+  ---
+  duration_ms: 1.8443
+  type: 'test'
+  ...
+# Subtest: T03-U: accepts pentagon CCW in SVG Y-down coordinates
+ok 39 - T03-U: accepts pentagon CCW in SVG Y-down coordinates
+  ---
+  duration_ms: 0.1963
+  type: 'test'
+  ...
+# Subtest: T03-U: rejects a simple concave pentagon in both orientations
+ok 40 - T03-U: rejects a simple concave pentagon in both orientations
+  ---
+  duration_ms: 0.415
+  type: 'test'
+  ...
+# Subtest: T03-U: symmetric bow-tie is SELF_INTERSECTION despite zero signed area
+ok 41 - T03-U: symmetric bow-tie is SELF_INTERSECTION despite zero signed area
+  ---
+  duration_ms: 0.4721
+  type: 'test'
+  ...
+# Subtest: T03-U: asymmetric crossing with nonzero signed area is SELF_INTERSECTION
+ok 42 - T03-U: asymmetric crossing with nonzero signed area is SELF_INTERSECTION
+  ---
+  duration_ms: 0.5255
+  type: 'test'
+  ...
+# Subtest: T03-U: a star with same-sign turns still fails simplicity
+ok 43 - T03-U: a star with same-sign turns still fails simplicity
+  ---
+  duration_ms: 0.5883
+  type: 'test'
+  ...
+# Subtest: T03-U: all collinear points take DEGENERATE priority over overlap/contact
+ok 44 - T03-U: all collinear points take DEGENERATE priority over overlap/contact
+  ---
+  duration_ms: 0.2092
+  type: 'test'
+  ...
+# Subtest: T03-U: an intermediate collinear vertex is valid, including at the cyclic seam
+ok 45 - T03-U: an intermediate collinear vertex is valid, including at the cyclic seam
+  ---
+  duration_ms: 0.3069
+  type: 'test'
+  ...
+# Subtest: T03-U: adjacent collinear backtracking is DEGENERATE
+ok 46 - T03-U: adjacent collinear backtracking is DEGENERATE
+  ---
+  duration_ms: 0.0863
+  type: 'test'
+  ...
+# Subtest: T03-U: backtracking across the closing seam is DEGENERATE
+ok 47 - T03-U: backtracking across the closing seam is DEGENERATE
+  ---
+  duration_ms: 0.0711
+  type: 'test'
+  ...
+# Subtest: T03-U: 0 vertices are TOO_FEW_VERTICES
+ok 48 - T03-U: 0 vertices are TOO_FEW_VERTICES
+  ---
+  duration_ms: 0.0619
+  type: 'test'
+  ...
+# Subtest: T03-U: 1 vertices are TOO_FEW_VERTICES
+ok 49 - T03-U: 1 vertices are TOO_FEW_VERTICES
+  ---
+  duration_ms: 0.0449
+  type: 'test'
+  ...
+# Subtest: T03-U: 2 vertices are TOO_FEW_VERTICES
+ok 50 - T03-U: 2 vertices are TOO_FEW_VERTICES
+  ---
+  duration_ms: 0.0358
+  type: 'test'
+  ...
+# Subtest: T03-U: absent input null is INCOMPLETE
+ok 51 - T03-U: absent input null is INCOMPLETE
+  ---
+  duration_ms: 0.0617
+  type: 'test'
+  ...
+# Subtest: T03-U: absent input undefined is INCOMPLETE
+ok 52 - T03-U: absent input undefined is INCOMPLETE
+  ---
+  duration_ms: 0.0366
+  type: 'test'
+  ...
+# Subtest: T03-U: coordinate NaN (number) is INVALID_COORDINATES
+ok 53 - T03-U: coordinate NaN (number) is INVALID_COORDINATES
+  ---
+  duration_ms: 0.0604
+  type: 'test'
+  ...
+# Subtest: T03-U: coordinate Infinity (number) is INVALID_COORDINATES
+ok 54 - T03-U: coordinate Infinity (number) is INVALID_COORDINATES
+  ---
+  duration_ms: 0.0502
+  type: 'test'
+  ...
+# Subtest: T03-U: coordinate -Infinity (number) is INVALID_COORDINATES
+ok 55 - T03-U: coordinate -Infinity (number) is INVALID_COORDINATES
+  ---
+  duration_ms: 0.0479
+  type: 'test'
+  ...
+# Subtest: T03-U: coordinate 1 (string) is INVALID_COORDINATES
+ok 56 - T03-U: coordinate 1 (string) is INVALID_COORDINATES
+  ---
+  duration_ms: 0.0575
+  type: 'test'
+  ...
+# Subtest: T03-U: coordinate null (object) is INVALID_COORDINATES
+ok 57 - T03-U: coordinate null (object) is INVALID_COORDINATES
+  ---
+  duration_ms: 0.0523
+  type: 'test'
+  ...
+# Subtest: T03-U: coordinate undefined (undefined) is INVALID_COORDINATES
+ok 58 - T03-U: coordinate undefined (undefined) is INVALID_COORDINATES
+  ---
+  duration_ms: 0.0393
+  type: 'test'
+  ...
+# Subtest: T03-U: malformed or sparse coordinate arrays are rejected without throwing
+ok 59 - T03-U: malformed or sparse coordinate arrays are rejected without throwing
+  ---
+  duration_ms: 0.107
+  type: 'test'
+  ...
+# Subtest: T03-U: too few vertices take priority over invalid coordinates
+ok 60 - T03-U: too few vertices take priority over invalid coordinates
+  ---
+  duration_ms: 0.0667
+  type: 'test'
+  ...
+# Subtest: T03-U: consecutive repeated vertices are DEGENERATE
+ok 61 - T03-U: consecutive repeated vertices are DEGENERATE
+  ---
+  duration_ms: 0.0673
+  type: 'test'
+  ...
+# Subtest: T03-U: repeated terminal vertex creates a null closing edge
+ok 62 - T03-U: repeated terminal vertex creates a null closing edge
+  ---
+  duration_ms: 0.0723
+  type: 'test'
+  ...
+# Subtest: T03-U: coincident geometry has no scale and is DEGENERATE
+ok 63 - T03-U: coincident geometry has no scale and is DEGENERATE
+  ---
+  duration_ms: 0.2458
+  type: 'test'
+  ...
+# Subtest: T03-U: side and closing-edge equivalence use relative length tolerance
+ok 64 - T03-U: side and closing-edge equivalence use relative length tolerance
+  ---
+  duration_ms: 0.8769
+  type: 'test'
+  ...
+# Subtest: T03-U: negative coordinates preserve convexity and orientation
+ok 65 - T03-U: negative coordinates preserve convexity and orientation
+  ---
+  duration_ms: 0.1686
+  type: 'test'
+  ...
+# Subtest: T03-U: very small/large scale 1e-150 preserves classifications
+ok 66 - T03-U: very small/large scale 1e-150 preserves classifications
+  ---
+  duration_ms: 0.1726
+  type: 'test'
+  ...
+# Subtest: T03-U: very small/large scale 0.001 preserves classifications
+ok 67 - T03-U: very small/large scale 0.001 preserves classifications
+  ---
+  duration_ms: 0.0807
+  type: 'test'
+  ...
+# Subtest: T03-U: very small/large scale 1e+150 preserves classifications
+ok 68 - T03-U: very small/large scale 1e+150 preserves classifications
+  ---
+  duration_ms: 0.0815
+  type: 'test'
+  ...
+# Subtest: T03-U: very small/large scale 1e+307 preserves classifications
+ok 69 - T03-U: very small/large scale 1e+307 preserves classifications
+  ---
+  duration_ms: 0.0801
+  type: 'test'
+  ...
+# Subtest: T03-U: finite coordinates whose bounding-box extent overflows still validate
+ok 70 - T03-U: finite coordinates whose bounding-box extent overflows still validate
+  ---
+  duration_ms: 0.1171
+  type: 'test'
+  ...
+# Subtest: T03-U: large translation avoids shoelace cancellation on simple shapes
+ok 71 - T03-U: large translation avoids shoelace cancellation on simple shapes
+  ---
+  duration_ms: 0.1004
+  type: 'test'
+  ...
+# Subtest: T03-U: vertex touching the interior of a nonadjacent edge is SELF_INTERSECTION
+ok 72 - T03-U: vertex touching the interior of a nonadjacent edge is SELF_INTERSECTION
+  ---
+  duration_ms: 0.0702
+  type: 'test'
+  ...
+# Subtest: T03-U: nonadjacent collinear overlapping edges are SELF_INTERSECTION
+ok 73 - T03-U: nonadjacent collinear overlapping edges are SELF_INTERSECTION
+  ---
+  duration_ms: 0.0562
+  type: 'test'
+  ...
+# Subtest: T03-U: repeated nonadjacent vertex is an invalid contact
+ok 74 - T03-U: repeated nonadjacent vertex is an invalid contact
+  ---
+  duration_ms: 0.0641
+  type: 'test'
+  ...
+# Subtest: T03-U: contact tolerance distinguishes a near touch from a separated concavity
+ok 75 - T03-U: contact tolerance distinguishes a near touch from a separated concavity
+  ---
+  duration_ms: 0.0762
+  type: 'test'
+  ...
+# Subtest: T03-U: nearly collinear intermediate turns are ignored within tolerance
+ok 76 - T03-U: nearly collinear intermediate turns are ignored within tolerance
+  ---
+  duration_ms: 0.0759
+  type: 'test'
+  ...
+# Subtest: T03-U: simple noncollinear near-zero area is rejected after simplicity
+ok 77 - T03-U: simple noncollinear near-zero area is rejected after simplicity
+  ---
+  duration_ms: 0.0729
+  type: 'test'
+  ...
+# Subtest: T03-U: validation never mutates deeply frozen input in any classification
+ok 78 - T03-U: validation never mutates deeply frozen input in any classification
+  ---
+  duration_ms: 0.2576
+  type: 'test'
+  ...
+# Subtest: T03-U: repeated validation is deterministic and results do not share mutable state
+ok 79 - T03-U: repeated validation is deterministic and results do not share mutable state
+  ---
+  duration_ms: 1.0695
+  type: 'test'
+  ...
+# Subtest: collects all six current sources with their actual response, query and status
+ok 80 - collects all six current sources with their actual response, query and status
+  ---
+  duration_ms: 4.0945
+  type: 'test'
+  ...
+# Subtest: a late response started before returning to Inicio cannot become its seventh source
+ok 81 - a late response started before returning to Inicio cannot become its seventh source
+  ---
+  duration_ms: 1.1723
+  type: 'test'
+  ...
+# Subtest: multiple navigation cycles isolate old requests even when URLs and permissions match
+ok 82 - multiple navigation cycles isolate old requests even when URLs and permissions match
+  ---
+  duration_ms: 1.2207
+  type: 'test'
+  ...
+# Subtest: ignores other origins, authentication, modules and non-GET requests
+ok 83 - ignores other origins, authentication, modules and non-GET requests
+  ---
+  duration_ms: 0.5335
+  type: 'test'
+  ...
+# Subtest: retains current authorization and server failures for the existing assertions
+ok 84 - retains current authorization and server failures for the existing assertions
+  ---
+  duration_ms: 0.2511
+  type: 'test'
+  ...
+# Subtest: a response whose request was never observed in this cycle is excluded
+ok 85 - a response whose request was never observed in this cycle is excluded
+  ---
+  duration_ms: 0.1073
+  type: 'test'
+  ...
+# Subtest: progress validates request identity, cursor, engine identity fields and local result URL
+ok 86 - progress validates request identity, cursor, engine identity fields and local result URL
+  ---
+  duration_ms: 2.5433
+  type: 'test'
+  ...
+# Subtest: durable FF admits only exact status and result identity
+ok 87 - durable FF admits only exact status and result identity
+  ---
+  duration_ms: 28.0031
+  type: 'test'
+  ...
+# Subtest: reader preserves cursor on failures, resets once on expiry, drains each page, and stops at terminal
+ok 88 - reader preserves cursor on failures, resets once on expiry, drains each page, and stops at terminal
+  ---
+  duration_ms: 2.0118
+  type: 'test'
+  ...
+# Subtest: abort skips late updates and 401, 403, and 404 stop the reader
+ok 89 - abort skips late updates and 401, 403, and 404 stop the reader
+  ---
+  duration_ms: 0.9882
+  type: 'test'
+  ...
+# Subtest: CA-06: el gate solo actúa en CI o con NEWGLASS_E2E_GATE=1
+ok 90 - CA-06: el gate solo actúa en CI o con NEWGLASS_E2E_GATE=1
+  ---
+  duration_ms: 22.4926
+  type: 'test'
+  ...
+# Subtest: una corrida completa sin omisiones pasa el gate
+ok 91 - una corrida completa sin omisiones pasa el gate
+  ---
+  duration_ms: 1.927
+  type: 'test'
+  ...
+# Subtest: CA-02: una prueba omitida sin aprobación hace fallar el gate y se identifica
+ok 92 - CA-02: una prueba omitida sin aprobación hace fallar el gate y se identifica
+  ---
+  duration_ms: 0.4852
+  type: 'test'
+  ...
+# Subtest: CA-03: una omisión aprobada con ID válido pasa y se lista; sin ID válido, falla
+ok 93 - CA-03: una omisión aprobada con ID válido pasa y se lista; sin ID válido, falla
+  ---
+  duration_ms: 0.7941
+  type: 'test'
+  ...
+# Subtest: CA-04: un spec crítico sin prueba aprobada en algún proyecto hace fallar el gate
+ok 94 - CA-04: un spec crítico sin prueba aprobada en algún proyecto hace fallar el gate
+  ---
+  duration_ms: 0.6193
+  type: 'test'
+  ...
+# Subtest: la lista de specs críticos coincide con los specs E2E del repositorio
+ok 95 - la lista de specs críticos coincide con los specs E2E del repositorio
+  ---
+  duration_ms: 1.5563
+  type: 'test'
+  ...
+# Subtest: playwright.config.js registra el reporter del gate sin quitar los existentes
+ok 96 - playwright.config.js registra el reporter del gate sin quitar los existentes
+  ---
+  duration_ms: 459.6559
+  type: 'test'
+  ...
+# Subtest: CA-01: HU-015 no depende de variables de entorno ni se omite
+ok 97 - CA-01: HU-015 no depende de variables de entorno ni se omite
+  ---
+  duration_ms: 1.7487
+  type: 'test'
+  ...
+# Gate E2E (TA-040): 2 pruebas, sin omisiones no aprobadas; fase b02 completa; cobertura global pendiente del gate conjunto.
+# Subtest: el reporter real aplaza cobertura global de B02 y persiste su evidencia independiente
+ok 98 - el reporter real aplaza cobertura global de B02 y persiste su evidencia independiente
+  ---
+  duration_ms: 192.6483
+  type: 'test'
+  ...
+# Subtest: B02 aislado no exige cobertura global; la unión exige todos los escenarios del inventario
+ok 99 - B02 aislado no exige cobertura global; la unión exige todos los escenarios del inventario
+  ---
+  duration_ms: 11.3491
+  type: 'test'
+  ...
+# Subtest: las dos selecciones son complementarias y B02 conserva su título exacto
+ok 100 - las dos selecciones son complementarias y B02 conserva su título exacto
+  ---
+  duration_ms: 1.2773
+  type: 'test'
+  ...
+# Subtest: el inventario rechaza proyectos, B02 y specs críticos ausentes, incluso antes de ejecutar
+ok 101 - el inventario rechaza proyectos, B02 y specs críticos ausentes, incluso antes de ejecutar
+  ---
+  duration_ms: 0.8784
+  type: 'test'
+  ...
+# Subtest: un reporte antiguo o ajeno falla por runId
+ok 102 - un reporte antiguo o ajeno falla por runId
+  ---
+  duration_ms: 8.523
+  type: 'test'
+  ...
+# Subtest: un reporte antiguo o ajeno falla por sha
+ok 103 - un reporte antiguo o ajeno falla por sha
+  ---
+  duration_ms: 7.4456
+  type: 'test'
+  ...
+# Subtest: un reporte antiguo o ajeno falla por planDigest
+ok 104 - un reporte antiguo o ajeno falla por planDigest
+  ---
+  duration_ms: 8.2638
+  type: 'test'
+  ...
+# Subtest: un inventario de otra invocación no puede certificar la ejecución actual
+ok 105 - un inventario de otra invocación no puede certificar la ejecución actual
+  ---
+  duration_ms: 4.6982
+  type: 'test'
+  ...
+# Subtest: los reportes son de escritura única y no se pueden sobrescribir con otra fase
+ok 106 - los reportes son de escritura única y no se pueden sobrescribir con otra fase
+  ---
+  duration_ms: 4.5904
+  type: 'test'
+  ...
+# Subtest: un archivo ausente o corrupto falla: plan.json
+ok 107 - un archivo ausente o corrupto falla: plan.json
+  ---
+  duration_ms: 6.2811
+  type: 'test'
+  ...
+# Subtest: un archivo ausente o corrupto falla: b02.json
+ok 108 - un archivo ausente o corrupto falla: b02.json
+  ---
+  duration_ms: 6.8015
+  type: 'test'
+  ...
+# Subtest: un archivo ausente o corrupto falla: remaining.json
+ok 109 - un archivo ausente o corrupto falla: remaining.json
+  ---
+  duration_ms: 8.0293
+  type: 'test'
+  ...
+# Subtest: una fase no puede perder o inventar resultados: missing
+ok 110 - una fase no puede perder o inventar resultados: missing
+  ---
+  duration_ms: 0.6647
+  type: 'test'
+  ...
+# Subtest: una fase no puede perder o inventar resultados: duplicate
+ok 111 - una fase no puede perder o inventar resultados: duplicate
+  ---
+  duration_ms: 0.4612
+  type: 'test'
+  ...
+# Subtest: una fase no puede perder o inventar resultados: wrong-scenario
+ok 112 - una fase no puede perder o inventar resultados: wrong-scenario
+  ---
+  duration_ms: 0.438
+  type: 'test'
+  ...
+# Subtest: una fase no puede perder o inventar resultados: wrong-project
+ok 113 - una fase no puede perder o inventar resultados: wrong-project
+  ---
+  duration_ms: 0.75
+  type: 'test'
+  ...
+# Subtest: una fase no puede perder o inventar resultados: no-results
+ok 114 - una fase no puede perder o inventar resultados: no-results
+  ---
+  duration_ms: 0.3318
+  type: 'test'
+  ...
+# Subtest: una fase no puede perder o inventar resultados: bad-annotations
+ok 115 - una fase no puede perder o inventar resultados: bad-annotations
+  ---
+  duration_ms: 0.4665
+  type: 'test'
+  ...
+# Subtest: una ejecución no completada falla aunque tenga tests aprobados: failed
+ok 116 - una ejecución no completada falla aunque tenga tests aprobados: failed
+  ---
+  duration_ms: 0.4079
+  type: 'test'
+  ...
+# Subtest: una ejecución no completada falla aunque tenga tests aprobados: timedout
+ok 117 - una ejecución no completada falla aunque tenga tests aprobados: timedout
+  ---
+  duration_ms: 0.6445
+  type: 'test'
+  ...
+# Subtest: una ejecución no completada falla aunque tenga tests aprobados: interrupted
+ok 118 - una ejecución no completada falla aunque tenga tests aprobados: interrupted
+  ---
+  duration_ms: 0.402
+  type: 'test'
+  ...
+# Subtest: una ejecución no completada falla aunque tenga tests aprobados: undefined
+ok 119 - una ejecución no completada falla aunque tenga tests aprobados: undefined
+  ---
+  duration_ms: 0.345
+  type: 'test'
+  ...
+# Subtest: errores globales y fechas previas a esta invocación no pasan el gate
+ok 120 - errores globales y fechas previas a esta invocación no pasan el gate
+  ---
+  duration_ms: 0.7349
+  type: 'test'
+  ...
+# Subtest: la unión rechaza unexpected aunque otro test del mismo spec haya pasado
+ok 121 - la unión rechaza unexpected aunque otro test del mismo spec haya pasado
+  ---
+  duration_ms: 7.1276
+  type: 'test'
+  ...
+# Subtest: la unión rechaza flaky aunque otro test del mismo spec haya pasado
+ok 122 - la unión rechaza flaky aunque otro test del mismo spec haya pasado
+  ---
+  duration_ms: 6.5634
+  type: 'test'
+  ...
+# Subtest: la unión rechaza skipped aunque otro test del mismo spec haya pasado
+ok 123 - la unión rechaza skipped aunque otro test del mismo spec haya pasado
+  ---
+  duration_ms: 6.1461
+  type: 'test'
+  ...
+# Subtest: un fallo marcado como esperado no certifica un escenario aprobado
+ok 124 - un fallo marcado como esperado no certifica un escenario aprobado
+  ---
+  duration_ms: 0.6159
+  type: 'test'
+  ...
+# Subtest: canonical recovery preserves a safe failure message without inventing a PENDIENTE transition
+ok 125 - canonical recovery preserves a safe failure message without inventing a PENDIENTE transition
+  ---
+  duration_ms: 11.4122
+  type: 'test'
+  ...
+# Subtest: wire events preserve 1-based units, physical stock and decimal strings; duplicate sequence ignored
+ok 126 - wire events preserve 1-based units, physical stock and decimal strings; duplicate sequence ignored
+  ---
+  duration_ms: 3.5985
+  type: 'test'
+  ...
+# Subtest: terminal with nullable metrics is not a failure; confirmation waits for canonical GET
+ok 127 - terminal with nullable metrics is not a failure; confirmation waits for canonical GET
+  ---
+  duration_ms: 2.2022
+  type: 'test'
+  ...
+# Subtest: SIN_SOLUCION retains diagnostic placements and cannot confirm
+ok 128 - SIN_SOLUCION retains diagnostic placements and cannot confirm
+  ---
+  duration_ms: 0.8655
+  type: 'test'
+  ...
+# Subtest: failed event shows safe error, canonical confirmed snapshot disables confirmation
+ok 129 - failed event shows safe error, canonical confirmed snapshot disables confirmation
+  ---
+  duration_ms: 1.1825
+  type: 'test'
+  ...
+# Subtest: sequence gaps, mismatched correlation and malformed placement fail without polluting canvas
+ok 130 - sequence gaps, mismatched correlation and malformed placement fail without polluting canvas
+  ---
+  duration_ms: 1.7423
+  type: 'test'
+  ...
+# Subtest: retry and discard reject stale lifecycle events
+ok 131 - retry and discard reject stale lifecycle events
+  ---
+  duration_ms: 0.9018
+  type: 'test'
+  ...
+# Subtest: live updates reconcile selection but preserve run snapshot
+ok 132 - live updates reconcile selection but preserve run snapshot
+  ---
+  duration_ms: 0.2604
+  type: 'test'
+  ...
+# Subtest: new orders are unselected, non-pending excluded and preparation invalidated
+ok 133 - new orders are unselected, non-pending excluded and preparation invalidated
+  ---
+  duration_ms: 0.3622
+  type: 'test'
+  ...
+# Subtest: group-scoped completion does not replace global progress
+ok 134 - group-scoped completion does not replace global progress
+  ---
+  duration_ms: 0.9321
+  type: 'test'
+  ...
+# Subtest: equal lengths cannot determine shape: square and rhombus retain distinct vertices and angles
+ok 135 - equal lengths cannot determine shape: square and rhombus retain distinct vertices and angles
+  ---
+  duration_ms: 3.8976
+  type: 'test'
+  ...
+# Subtest: scale preserves shape, vertex order and angle sum in either winding
+ok 136 - scale preserves shape, vertex order and angle sum in either winding
+  ---
+  duration_ms: 2.0088
+  type: 'test'
+  ...
+# Subtest: concave angles are derived with reflex vertex; validation remains separate
+ok 137 - concave angles are derived with reflex vertex; validation remains separate
+  ---
+  duration_ms: 1.2462
+  type: 'test'
+  ...
+# Subtest: invalid finite vertices []
+ok 138 - invalid finite vertices []
+  ---
+  duration_ms: 0.3968
+  type: 'test'
+  ...
+# Subtest: invalid finite vertices [[0,0],[1,0]]
+ok 139 - invalid finite vertices [[0,0],[1,0]]
+  ---
+  duration_ms: 0.1314
+  type: 'test'
+  ...
+# Subtest: invalid finite vertices [[0,0],[1,0],[null,1]]
+ok 140 - invalid finite vertices [[0,0],[1,0],[null,1]]
+  ---
+  duration_ms: 0.1171
+  type: 'test'
+  ...
+# Subtest: invalid finite vertices [[0,0],[1,0],[null,1]]
+ok 141 - invalid finite vertices [[0,0],[1,0],[null,1]]
+  ---
+  duration_ms: 0.1032
+  type: 'test'
+  ...
+# Subtest: invalid finite vertices [[0,0],[1,0],["2",1]]
+ok 142 - invalid finite vertices [[0,0],[1,0],["2",1]]
+  ---
+  duration_ms: 0.1945
+  type: 'test'
+  ...
+# Subtest: invalid finite vertices [[0,0],[1,0],[true,1]]
+ok 143 - invalid finite vertices [[0,0],[1,0],[true,1]]
+  ---
+  duration_ms: 0.3524
+  type: 'test'
+  ...
+# Subtest: degenerate geometry [[0,0],[0,0],[1,1]] is rejected
+ok 144 - degenerate geometry [[0,0],[0,0],[1,1]] is rejected
+  ---
+  duration_ms: 0.7513
+  type: 'test'
+  ...
+# Subtest: degenerate geometry [[0,0],[1,0],[2,0]] is rejected
+ok 145 - degenerate geometry [[0,0],[1,0],[2,0]] is rejected
+  ---
+  duration_ms: 0.212
+  type: 'test'
+  ...
+# Subtest: degenerate geometry [[0,0],[1,0],[2,0],[2,1],[0,1]] is rejected
+ok 146 - degenerate geometry [[0,0],[1,0],[2,0],[2,1],[0,1]] is rejected
+  ---
+  duration_ms: 0.1053
+  type: 'test'
+  ...
+# Subtest: invalid length 0 cannot yield a polygon
+ok 147 - invalid length 0 cannot yield a polygon
+  ---
+  duration_ms: 0.1163
+  type: 'test'
+  ...
+# Subtest: invalid length -1 cannot yield a polygon
+ok 148 - invalid length -1 cannot yield a polygon
+  ---
+  duration_ms: 0.049
+  type: 'test'
+  ...
+# Subtest: invalid length NaN cannot yield a polygon
+ok 149 - invalid length NaN cannot yield a polygon
+  ---
+  duration_ms: 0.0453
+  type: 'test'
+  ...
+# Subtest: invalid length Infinity cannot yield a polygon
+ok 150 - invalid length Infinity cannot yield a polygon
+  ---
+  duration_ms: 0.0457
+  type: 'test'
+  ...
+# Subtest: invalid length  cannot yield a polygon
+ok 151 - invalid length  cannot yield a polygon
+  ---
+  duration_ms: 0.0457
+  type: 'test'
+  ...
+# Subtest: invalid length null cannot yield a polygon
+ok 152 - invalid length null cannot yield a polygon
+  ---
+  duration_ms: 0.0485
+  type: 'test'
+  ...
+# Subtest: invalid length true cannot yield a polygon
+ok 153 - invalid length true cannot yield a polygon
+  ---
+  duration_ms: 0.0597
+  type: 'test'
+  ...
+# Subtest: inconsistent independent lengths are rejected instead of changing sketch angles
+ok 154 - inconsistent independent lengths are rejected instead of changing sketch angles
+  ---
+  duration_ms: 0.391
+  type: 'test'
+  ...
+# Subtest: partial measurements remain provisional; complete consistent measurements scale vertices
+ok 155 - partial measurements remain provisional; complete consistent measurements scale vertices
+  ---
+  duration_ms: 0.4484
+  type: 'test'
+  ...
+# Subtest: frozen coordinates remain unchanged through scaling and responsive previews
+ok 156 - frozen coordinates remain unchanged through scaling and responsive previews
+  ---
+  duration_ms: 0.7357
+  type: 'test'
+  ...
+# Subtest: invalid scale, numeric overflow and missing edges never emit non-finite coordinates
+ok 157 - invalid scale, numeric overflow and missing edges never emit non-finite coordinates
+  ---
+  duration_ms: 0.3066
+  type: 'test'
+  ...
+# Subtest: preview rejects invalid and non-finite viewport dimensions on either axis
+ok 158 - preview rejects invalid and non-finite viewport dimensions on either axis
+  ---
+  duration_ms: 0.243
+  type: 'test'
+  ...
+# Subtest: preview rejects negative/non-finite padding and a viewport exhausted by padding
+ok 159 - preview rejects negative/non-finite padding and a viewport exhausted by padding
+  ---
+  duration_ms: 1.058
+  type: 'test'
+  ...
+# Subtest: one-axis preview extents remain finite and centered without modifying canonical input
+ok 160 - one-axis preview extents remain finite and centered without modifying canonical input
+  ---
+  duration_ms: 0.4153
+  type: 'test'
+  ...
+# Subtest: canonical 200:5000 polygon preserves angles in tall/wide responsive previews
+ok 161 - canonical 200:5000 polygon preserves angles in tall/wide responsive previews
+  ---
+  duration_ms: 0.582
+  type: 'test'
+  ...
+# Subtest: canonical 5000:200 polygon preserves angles in tall/wide responsive previews
+ok 162 - canonical 5000:200 polygon preserves angles in tall/wide responsive previews
+  ---
+  duration_ms: 0.2337
+  type: 'test'
+  ...
+# Subtest: positive physical lengths below 0.01 scale vertices without changing shape
+ok 163 - positive physical lengths below 0.01 scale vertices without changing shape
+  ---
+  duration_ms: 0.9507
+  type: 'test'
+  ...
+# Subtest: remaining non-finite and malformed length inputs are rejected rather than estimated
+ok 164 - remaining non-finite and malformed length inputs are rejected rather than estimated
+  ---
+  duration_ms: 0.3824
+  type: 'test'
+  ...
+# Subtest: segment IDs and indices include the closing edge and reject corrupted ordering
+ok 165 - segment IDs and indices include the closing edge and reject corrupted ordering
+  ---
+  duration_ms: 0.4846
+  type: 'test'
+  ...
+# Subtest: native badInput is an error even when its displayed value is empty or previously valid
+ok 166 - native badInput is an error even when its displayed value is empty or previously valid
+  ---
+  duration_ms: 0.3444
+  type: 'test'
+  ...
+# Subtest: malformed/repeated/non-finite sketch vertices cannot yield physical geometry
+ok 167 - malformed/repeated/non-finite sketch vertices cannot yield physical geometry
+  ---
+  duration_ms: 0.2449
+  type: 'test'
+  ...
+# Subtest: overflow of provisional scale fails before emitting non-finite vertices
+ok 168 - overflow of provisional scale fails before emitting non-finite vertices
+  ---
+  duration_ms: 0.2666
+  type: 'test'
+  ...
+# Subtest: rotated/translated canonical sketch retains orientation and ordered vertices after scaling
+ok 169 - rotated/translated canonical sketch retains orientation and ordered vertices after scaling
+  ---
+  duration_ms: 0.4802
+  type: 'test'
+  ...
+# Subtest: six or more vertices retain their canonical shape rather than solving independent side lengths
+ok 170 - six or more vertices retain their canonical shape rather than solving independent side lengths
+  ---
+  duration_ms: 3.1211
+  type: 'test'
+  ...
+# Subtest: dimensional pipeline leaves frozen sketch and segment inputs unchanged
+ok 171 - dimensional pipeline leaves frozen sketch and segment inputs unchanged
+  ---
+  duration_ms: 0.4813
+  type: 'test'
+  ...
+# Subtest: clearing all measurements removes physical scale and previously derived vertices
+ok 172 - clearing all measurements removes physical scale and previously derived vertices
+  ---
+  duration_ms: 0.3536
+  type: 'test'
+  ...
+# Subtest: odd and even subsets of canonical measurements resolve the same uniform scale
+ok 173 - odd and even subsets of canonical measurements resolve the same uniform scale
+  ---
+  duration_ms: 0.3509
+  type: 'test'
+  ...
+# Subtest: thin non-degenerate canonical triangle survives scaling while a collinear polygon stays invalid
+ok 174 - thin non-degenerate canonical triangle survives scaling while a collinear polygon stays invalid
+  ---
+  duration_ms: 0.7405
+  type: 'test'
+  ...
+# Subtest: grouping separates different material and thickness, merges numeric thickness, preserves input and units
+ok 175 - grouping separates different material and thickness, merges numeric thickness, preserves input and units
+  ---
+  duration_ms: 5.1019
+  type: 'test'
+  ...
+# Subtest: missing details and invalid quantities are unresolved, never silently compatible
+ok 176 - missing details and invalid quantities are unresolved, never silently compatible
+  ---
+  duration_ms: 0.8279
+  type: 'test'
+  ...
+# Subtest: a piece cannot be placed in a different compatible-looking group or absent unit
+ok 177 - a piece cannot be placed in a different compatible-looking group or absent unit
+  ---
+  duration_ms: 1.9843
+  type: 'test'
+  ...
+# Subtest: mismatched stock and reuse of a container by incompatible groups are rejected
+ok 178 - mismatched stock and reuse of a container by incompatible groups are rejected
+  ---
+  duration_ms: 0.5209
+  type: 'test'
+  ...
+# Subtest: conserva la precisión de las medidas originales sin ceros innecesarios
+ok 179 - conserva la precisión de las medidas originales sin ceros innecesarios
+  ---
+  duration_ms: 2.5067
+  type: 'test'
+  ...
+# Subtest: rectángulo y círculo muestran las medidas ingresadas en mm
+ok 180 - rectángulo y círculo muestran las medidas ingresadas en mm
+  ---
+  duration_ms: 0.2595
+  type: 'test'
+  ...
+# Subtest: el polígono muestra cada lado calculado desde sus vértices, redondeado a 0,1 mm
+ok 181 - el polígono muestra cada lado calculado desde sus vértices, redondeado a 0,1 mm
+  ---
+  duration_ms: 1.3477
+  type: 'test'
+  ...
+# Subtest: el formato usa 0,1 mm y no inventa medidas que no existen
+ok 182 - el formato usa 0,1 mm y no inventa medidas que no existen
+  ---
+  duration_ms: 0.2469
+  type: 'test'
+  ...
+# Subtest: 3D translates oriented geometry once and never reapplies received rotation
+ok 183 - 3D translates oriented geometry once and never reapplies received rotation
+  ---
+  duration_ms: 1.8527
+  type: 'test'
+  ...
+# Subtest: arbitrary piece rotation preserves lengths and does not mutate negative polygon coordinates
+ok 184 - arbitrary piece rotation preserves lengths and does not mutate negative polygon coordinates
+  ---
+  duration_ms: 0.641
+  type: 'test'
+  ...
+# Subtest: circle display contour is centered at its normalized radius, with 96 bounded samples
+ok 185 - circle display contour is centered at its normalized radius, with 96 bounded samples
+  ---
+  duration_ms: 1.31
+  type: 'test'
+  ...
+# Subtest: yaw supports a complete 360 degree orbit and projection remains finite at limits
+ok 186 - yaw supports a complete 360 degree orbit and projection remains finite at limits
+  ---
+  duration_ms: 1.4747
+  type: 'test'
+  ...
+# Subtest: projection preserves physical proportions under common scaling of all dimensions
+ok 187 - projection preserves physical proportions under common scaling of all dimensions
+  ---
+  duration_ms: 0.2609
+  type: 'test'
+  ...
+# Subtest: scene filters material source plus ID, keeps colors stable and leaves snapshot untouched
+ok 188 - scene filters material source plus ID, keeps colors stable and leaves snapshot untouched
+  ---
+  duration_ms: 5.4972
+  type: 'test'
+  ...
+# Subtest: extrusion includes closed side faces ordered by camera depth, not optimization order
+ok 189 - extrusion includes closed side faces ordered by camera depth, not optimization order
+  ---
+  duration_ms: 0.6977
+  type: 'test'
+  ...
+# Subtest: missing geometry or invalid dimensions do not produce fabricated scene data
+ok 190 - missing geometry or invalid dimensions do not produce fabricated scene data
+  ---
+  duration_ms: 0.2458
+  type: 'test'
+  ...
+# Subtest: stable frame contains square and narrow inventory at every permitted yaw
+ok 191 - stable frame contains square and narrow inventory at every permitted yaw
+  ---
+  duration_ms: 12.4428
+  type: 'test'
+  ...
+# Subtest: inspection accepts bounded span masks but rejects malformed resolution and out-of-grid runs
+ok 192 - inspection accepts bounded span masks but rejects malformed resolution and out-of-grid runs
+  ---
+  duration_ms: 2.57
+  type: 'test'
+  ...
+# Subtest: order and piece keys take precedence, and all group units require prepared masks
+ok 193 - order and piece keys take precedence, and all group units require prepared masks
+  ---
+  duration_ms: 0.4648
+  type: 'test'
+  ...
+# Subtest: shared core T1 fixture validates without aliases or data loss
+ok 194 - shared core T1 fixture validates without aliases or data loss
+  ---
+  duration_ms: 4.2748
+  type: 'test'
+  ...
+# Subtest: request has only order_ids; empty, duplicate, string and invalid IDs rejected
+ok 195 - request has only order_ids; empty, duplicate, string and invalid IDs rejected
+  ---
+  duration_ms: 0.5012
+  type: 'test'
+  ...
+# Subtest: decimal strings are preserved; equivalence keys avoid Number precision loss
+ok 196 - decimal strings are preserved; equivalence keys avoid Number precision loss
+  ---
+  duration_ms: 0.7343
+  type: 'test'
+  ...
+# Subtest: all authored scenarios are T1-shaped: quantity, orders, materials, physical units and nullable results
+ok 197 - all authored scenarios are T1-shaped: quantity, orders, materials, physical units and nullable results
+  ---
+  duration_ms: 6.4156
+  type: 'test'
+  ...
+# Subtest: malformed identity, source, physical unit, oriented contour and counters are rejected
+ok 198 - malformed identity, source, physical unit, oriented contour and counters are rejected
+  ---
+  duration_ms: 1.4278
+  type: 'test'
+  ...
+# Subtest: incomplete or confirmed result cannot claim confirmation eligibility
+ok 199 - incomplete or confirmed result cannot claim confirmation eligibility
+  ---
+  duration_ms: 0.6578
+  type: 'test'
+  ...
+# Subtest: NDJSON handles UTF-8 split characters, split lines and multiple lines per chunk
+ok 200 - NDJSON handles UTF-8 split characters, split lines and multiple lines per chunk
+  ---
+  duration_ms: 5.0502
+  type: 'test'
+  ...
+# Subtest: NDJSON truncated line, absent terminal and invalid JSON do not fabricate completion
+ok 201 - NDJSON truncated line, absent terminal and invalid JSON do not fabricate completion
+  ---
+  duration_ms: 1.4024
+  type: 'test'
+  ...
+# Subtest: injected transport sends only selection and confirms by ID without functional body
+ok 202 - injected transport sends only selection and confirms by ID without functional body
+  ---
+  duration_ms: 2.0252
+  type: 'test'
+  ...
+# Subtest: unconfigured transport performs no fabricated network operation
+ok 203 - unconfigured transport performs no fabricated network operation
+  ---
+  duration_ms: 1.0996
+  type: 'test'
+  ...
+# Subtest: TA-037: optimization_failed accepts TIME_BUDGET_EXCEEDED and still rejects unknown codes
+ok 204 - TA-037: optimization_failed accepts TIME_BUDGET_EXCEEDED and still rejects unknown codes
+  ---
+  duration_ms: 0.3583
+  type: 'test'
+  ...
+# Subtest: Pages usa el subpath aprobado y una API HTTPS explícita
+ok 205 - Pages usa el subpath aprobado y una API HTTPS explícita
+  ---
+  duration_ms: 1.5216
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: undefined
+ok 206 - build staging rechaza entrada no apta: undefined
+  ---
+  duration_ms: 0.5017
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: 
+ok 207 - build staging rechaza entrada no apta: 
+  ---
+  duration_ms: 0.1311
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: invalid
+ok 208 - build staging rechaza entrada no apta: invalid
+  ---
+  duration_ms: 0.0997
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: http://api.example.test
+ok 209 - build staging rechaza entrada no apta: http://api.example.test
+  ---
+  duration_ms: 0.2078
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://localhost
+ok 210 - build staging rechaza entrada no apta: https://localhost
+  ---
+  duration_ms: 0.0947
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://app.localhost
+ok 211 - build staging rechaza entrada no apta: https://app.localhost
+  ---
+  duration_ms: 0.2047
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://127.0.0.1
+ok 212 - build staging rechaza entrada no apta: https://127.0.0.1
+  ---
+  duration_ms: 0.095
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://127.1
+ok 213 - build staging rechaza entrada no apta: https://127.1
+  ---
+  duration_ms: 0.3287
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://2130706433
+ok 214 - build staging rechaza entrada no apta: https://2130706433
+  ---
+  duration_ms: 0.4185
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://0.0.0.0
+ok 215 - build staging rechaza entrada no apta: https://0.0.0.0
+  ---
+  duration_ms: 0.1734
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://[::1]
+ok 216 - build staging rechaza entrada no apta: https://[::1]
+  ---
+  duration_ms: 0.0908
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://[::]
+ok 217 - build staging rechaza entrada no apta: https://[::]
+  ---
+  duration_ms: 0.0679
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://host.local
+ok 218 - build staging rechaza entrada no apta: https://host.local
+  ---
+  duration_ms: 0.0638
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://user:password@api.example.test
+ok 219 - build staging rechaza entrada no apta: https://user:password@api.example.test
+  ---
+  duration_ms: 0.0768
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://api.example.test?token=synthetic
+ok 220 - build staging rechaza entrada no apta: https://api.example.test?token=synthetic
+  ---
+  duration_ms: 0.0567
+  type: 'test'
+  ...
+# Subtest: build staging rechaza entrada no apta: https://api.example.test\#fragment
+ok 221 - build staging rechaza entrada no apta: https://api.example.test\#fragment
+  ---
+  duration_ms: 0.0728
+  type: 'test'
+  ...
+1..221
+# tests 221
+# suites 0
+# pass 221
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 688.9585
+EXIT=0

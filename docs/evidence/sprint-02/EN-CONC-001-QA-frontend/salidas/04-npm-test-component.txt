@@ -1,0 +1,43 @@
+﻿
+> frontend@0.0.0 test:component
+> vitest run
+
+
+ RUN  v5.0.3 C:/Users/Usuario/Desktop/Repo Taller 1/clean-install/newglass-frontend
+
+ ❯ src/features/optimization/__tests__/ComparisonWorkspaceV2.test.jsx (32 tests | 1 failed) 34804ms
+   × manual v2 confirmation keeps history after reload, lost response=false 5341ms
+node.exe : 
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/optimization/__tests__/ComparisonWorkspaceV2.test.jsx > manual v2 confirmation keeps history after 
+reload, lost response=false
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/features/optimization/__tests__/ComparisonWorkspaceV2.test.jsx:160:25
+    158| });
+    159|
+    160| test.each([false, true])('manual v2 confirmation keeps history after r…
+       |                         ^
+    161|   const { apiV2, v1, view } = setupV2({ lostResponse }); await startV2…
+    162|   fireEvent.click(screen.getByRole('tab', { name: 'Comparación' }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 63 passed (64)
+      Tests  1 failed | 657 passed (658)
+   Start at  00:19:44
+   Duration  51.55s (environment 51%, tests 28%, setup 12%, transform 5%, import 3%)
+
+Environment  jsdom was created 64 times · 549.88s total, 51% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+EXIT=1

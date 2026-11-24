@@ -1,0 +1,77 @@
+[
+  {
+    "mode": "distribuido",
+    "what": "UI Almacenero: controles visibles",
+    "value": {
+      "comparar6": 0,
+      "comparar3": 0,
+      "selectorMetodos": 1,
+      "verAnteriores": 1
+    }
+  },
+  {
+    "mode": "distribuido",
+    "what": "UI Operario: controles visibles",
+    "value": {
+      "comparar6": 0,
+      "comparar3": 1,
+      "selectorMetodos": 1,
+      "verAnteriores": 1
+    }
+  },
+  {
+    "mode": "distribuido",
+    "what": "UI Administrador: controles visibles",
+    "value": {
+      "comparar6": 0,
+      "comparar3": 1,
+      "selectorMetodos": 1,
+      "verAnteriores": 1
+    }
+  },
+  {
+    "mode": "distribuido",
+    "what": "API Almacenero POST comparisons-v2",
+    "value": 403
+  },
+  {
+    "mode": "distribuido",
+    "what": "API Administrador GET comparación del Operario",
+    "value": 404
+  },
+  {
+    "mode": "distribuido",
+    "what": "API Administrador GET progreso del Operario",
+    "value": 404
+  },
+  {
+    "mode": "distribuido",
+    "what": "API Almacenero GET comparación del Operario",
+    "value": 404
+  },
+  {
+    "mode": "distribuido",
+    "what": "API Administrador POST cancelar comparación del Operario",
+    "value": 404
+  },
+  {
+    "mode": "distribuido",
+    "what": "cola al admitir el segundo trabajo",
+    "value": "WAITING"
+  },
+  {
+    "mode": "distribuido",
+    "what": "estado del Operario tras cancelar el trabajo en espera del Administrador",
+    "value": "RUNNING"
+  },
+  {
+    "mode": "distribuido",
+    "what": "pedido del Administrador tras cancelar en espera",
+    "value": "PENDIENTE"
+  },
+  {
+    "mode": "distribuido",
+    "what": "comparación confirmada por Operario",
+    "value": 4
+  }
+]

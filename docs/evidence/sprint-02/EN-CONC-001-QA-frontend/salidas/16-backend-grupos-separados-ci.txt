@@ -1,0 +1,13 @@
+WSL2 | Python 3.12.3 | PostgreSQL 16.15 | backend 806cde3 | grupos que el CI del backend ejecuta en procesos pytest separados
+$ python -m pytest tests/integration/optimization/test_comparison_calculation.py -q -ra
+8 passed in 5.06s
+EXIT=0
+$ python -m pytest tests/integration/optimization/test_comparison_supervision_v2.py -q -ra
+32 passed in 26.78s
+EXIT=0
+$ python -m pytest tests/integration/optimization/test_comparison_queue_v2.py -q -ra
+6 passed, 1 warning in 12.11s
+EXIT=0
+$ python -m pytest tests/integration/optimization/test_comparison_v2_http_restart.py tests/integration/optimization/test_distributed_progress.py -q -ra
+24 passed, 1 warning in 157.54s (0:02:37)
+EXIT=0

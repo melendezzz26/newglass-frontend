@@ -1,0 +1,39 @@
+[
+  {
+    "mode": "distribuido",
+    "what": "selector inicial de métodos",
+    "value": "comparison-v1"
+  },
+  {
+    "mode": "distribuido",
+    "what": "motores",
+    "value": [
+      "FF:completo",
+      "BF:completo",
+      "WF:completo",
+      "HF:completo",
+      "M5:completo",
+      "M6-BS:completo"
+    ]
+  },
+  {
+    "mode": "distribuido",
+    "what": "GET visual (máscaras en vivo)",
+    "value": 410
+  },
+  {
+    "mode": "distribuido",
+    "what": "POST de admisión tras recarga",
+    "value": 0
+  },
+  {
+    "mode": "distribuido",
+    "what": "estado del pedido tras liberar",
+    "value": "PENDIENTE"
+  },
+  {
+    "mode": "distribuido",
+    "what": "errores de página",
+    "value": []
+  }
+]

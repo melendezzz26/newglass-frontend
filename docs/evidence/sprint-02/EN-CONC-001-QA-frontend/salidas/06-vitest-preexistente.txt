@@ -1,0 +1,22 @@
+﻿== main 5cb33bb (segunda ejecución completa)
+
+ ❯ src/features/optimization/__tests__/ComparisonWorkspaceV2.test.jsx (32 tests | 2 failed) 41392ms
+   × manual v2 confirmation keeps history after reload, lost response=false 6153ms
+   × manual v2 confirmation keeps history after reload, lost response=true 5715ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 63 passed (64)
+      Tests  2 failed | 656 passed (658)
+   Duration  59.97s (environment 49%, tests 29%, setup 13%, transform 5%, import 4%)
+== 6a00b9a (antes de EN-CONC-001 #21, misma máquina)
+ ❯ src/features/optimization/__tests__/ComparisonWorkspace.test.jsx (10 tests | 1 failed) 16971ms
+   × default workspace has four stable tabs, real phases and no automatic choice 6020ms
+ ❯ src/features/optimization/__tests__/ComparisonWorkspaceV2.test.jsx (30 tests | 3 failed) 41726ms
+   × shows the applied separation 0 mm across all six methods and comparison 5278ms
+   × manual v2 confirmation keeps history after reload, lost response=false 5965ms
+   × manual v2 confirmation keeps history after reload, lost response=true 6215ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  2 failed | 61 passed (63)
+      Tests  4 failed | 644 passed (648)
+   Duration  60.57s (environment 47%, tests 32%, setup 11%, transform 6%, import 4%)
+
+

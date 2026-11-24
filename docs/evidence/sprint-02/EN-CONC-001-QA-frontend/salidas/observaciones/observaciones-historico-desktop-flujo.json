@@ -1,0 +1,39 @@
+[
+  {
+    "mode": "historico",
+    "what": "selector inicial de métodos",
+    "value": "comparison-v1"
+  },
+  {
+    "mode": "historico",
+    "what": "motores",
+    "value": [
+      "FF:completo",
+      "BF:completo",
+      "WF:completo",
+      "HF:completo",
+      "M5:completo",
+      "M6-BS:completo"
+    ]
+  },
+  {
+    "mode": "historico",
+    "what": "GET visual (máscaras en vivo)",
+    "value": 200
+  },
+  {
+    "mode": "historico",
+    "what": "POST de admisión tras recarga",
+    "value": 0
+  },
+  {
+    "mode": "historico",
+    "what": "estado del pedido tras liberar",
+    "value": "PENDIENTE"
+  },
+  {
+    "mode": "historico",
+    "what": "errores de página",
+    "value": []
+  }
+]

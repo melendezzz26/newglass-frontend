@@ -1,0 +1,72 @@
+﻿E2E actual: SHA 5cb33bb17ebfcae4296b7198832a643cae56083a, run a99f5443-eae7-4254-8597-87071761e780, evidencia C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\test-results\e2e-phases\run-ueyZhq
+Inventario actual: 156 escenarios; b02=2, remaining=154.
+node : [WebServer] (node:37540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+En línea: 1 Carácter: 844
++ ... s-backend-fijado.txt"; node scripts/run-e2e-phases.js *> $out; "EXIT= ...
++                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:33916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:14940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL (5.4s)
+(node:36112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL (4.7s)
+
+
+  1) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      712 |     && r.request().method() === 'POST');
+      713 |   await page.getByRole('button', { name: 'Comparar con los tres motores', exact: true }).click();
+    > 714 |   const response = await accepted; expect(response.status()).toBe(201);
+          |                                                              ^
+      715 |   const id = (await response.json()).comparison_id;
+      716 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+      717 |   const get = async url => {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:714:62
+
+    Error Context: test-results\e2e-phases\run-ueyZhq\b02\optimization-comparison-TA-e1e14-pués-del-upgrade-PostgreSQL-chromium-desktop\error-context.md
+
+  2) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      712 |     && r.request().method() === 'POST');
+      713 |   await page.getByRole('button', { name: 'Comparar con los tres motores', exact: true }).click();
+    > 714 |   const response = await accepted; expect(response.status()).toBe(201);
+          |                                                              ^
+      715 |   const id = (await response.json()).comparison_id;
+      716 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+      717 |   const get = async url => {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:714:62
+
+    Error Context: test-results\e2e-phases\run-ueyZhq\b02\optimization-comparison-TA-e1e14-pués-del-upgrade-PostgreSQL-chromium-mobile\error-context.md
+
+  2 failed
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+
+Gate E2E (TA-040) fallido:
+- ejecución incompleta o fallida: b02 (failed)
+Gate conjunto TA-040: FAIL, 0/156 escenarios validados.
+b02: proceso fallido (1)
+evidencia ausente o JSON corrupto: C:\Users\Usuario\Desktop\Repo Taller 
+1\clean-install\newglass-frontend\test-results\e2e-phases\run-ueyZhq\remaining.json: ENOENT: no such file or 
+directory, open 'C:\Users\Usuario\Desktop\Repo Taller 
+1\clean-install\newglass-frontend\test-results\e2e-phases\run-ueyZhq\remaining.json'
+EXIT=1

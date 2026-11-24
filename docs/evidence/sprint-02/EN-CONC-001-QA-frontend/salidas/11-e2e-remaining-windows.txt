@@ -1,0 +1,854 @@
+﻿node.exe : [WebServer] (node:35588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:12596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 154 tests using 1 worker
+
+(node:31020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x    1 [chromium-desktop] › tests\e2e\en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables (3.0s)
+(node:7424) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   2 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:61:3 › 5 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (1.1s)
+  ok   3 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:61:3 › 6 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (970ms)
+  ok   4 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:86:1 › lados independientes: triángulo 50/70/65 y rechazo de 10/10/30 (564ms)
+  ok   5 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:99:1 › lados independientes: ángulo fijado cambia cuadrilátero sin cambiar lados (589ms)
+  ok   6 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:115:1 › lados independientes: pentágono irregular con restricción cíclica explícita (580ms)
+  ok   7 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:125:1 › TA-036: longitudes independientes y selección accesible en el lienzo único (838ms)
+  ok   8 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:147:1 › TA-036: multiplicar explícitamente todos los lados conserva los ángulos (1.5s)
+  ok   9 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 0 muestra error y se recupera (1.3s)
+  ok  10 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida -1 muestra error y se recupera (1.1s)
+  ok  11 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 1e muestra error y se recupera (1.1s)
+  ok  12 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:178:1 › T01-T02-E04: reiniciar invalida medidas; deshacer abierto elimina el último vértice (1.4s)
+  ok  13 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:201:1 › T03-E05: dimensiones completas validan convexidad automáticamente y borrar retira el éxito (638ms)
+  ok  14 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:219:1 › TA-036: escalar un contorno cóncavo conserva su rechazo (556ms)
+  ok  15 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:236:1 › T03-E07: bow-tie simétrico completo se rechaza por autointersección (527ms)
+  ok  16 [chromium-desktop] › tests\e2e\hu007-custom-piece.spec.js:245:1 › T03-E08: estado accesible conserva el motivo actual del bloqueo (772ms)
+  ok  17 [chromium-desktop] › tests\e2e\hu007-order-integration.spec.js:57:1 › lados independientes: POST y lectura real conservan triángulo, cuadrilátero angular y pentágono (1.7s)
+  ok  18 [chromium-desktop] › tests\e2e\hu007-order-integration.spec.js:88:1 › T04: login JWT real, múltiples piezas locales, POST único y 201 (1.6s)
+  ok  19 [chromium-desktop] › tests\e2e\hu007-order-integration.spec.js:117:1 › T04: error de red conserva pieza y reintento llega al backend real (1.1s)
+  ok  20 [chromium-desktop] › tests\e2e\hu012-client-order.spec.js:24:1 › T03: alta contextual, bloqueo sin cliente, persistencia y lectura real (939ms)
+  ok  21 [chromium-desktop] › tests\e2e\hu012-client-order.spec.js:60:1 › T03: duplicado controlado, búsqueda documental y cambio a cliente inactivo (1.2s)
+  ok  22 [chromium-desktop] › tests\e2e\hu012-client-order.spec.js:89:1 › vidrios plegables conservan piezas, edición contraída, teclado y footer visible (1.5s)
+  ok  23 [chromium-desktop] › tests\e2e\hu014-inventory-writeoff.spec.js:15:1 › HU-014: Almacenero registra una baja y consulta el movimiento persistido (1.3s)
+  ok  24 [chromium-desktop] › tests\e2e\hu014-inventory-writeoff.spec.js:105:1 › HU-014: Operario consulta inventario, pero no ve acciones de gestión (997ms)
+  ok  25 [chromium-desktop] › tests\e2e\hu015-rasterization.spec.js:52:1 › HU-015: flujo real de pieza cantidad 5, raster, recuperación, resolución y responsive (2.3s)
+  ok  26 [chromium-desktop] › tests\e2e\hu015-rasterization.spec.js:209:1 › HU-015: CIRCUNFERENCIA se compara con la máscara real del backend (1.3s)
+  ok  27 [chromium-desktop] › tests\e2e\hu015-rasterization.spec.js:236:1 › HU-015: POLIGONO_CONVEXO conserva vertices_mm negativos y columnas sobre 53 (1.3s)
+  ok  28 [chromium-desktop] › tests\e2e\hu017-unified-flow.spec.js:4:1 › HU-017 T01: multipedido unificado, inspección honesta y simulación sin consumo (4.2s)
+  ok  29 [chromium-desktop] › tests\e2e\hu017-unified-flow.spec.js:50:1 › HU-017: máscara orientada, controles por teclado y recuperación sin recalcular (3.7s)
+  ok  30 [chromium-desktop] › tests\e2e\hu017-unified-flow.spec.js:89:1 › HU-017: el POST sin perfil conserva V1 y sus permisos de consulta (2.0s)
+  ok  31 [chromium-desktop] › tests\e2e\hu017-unified-flow.spec.js:102:1 › HU-017 T01: SIN_SOLUCION conserva resultado parcial sin certificar etapas no observadas (3.6s)
+  ok  32 [chromium-desktop] › tests\e2e\hu018-bulk-import.spec.js:27:1 › importación con corrección: el pedido queda con exactamente las piezas del archivo (2.5s)
+  ok  33 [chromium-desktop] › tests\e2e\hu018-bulk-import.spec.js:81:1 › un archivo no admitido muestra el error sin registrar nada (1.5s)
+  ok  34 [chromium-desktop] › tests\e2e\hu018-bulk-import.spec.js:92:1 › una observación bloquea guardar piezas manuales hasta corregirla (1.9s)
+  x   35 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen (3.5s)
+(node:27764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   36 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores (4.1s)
+(node:22984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   37 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores (4.3s)
+(node:35400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   38 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado (3.7s)
+(node:26052) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   39 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real (2.9s)
+(node:4076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   40 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real (2.9s)
+(node:17996) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   41 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real (3.1s)
+(node:35612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   42 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock (4.8s)
+(node:33832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   43 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez (4.5s)
+(node:37164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   44 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado (9.4s)
+(node:21020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   45 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas (7.7s)
+(node:36484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   46 [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo (2.5s)
+(node:26716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   47 [chromium-desktop] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend (2.8s)
+(node:34844) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   48 [chromium-desktop] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend (2.8s)
+(node:30392) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  49 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:15:1 › S1-01 vista previa real conserva pendiente, permite First Fit y confirma con trazabilidad (6.6s)
+  ok  50 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:52:1 › E2E1 N=1 real: progreso, placements, métricas, confirmación, stock y pedido (5.8s)
+  ok  51 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:82:1 › E2E2 multipedido real: una corrida confirma todos (6.3s)
+  ok  52 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:89:1 › E2E3 multimaterial real: layouts y métricas separados (5.9s)
+  ok  53 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:100:1 › E2E4 plancha multiunidad real: 3 placements consumen 2 unidades (6.8s)
+  ok  54 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:118:1 › E2E5 retazo primero real: dos piezas consumen un retazo una sola vez (6.0s)
+  ok  55 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:125:1 › E2E6 SIN_SOLUCION real: diagnóstico, pedidos PENDIENTE y stock intacto (5.9s)
+  ok  56 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:136:1 › E2E7 409 real: stock cambiado, feedback y ninguna confirmación parcial (7.4s)
+  ok  57 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes (9.2s)
+  ok  58 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:185:1 › E2E9 rotación real: contorno orientado se traduce una sola vez en 2D y 3D (6.4s)
+  ok  59 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:201:1 › E2E10 CA-28 conjunto: dos pedidos, dos materiales, cantidad y unidades físicas reales (5.7s)
+  ok  60 [chromium-desktop] › tests\e2e\s1-optimization-ui.spec.js:216:1 › E2E11 comercial: pedido UI, 8/8 a 1 mm, cámara XYZ, merma, confirmación y origen del retazo (9.3s)
+  ok  61 [chromium-desktop] › tests\e2e\s1-post-review.spec.js:21:1 › editar tres veces conserva ID, cantidad de pedidos y selección en optimización (6.3s)
+  ok  62 [chromium-desktop] › tests\e2e\s1-post-review.spec.js:84:1 › crear polígono actualiza medidas parciales y mantiene referencia provisional (2.9s)
+  ok  63 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:123:3 › Dashboard real para Administrador: datos, permisos y navegación (4.4s)
+  ok  64 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:123:3 › Dashboard real para Operario: datos, permisos y navegación (3.2s)
+  ok  65 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:123:3 › Dashboard real para Almacenero: datos, permisos y navegación (2.8s)
+  ok  66 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:185:1 › refresh conserva sesión real mediante GET /api/auth/me (2.6s)
+  ok  67 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:202:1 › logout elimina la sesión real y devuelve al login (2.5s)
+  ok  68 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 1440px: sin overflow y Sidebar utilizable (3.0s)
+  ok  69 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 1024px: sin overflow y Sidebar utilizable (2.8s)
+  ok  70 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 800px: sin overflow y Sidebar utilizable (2.7s)
+  ok  71 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 390px: sin overflow y Sidebar utilizable (2.7s)
+  ok  72 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:243:1 › sesión real sin permisos conserva Inicio y logout sin consultar módulos restringidos (3.0s)
+  ok  73 [chromium-desktop] › tests\e2e\ta-dashboard.spec.js:275:1 › CONTROLLED FAILURE SCENARIO — NOT REAL BACKEND FAILURE: muestra error parcial conservando otras fuentes reales (2.1s)
+  ok  74 [chromium-desktop] › tests\e2e\ta036-retazo-personalizado.spec.js:4:1 › retazo personalizado: editor compartido, POST real sin Decimal no serializable y lectura numérica (2.6s)
+  ok  75 [chromium-desktop] › tests\e2e\ta037-load-feedback.spec.js:5:1 › TA037 pedido sobre el límite: aviso comprensible, selección conservada, pedido pendiente y stock intacto (5.7s)
+  ok  76 [chromium-desktop] › tests\e2e\ta046-keyboard.spec.js:17:1 › registro de pedido completo solo con teclado, sin mouse (2.5s)
+  ok  77 [chromium-desktop] › tests\e2e\ta046-keyboard.spec.js:61:1 › al eliminar un vidrio el foco sigue en el diálogo y Escape lo cierra (2.0s)
+(node:29712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   78 [chromium-mobile] › tests\e2e\en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables (5.6s)
+(node:24708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  79 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:61:3 › 5 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (2.4s)
+  ok  80 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:61:3 › 6 lados: fijar hasta n-3 ángulos y liberar para elegir otro vértice (2.1s)
+  ok  81 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:86:1 › lados independientes: triángulo 50/70/65 y rechazo de 10/10/30 (1.2s)
+  ok  82 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:99:1 › lados independientes: ángulo fijado cambia cuadrilátero sin cambiar lados (1.2s)
+  ok  83 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:115:1 › lados independientes: pentágono irregular con restricción cíclica explícita (1.4s)
+  ok  84 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:125:1 › TA-036: longitudes independientes y selección accesible en el lienzo único (1.5s)
+  ok  85 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:147:1 › TA-036: multiplicar explícitamente todos los lados conserva los ángulos (1.4s)
+  ok  86 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 0 muestra error y se recupera (1.4s)
+  ok  87 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida -1 muestra error y se recupera (1.4s)
+  ok  88 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:157:3 › T02-E03: entrada numérica inválida 1e muestra error y se recupera (1.4s)
+  ok  89 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:178:1 › T01-T02-E04: reiniciar invalida medidas; deshacer abierto elimina el último vértice (1.7s)
+  ok  90 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:201:1 › T03-E05: dimensiones completas validan convexidad automáticamente y borrar retira el éxito (1.3s)
+  ok  91 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:219:1 › TA-036: escalar un contorno cóncavo conserva su rechazo (1.3s)
+  ok  92 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:236:1 › T03-E07: bow-tie simétrico completo se rechaza por autointersección (1.1s)
+  ok  93 [chromium-mobile] › tests\e2e\hu007-custom-piece.spec.js:245:1 › T03-E08: estado accesible conserva el motivo actual del bloqueo (1.5s)
+  ok  94 [chromium-mobile] › tests\e2e\hu007-order-integration.spec.js:57:1 › lados independientes: POST y lectura real conservan triángulo, cuadrilátero angular y pentágono (3.3s)
+  ok  95 [chromium-mobile] › tests\e2e\hu007-order-integration.spec.js:88:1 › T04: login JWT real, múltiples piezas locales, POST único y 201 (3.4s)
+  ok  96 [chromium-mobile] › tests\e2e\hu007-order-integration.spec.js:117:1 › T04: error de red conserva pieza y reintento llega al backend real (3.6s)
+  ok  97 [chromium-mobile] › tests\e2e\hu012-client-order.spec.js:24:1 › T03: alta contextual, bloqueo sin cliente, persistencia y lectura real (2.4s)
+  ok  98 [chromium-mobile] › tests\e2e\hu012-client-order.spec.js:60:1 › T03: duplicado controlado, búsqueda documental y cambio a cliente inactivo (2.8s)
+  ok  99 [chromium-mobile] › tests\e2e\hu012-client-order.spec.js:89:1 › vidrios plegables conservan piezas, edición contraída, teclado y footer visible (2.9s)
+  ok 100 [chromium-mobile] › tests\e2e\hu014-inventory-writeoff.spec.js:15:1 › HU-014: Almacenero registra una baja y consulta el movimiento persistido (1.6s)
+  ok 101 [chromium-mobile] › tests\e2e\hu014-inventory-writeoff.spec.js:105:1 › HU-014: Operario consulta inventario, pero no ve acciones de gestión (905ms)
+  ok 102 [chromium-mobile] › tests\e2e\hu015-rasterization.spec.js:52:1 › HU-015: flujo real de pieza cantidad 5, raster, recuperación, resolución y responsive (2.1s)
+  ok 103 [chromium-mobile] › tests\e2e\hu015-rasterization.spec.js:209:1 › HU-015: CIRCUNFERENCIA se compara con la máscara real del backend (1.3s)
+  ok 104 [chromium-mobile] › tests\e2e\hu015-rasterization.spec.js:236:1 › HU-015: POLIGONO_CONVEXO conserva vertices_mm negativos y columnas sobre 53 (1.3s)
+  ok 105 [chromium-mobile] › tests\e2e\hu017-unified-flow.spec.js:4:1 › HU-017 T01: multipedido unificado, inspección honesta y simulación sin consumo (3.5s)
+  ok 106 [chromium-mobile] › tests\e2e\hu017-unified-flow.spec.js:50:1 › HU-017: máscara orientada, controles por teclado y recuperación sin recalcular (4.8s)
+  ok 107 [chromium-mobile] › tests\e2e\hu017-unified-flow.spec.js:89:1 › HU-017: el POST sin perfil conserva V1 y sus permisos de consulta (2.4s)
+  ok 108 [chromium-mobile] › tests\e2e\hu017-unified-flow.spec.js:102:1 › HU-017 T01: SIN_SOLUCION conserva resultado parcial sin certificar etapas no observadas (4.1s)
+  ok 109 [chromium-mobile] › tests\e2e\hu018-bulk-import.spec.js:27:1 › importación con corrección: el pedido queda con exactamente las piezas del archivo (1.7s)
+  ok 110 [chromium-mobile] › tests\e2e\hu018-bulk-import.spec.js:81:1 › un archivo no admitido muestra el error sin registrar nada (1.5s)
+  ok 111 [chromium-mobile] › tests\e2e\hu018-bulk-import.spec.js:92:1 › una observación bloquea guardar piezas manuales hasta corregirla (2.3s)
+  x  112 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen (3.7s)
+(node:3964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  113 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores (5.6s)
+(node:37648) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  114 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores (4.2s)
+(node:31604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  115 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado (6.9s)
+(node:25612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  116 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real (9.3s)
+(node:38264) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  117 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real (8.9s)
+(node:31580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  118 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real (8.4s)
+(node:13280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  119 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock (6.0s)
+(node:36732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  120 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez (3.3s)
+(node:9560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  121 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado (8.5s)
+(node:34604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  122 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas (10.2s)
+(node:8812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  123 [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo (3.6s)
+(node:30656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  124 [chromium-mobile] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend (3.7s)
+(node:32332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  125 [chromium-mobile] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend (5.1s)
+(node:38652) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 126 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:15:1 › S1-01 vista previa real conserva pendiente, permite First Fit y confirma con trazabilidad (10.9s)
+  ok 127 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:52:1 › E2E1 N=1 real: progreso, placements, métricas, confirmación, stock y pedido (8.4s)
+  ok 128 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:82:1 › E2E2 multipedido real: una corrida confirma todos (7.4s)
+  ok 129 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:89:1 › E2E3 multimaterial real: layouts y métricas separados (7.8s)
+  ok 130 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:100:1 › E2E4 plancha multiunidad real: 3 placements consumen 2 unidades (4.0s)
+  ok 131 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:118:1 › E2E5 retazo primero real: dos piezas consumen un retazo una sola vez (4.2s)
+  ok 132 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:125:1 › E2E6 SIN_SOLUCION real: diagnóstico, pedidos PENDIENTE y stock intacto (4.1s)
+  ok 133 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:136:1 › E2E7 409 real: stock cambiado, feedback y ninguna confirmación parcial (3.6s)
+  ok 134 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:158:1 › E2E8 RBAC real: sin view, view, execute y confirm independientes (6.1s)
+  ok 135 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:185:1 › E2E9 rotación real: contorno orientado se traduce una sola vez en 2D y 3D (4.1s)
+  ok 136 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:201:1 › E2E10 CA-28 conjunto: dos pedidos, dos materiales, cantidad y unidades físicas reales (3.8s)
+  ok 137 [chromium-mobile] › tests\e2e\s1-optimization-ui.spec.js:216:1 › E2E11 comercial: pedido UI, 8/8 a 1 mm, cámara XYZ, merma, confirmación y origen del retazo (5.3s)
+  ok 138 [chromium-mobile] › tests\e2e\s1-post-review.spec.js:21:1 › editar tres veces conserva ID, cantidad de pedidos y selección en optimización (4.3s)
+  ok 139 [chromium-mobile] › tests\e2e\s1-post-review.spec.js:84:1 › crear polígono actualiza medidas parciales y mantiene referencia provisional (1.7s)
+  ok 140 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:123:3 › Dashboard real para Administrador: datos, permisos y navegación (2.8s)
+  ok 141 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:123:3 › Dashboard real para Operario: datos, permisos y navegación (2.3s)
+  ok 142 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:123:3 › Dashboard real para Almacenero: datos, permisos y navegación (1.8s)
+  ok 143 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:185:1 › refresh conserva sesión real mediante GET /api/auth/me (1.9s)
+  ok 144 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:202:1 › logout elimina la sesión real y devuelve al login (1.0s)
+  ok 145 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 1440px: sin overflow y Sidebar utilizable (1.6s)
+  ok 146 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 1024px: sin overflow y Sidebar utilizable (1.4s)
+  ok 147 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 800px: sin overflow y Sidebar utilizable (1.4s)
+  ok 148 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:215:3 › Dashboard real a 390px: sin overflow y Sidebar utilizable (1.6s)
+  ok 149 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:243:1 › sesión real sin permisos conserva Inicio y logout sin consultar módulos restringidos (1.5s)
+  ok 150 [chromium-mobile] › tests\e2e\ta-dashboard.spec.js:275:1 › CONTROLLED FAILURE SCENARIO — NOT REAL BACKEND FAILURE: muestra error parcial conservando otras fuentes reales (1.3s)
+  ok 151 [chromium-mobile] › tests\e2e\ta036-retazo-personalizado.spec.js:4:1 › retazo personalizado: editor compartido, POST real sin Decimal no serializable y lectura numérica (1.6s)
+  ok 152 [chromium-mobile] › tests\e2e\ta037-load-feedback.spec.js:5:1 › TA037 pedido sobre el límite: aviso comprensible, selección conservada, pedido pendiente y stock intacto (3.5s)
+  ok 153 [chromium-mobile] › tests\e2e\ta046-keyboard.spec.js:17:1 › registro de pedido completo solo con teclado, sin mouse (2.8s)
+  ok 154 [chromium-mobile] › tests\e2e\ta046-keyboard.spec.js:61:1 › al eliminar un vidrio el foco sigue en el diálogo y Escape lo cierra (1.9s)
+
+
+  1) [chromium-desktop] › tests\e2e\en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\en-ux-004-cancel.spec.js:54:22
+
+    Error Context: test-results\en-ux-004-cancel-EN-UX-004-4317a-edidos-e-histórico-durables-chromium-desktop\error-context.md
+
+  2) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:21:19
+
+    Error Context: test-results\optimization-comparison-HU-901bc-irmados-conservan-su-origen-chromium-desktop\error-context.md
+
+  3) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:89:21
+
+    Error Context: test-results\optimization-comparison-HU-c9f92-para-single-en-seis-motores-chromium-desktop\error-context.md
+
+  4) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:89:21
+
+    Error Context: test-results\optimization-comparison-HU-5c627-ara-remnant-en-seis-motores-chromium-desktop\error-context.md
+
+  5) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:126:19
+
+    Error Context: test-results\optimization-comparison-S2-69782-miento-ni-consumo-duplicado-chromium-desktop\error-context.md
+
+  6) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      196 |   const acceptedResponse = page.waitForResponse(r => new URL(r.url()).pathname === '/api/optimization/comparisons-v2' && r.request().method() === 'POST');
+      197 |   await page.getByRole('button', { name: 'Comparar con los seis motores', exact: true }).click();
+    > 198 |   const acceptedHttp = await acceptedResponse; expect(acceptedHttp.status()).toBe(201);
+          |                                                                              ^
+      199 |   const accepted = parseComparisonV2(await acceptedHttp.json());
+      200 |   const endpoint = `${api}/api/optimization/comparisons-v2/${accepted.comparison_id}`;
+      201 |   const read = async () => {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:198:78
+
+    Error Context: test-results\optimization-comparison-TA-f909a-onfirmacion-v2-atomica-real-chromium-desktop\error-context.md
+
+  7) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      347 |   const key = `b06-browser-${info.project.name}`;
+      348 |   const post = await http('/api/optimization/comparisons-v2', { method: 'POST', body: { order_ids: data.orders }, key });
+    > 349 |   expect(post.status).toBe(201);
+          |                       ^
+      350 |   const accepted = parseComparisonV2(post.body);
+      351 |   let current;
+      352 |   await expect.poll(async () => {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:349:23
+
+    Error Context: test-results\optimization-comparison-TA-31f78-acion-y-compatibilidad-real-chromium-desktop\error-context.md
+
+  8) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      451 |   await page.getByRole('button', { name: 'Comparar con los seis motores', exact: true }).click();
+      452 |   const acceptedHttp = await acceptedResponse;
+    > 453 |   expect(acceptedHttp.status()).toBe(201);
+          |                                 ^
+      454 |   const accepted = parseComparisonV2(await acceptedHttp.json());
+      455 |   const idempotencyKey = acceptedHttp.request().headers()['idempotency-key'];
+      456 |   expect(idempotencyKey).toMatch(/^[A-Za-z0-9_-]{8,64}$/);
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:453:33
+
+    Error Context: test-results\optimization-comparison-TA-5ea82--y-recuperacion-visual-real-chromium-desktop\error-context.md
+
+  9) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      782 |   await page.getByRole('button', { name: 'Comparar con los tres motores', exact: true }).click();
+      783 |   const response = await accepted;
+    > 784 |   expect(response.status()).toBe(201);
+          |                             ^
+      785 |   const comparison = await response.json();
+      786 |   expect(comparison.profile).toBe('comparison-v1');
+      787 |   expect(comparison.executions.map(e => e.method)).toEqual(['FF', 'BF', 'WF']);
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:784:29
+
+    Error Context: test-results\optimization-comparison-TA-4febb-s-legacy-sin-consumir-stock-chromium-desktop\error-context.md
+
+  10) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      842 |   await page.getByRole('button', { name: 'Comparar con los tres motores', exact: true }).click();
+      843 |   const response = await accepted;
+    > 844 |   expect(response.status()).toBe(201);
+          |                             ^
+      845 |   const current = await response.json(), path = `${api}/api/optimization/comparisons/${current.comparison_id}`;
+      846 |   await expect(page.getByRole('tab')).toHaveCount(4);
+      847 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:844:29
+
+    Error Context: test-results\optimization-comparison-co-345e2-BF-y-confirmar-una-sola-vez-chromium-desktop\error-context.md
+
+  11) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Comparación finalizada', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Comparación finalizada', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Comparación finalizada', { exact: true })
+
+
+      941 |   await page.getByRole('button', { name: 'Comparar con los tres motores' }).click();
+      942 |   const current = await (await started).json(), path = `${api}/api/optimization/comparisons/${current.comparison_id}`;
+    > 943 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+          |                                                                           ^
+      944 |   await expect(page.getByText(/No se pudo guardar el resultado de este motor/)).toBeVisible();
+      945 |   expect(await stock(page, data)).toEqual(before);
+      946 |   await page.getByRole('tab', { name: 'Comparación', exact: true }).click();
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:943:75
+
+    Error Context: test-results\optimization-comparison-FF-a6788-a-vez-regresando-al-listado-chromium-desktop\error-context.md
+
+  12) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Comparación finalizada', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Comparación finalizada', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Comparación finalizada', { exact: true })
+
+
+      982 |   page.on('request', r => { if (new URL(r.url()).pathname === '/api/optimization/comparisons' && r.method() === 'POST') posts++; });
+      983 |   await page.getByRole('button', { name: 'Comparar con los tres motores' }).click();
+    > 984 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+          |                                                                           ^
+      985 |   for (const name of ['First Fit', 'Best Fit', 'Worst Fit']) {
+      986 |     await page.getByRole('tab', { name: new RegExp(name) }).click();
+      987 |     const panel = page.getByRole('tabpanel', { name: new RegExp(name) });
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:984:75
+
+    Error Context: test-results\optimization-comparison-ro-caf0b-trabajo-al-cambiar-pestañas-chromium-desktop\error-context.md
+
+  13) [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      1003 |   const data = await setup(page, 'single');
+      1004 |   const created = await page.request.post(`${api}/api/optimization/comparisons`, { headers: { ...data.headers, 'Idempotency-Key': `view-only-${Date.now()}` }, data: { order_ids: data.orders } });
+    > 1005 |   expect(created.status()).toBe(201);
+           |                            ^
+      1006 |   const comparison = await created.json();
+      1007 |   await login(page, data.actors.view, { comparative: true }); await open(page);
+      1008 |   await page.getByText('Consulta avanzada', { exact: true }).click();
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:1005:28
+
+    Error Context: test-results\optimization-comparison-co-f9ec9-ermitir-elección-ni-consumo-chromium-desktop\error-context.md
+
+  14) [chromium-desktop] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      34 |   const accepted=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/optimization/comparisons'&&r.request().method()==='POST');
+      35 |   await page.getByRole('button',{name:'Comparar con los tres motores',exact:true}).click();
+    > 36 |   const response=await accepted;expect(response.status()).toBe(201);
+         |                                                           ^
+      37 |   const current=await response.json(),results={};
+      38 |   await expect(page.getByText('Comparación finalizada',{exact:true})).toBeVisible();
+      39 |   for(const execution of current.executions) {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-policy-audit.spec.js:36:59
+
+    Error Context: test-results\optimization-policy-audit--a6072--3D-corresponden-al-backend-chromium-desktop\error-context.md
+
+  15) [chromium-desktop] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      34 |   const accepted=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/optimization/comparisons'&&r.request().method()==='POST');
+      35 |   await page.getByRole('button',{name:'Comparar con los tres motores',exact:true}).click();
+    > 36 |   const response=await accepted;expect(response.status()).toBe(201);
+         |                                                           ^
+      37 |   const current=await response.json(),results={};
+      38 |   await expect(page.getByText('Comparación finalizada',{exact:true})).toBeVisible();
+      39 |   for(const execution of current.executions) {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-policy-audit.spec.js:36:59
+
+    Error Context: test-results\optimization-policy-audit--a214a--3D-corresponden-al-backend-chromium-desktop\error-context.md
+
+  16) [chromium-mobile] › tests\e2e\en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\en-ux-004-cancel.spec.js:54:22
+
+    Error Context: test-results\en-ux-004-cancel-EN-UX-004-4317a-edidos-e-histórico-durables-chromium-mobile\error-context.md
+
+  17) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:21:19
+
+    Error Context: test-results\optimization-comparison-HU-901bc-irmados-conservan-su-origen-chromium-mobile\error-context.md
+
+  18) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:89:21
+
+    Error Context: test-results\optimization-comparison-HU-c9f92-para-single-en-seis-motores-chromium-mobile\error-context.md
+
+  19) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:89:21
+
+    Error Context: test-results\optimization-comparison-HU-5c627-ara-remnant-en-seis-motores-chromium-mobile\error-context.md
+
+  20) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado 
+
+    Error: No se pudo interpretar el avance del trabajo. Consulta el resultado antes de continuar.
+
+       at ..\..\src\features\optimization\comparisonV2Contract.js:17
+
+      15 | export const METHODS_V2 = Object.freeze(CATALOG_V2.map(m => m.code));
+      16 | const METHODS_V1 = Object.freeze(METHODS_V2.slice(0, 3));
+    > 17 | const check = value => { if (!value) throw new RunContractError(); };
+         |                                            ^
+      18 | const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+      19 | const count = value => Number.isSafeInteger(value) && value >= 0;
+      20 | const id = value => Number.isSafeInteger(value) && value > 0 && value <= 2147483647;
+        at check (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:17:44)
+        at profile (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:23:25)
+        at parseComparisonV2 (C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\src\features\optimization\comparisonV2Contract.js:89:3)
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:126:19
+
+    Error Context: test-results\optimization-comparison-S2-69782-miento-ni-consumo-duplicado-chromium-mobile\error-context.md
+
+  21) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      196 |   const acceptedResponse = page.waitForResponse(r => new URL(r.url()).pathname === '/api/optimization/comparisons-v2' && r.request().method() === 'POST');
+      197 |   await page.getByRole('button', { name: 'Comparar con los seis motores', exact: true }).click();
+    > 198 |   const acceptedHttp = await acceptedResponse; expect(acceptedHttp.status()).toBe(201);
+          |                                                                              ^
+      199 |   const accepted = parseComparisonV2(await acceptedHttp.json());
+      200 |   const endpoint = `${api}/api/optimization/comparisons-v2/${accepted.comparison_id}`;
+      201 |   const read = async () => {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:198:78
+
+    Error Context: test-results\optimization-comparison-TA-f909a-onfirmacion-v2-atomica-real-chromium-mobile\error-context.md
+
+  22) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      347 |   const key = `b06-browser-${info.project.name}`;
+      348 |   const post = await http('/api/optimization/comparisons-v2', { method: 'POST', body: { order_ids: data.orders }, key });
+    > 349 |   expect(post.status).toBe(201);
+          |                       ^
+      350 |   const accepted = parseComparisonV2(post.body);
+      351 |   let current;
+      352 |   await expect.poll(async () => {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:349:23
+
+    Error Context: test-results\optimization-comparison-TA-31f78-acion-y-compatibilidad-real-chromium-mobile\error-context.md
+
+  23) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      451 |   await page.getByRole('button', { name: 'Comparar con los seis motores', exact: true }).click();
+      452 |   const acceptedHttp = await acceptedResponse;
+    > 453 |   expect(acceptedHttp.status()).toBe(201);
+          |                                 ^
+      454 |   const accepted = parseComparisonV2(await acceptedHttp.json());
+      455 |   const idempotencyKey = acceptedHttp.request().headers()['idempotency-key'];
+      456 |   expect(idempotencyKey).toMatch(/^[A-Za-z0-9_-]{8,64}$/);
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:453:33
+
+    Error Context: test-results\optimization-comparison-TA-5ea82--y-recuperacion-visual-real-chromium-mobile\error-context.md
+
+  24) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      782 |   await page.getByRole('button', { name: 'Comparar con los tres motores', exact: true }).click();
+      783 |   const response = await accepted;
+    > 784 |   expect(response.status()).toBe(201);
+          |                             ^
+      785 |   const comparison = await response.json();
+      786 |   expect(comparison.profile).toBe('comparison-v1');
+      787 |   expect(comparison.executions.map(e => e.method)).toEqual(['FF', 'BF', 'WF']);
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:784:29
+
+    Error Context: test-results\optimization-comparison-TA-4febb-s-legacy-sin-consumir-stock-chromium-mobile\error-context.md
+
+  25) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      842 |   await page.getByRole('button', { name: 'Comparar con los tres motores', exact: true }).click();
+      843 |   const response = await accepted;
+    > 844 |   expect(response.status()).toBe(201);
+          |                             ^
+      845 |   const current = await response.json(), path = `${api}/api/optimization/comparisons/${current.comparison_id}`;
+      846 |   await expect(page.getByRole('tab')).toHaveCount(4);
+      847 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:844:29
+
+    Error Context: test-results\optimization-comparison-co-345e2-BF-y-confirmar-una-sola-vez-chromium-mobile\error-context.md
+
+  26) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Comparación finalizada', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Comparación finalizada', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Comparación finalizada', { exact: true })
+
+
+      941 |   await page.getByRole('button', { name: 'Comparar con los tres motores' }).click();
+      942 |   const current = await (await started).json(), path = `${api}/api/optimization/comparisons/${current.comparison_id}`;
+    > 943 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+          |                                                                           ^
+      944 |   await expect(page.getByText(/No se pudo guardar el resultado de este motor/)).toBeVisible();
+      945 |   expect(await stock(page, data)).toEqual(before);
+      946 |   await page.getByRole('tab', { name: 'Comparación', exact: true }).click();
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:943:75
+
+    Error Context: test-results\optimization-comparison-FF-a6788-a-vez-regresando-al-listado-chromium-mobile\error-context.md
+
+  27) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Comparación finalizada', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Comparación finalizada', { exact: true }) with timeout 5000ms
+      - waiting for getByText('Comparación finalizada', { exact: true })
+
+
+      982 |   page.on('request', r => { if (new URL(r.url()).pathname === '/api/optimization/comparisons' && r.method() === 'POST') posts++; });
+      983 |   await page.getByRole('button', { name: 'Comparar con los tres motores' }).click();
+    > 984 |   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+          |                                                                           ^
+      985 |   for (const name of ['First Fit', 'Best Fit', 'Worst Fit']) {
+      986 |     await page.getByRole('tab', { name: new RegExp(name) }).click();
+      987 |     const panel = page.getByRole('tabpanel', { name: new RegExp(name) });
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:984:75
+
+    Error Context: test-results\optimization-comparison-ro-caf0b-trabajo-al-cambiar-pestañas-chromium-mobile\error-context.md
+
+  28) [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      1003 |   const data = await setup(page, 'single');
+      1004 |   const created = await page.request.post(`${api}/api/optimization/comparisons`, { headers: { ...data.headers, 'Idempotency-Key': `view-only-${Date.now()}` }, data: { order_ids: data.orders } });
+    > 1005 |   expect(created.status()).toBe(201);
+           |                            ^
+      1006 |   const comparison = await created.json();
+      1007 |   await login(page, data.actors.view, { comparative: true }); await open(page);
+      1008 |   await page.getByText('Consulta avanzada', { exact: true }).click();
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-comparison.spec.js:1005:28
+
+    Error Context: test-results\optimization-comparison-co-f9ec9-ermitir-elección-ni-consumo-chromium-mobile\error-context.md
+
+  29) [chromium-mobile] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      34 |   const accepted=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/optimization/comparisons'&&r.request().method()==='POST');
+      35 |   await page.getByRole('button',{name:'Comparar con los tres motores',exact:true}).click();
+    > 36 |   const response=await accepted;expect(response.status()).toBe(201);
+         |                                                           ^
+      37 |   const current=await response.json(),results={};
+      38 |   await expect(page.getByText('Comparación finalizada',{exact:true})).toBeVisible();
+      39 |   for(const execution of current.executions) {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-policy-audit.spec.js:36:59
+
+    Error Context: test-results\optimization-policy-audit--a6072--3D-corresponden-al-backend-chromium-mobile\error-context.md
+
+  30) [chromium-mobile] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 503
+
+      34 |   const accepted=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/optimization/comparisons'&&r.request().method()==='POST');
+      35 |   await page.getByRole('button',{name:'Comparar con los tres motores',exact:true}).click();
+    > 36 |   const response=await accepted;expect(response.status()).toBe(201);
+         |                                                           ^
+      37 |   const current=await response.json(),results={};
+      38 |   await expect(page.getByText('Comparación finalizada',{exact:true})).toBeVisible();
+      39 |   for(const execution of current.executions) {
+        at C:\Users\Usuario\Desktop\Repo Taller 1\clean-install\newglass-frontend\tests\e2e\optimization-policy-audit.spec.js:36:59
+
+    Error Context: test-results\optimization-policy-audit--a214a--3D-corresponden-al-backend-chromium-mobile\error-context.md
+
+  30 failed
+    [chromium-desktop] › tests\e2e\en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas 
+    [chromium-desktop] › tests\e2e\optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+    [chromium-desktop] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend 
+    [chromium-desktop] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend 
+    [chromium-mobile] › tests\e2e\en-ux-004-cancel.spec.js:37:1 › EN-UX-004: confirmación operario, parada real, pedidos e histórico durables 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:8:1 › HU-MAT-001: dos fuentes reales y sobrantes confirmados conservan su origen 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para single en seis motores 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:81:3 › HU-MAT-001: trazabilidad real para remnant en seis motores 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:117:1 › S2: ocho fuentes se revisan en el dialogo sin desbordamiento ni consumo duplicado 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:186:1 › TA-043 B08 smoke: seleccion manual y confirmacion v2 atomica real 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:311:1 › TA-043 B06 smoke: API publica seis motores, recuperacion y compatibilidad real 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:415:1 › TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual real 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:766:1 › TA-043 B01 smoke: arranque real, comparison-v1 y runs legacy sin consumir stock 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:826:1 › comparar tres motores, revisar fases y solicitud, elegir BF y confirmar una sola vez 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:935:1 › FF falla al persistir y BF se confirma una vez, regresando al listado 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:976:1 › rotación real de 90 grados y movimiento reducido sin ejecutar otro trabajo al cambiar pestañas 
+    [chromium-mobile] › tests\e2e\optimization-comparison.spec.js:1002:1 › consulta sin permisos de ejecución recupera resultados sin permitir elección ni consumo 
+    [chromium-mobile] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales differential: fuentes y contornos 2D/3D corresponden al backend 
+    [chromium-mobile] › tests\e2e\optimization-policy-audit.spec.js:12:50 › políticas reales mixed: fuentes y contornos 2D/3D corresponden al backend 
+  124 passed (9.7m)
+EXIT=1

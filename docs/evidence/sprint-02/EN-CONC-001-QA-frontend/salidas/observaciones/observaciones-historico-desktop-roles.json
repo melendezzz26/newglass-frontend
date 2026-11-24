@@ -1,0 +1,37 @@
+[
+  {
+    "mode": "historico",
+    "what": "UI Almacenero: controles visibles",
+    "value": {
+      "comparar6": 0,
+      "comparar3": 0,
+      "selectorMetodos": 1,
+      "verAnteriores": 1
+    }
+  },
+  {
+    "mode": "historico",
+    "what": "UI Operario: controles visibles",
+    "value": {
+      "comparar6": 0,
+      "comparar3": 1,
+      "selectorMetodos": 1,
+      "verAnteriores": 1
+    }
+  },
+  {
+    "mode": "historico",
+    "what": "UI Administrador: controles visibles",
+    "value": {
+      "comparar6": 0,
+      "comparar3": 1,
+      "selectorMetodos": 1,
+      "verAnteriores": 1
+    }
+  },
+  {
+    "mode": "historico",
+    "what": "API Almacenero POST comparisons-v2",
+    "value": 403
+  }
+]

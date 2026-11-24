@@ -1,0 +1,324 @@
+Linux WSL2 | node v22.20.0 | Python 3.12.3 | PostgreSQL 16.15 | frontend 5cb33bb | backend 806cde3 (main actual, NO el SHA fijado)
+E2E actual: SHA 5cb33bb17ebfcae4296b7198832a643cae56083a, run 683e61fd-8f9c-4c15-aec1-5579143c7d42, evidencia ~/newglass-qa/e2e/frontend/test-results/e2e-phases/run-Mqsnv5
+Inventario actual: 156 escenarios; b02=2, remaining=154.
+
+Running 2 tests using 1 worker
+
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1943, in _exec_single_context
+[WebServer]     self.dialect.do_execute(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1180, in do_execute
+[WebServer]     cursor.execute(statement, parameters)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+[WebServer]     raise ex.with_traceback(None)
+[WebServer] psycopg.errors.UndefinedTable: relation "intentos_login" does not exist
+[WebServer] LINE 2: FROM intentos_login 
+[WebServer]              ^
+[WebServer] 
+[WebServer] The above exception was the direct cause of the following exception:
+[WebServer] 
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 422, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/applications.py", line 96, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 91, in __call__
+[WebServer]     await self.simple_response(scope, receive, send, request_headers=headers)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 149, in simple_response
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 676, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2706, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 1100, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/presentation/router.py", line 68, in login
+[WebServer]     user = authenticate_with_attempt_limit(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/application/use_cases.py", line 70, in authenticate_with_attempt_limit
+[WebServer]     remaining = max(seconds_locked(attempts.get(key), now) for key in keys)
+[WebServer]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/application/use_cases.py", line 70, in <genexpr>
+[WebServer]     remaining = max(seconds_locked(attempts.get(key), now) for key in keys)
+[WebServer]                                    ^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/infrastructure/sqlalchemy_login_attempt_store.py", line 44, in get
+[WebServer]     row = self._db.execute(select(IntentoLogin).where(_same_key(key))).scalar_one_or_none()
+[WebServer]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2473, in execute
+[WebServer]     return self._execute_internal(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2363, in _execute_internal
+[WebServer]     compile_state_cls.orm_execute_statement(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 316, in orm_execute_statement
+[WebServer]     result = conn.execute(
+[WebServer]              ^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1448, in execute
+[WebServer]     return meth(
+[WebServer]            ^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 533, in _execute_on_connection
+[WebServer]     return connection._execute_clauseelement(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1668, in _execute_clauseelement
+[WebServer]     ret = self._execute_context(
+[WebServer]           ^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1822, in _execute_context
+[WebServer]     return self._exec_single_context(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1962, in _exec_single_context
+[WebServer]     self._handle_dbapi_exception(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2332, in _handle_dbapi_exception
+[WebServer]     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1943, in _exec_single_context
+[WebServer]     self.dialect.do_execute(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1180, in do_execute
+[WebServer]     cursor.execute(statement, parameters)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+[WebServer]     raise ex.with_traceback(None)
+[WebServer] sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedTable) relation "intentos_login" does not exist
+[WebServer] LINE 2: FROM intentos_login 
+[WebServer]              ^
+[WebServer] [SQL: SELECT intentos_login.alcance, intentos_login.clave, intentos_login.fallos, intentos_login.inicio_ventana, intentos_login.bloqueado_hasta, intentos_login.actualizado_en 
+[WebServer] FROM intentos_login 
+[WebServer] WHERE intentos_login.alcance = %(alcance_1)s::VARCHAR AND intentos_login.clave = %(clave_1)s::VARCHAR]
+[WebServer] [parameters: {'alcance_1': 'account', 'clave_1': 'E93226458'}]
+[WebServer] (Background on this error at: https://sqlalche.me/e/21/f405)
+  ✘  1 [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL (2.1s)
+[WebServer] ERROR:    Exception in ASGI application
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1943, in _exec_single_context
+[WebServer]     self.dialect.do_execute(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1180, in do_execute
+[WebServer]     cursor.execute(statement, parameters)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+[WebServer]     raise ex.with_traceback(None)
+[WebServer] psycopg.errors.UndefinedTable: relation "intentos_login" does not exist
+[WebServer] LINE 2: FROM intentos_login 
+[WebServer]              ^
+[WebServer] 
+[WebServer] The above exception was the direct cause of the following exception:
+[WebServer] 
+[WebServer] Traceback (most recent call last):
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 422, in run_asgi
+[WebServer]     result = await app(  # type: ignore[func-returns-value]
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+[WebServer]     return await self.app(scope, receive, send)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1163, in __call__
+[WebServer]     await super().__call__(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/applications.py", line 96, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+[WebServer]     raise exc
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+[WebServer]     await self.app(scope, receive, _send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 91, in __call__
+[WebServer]     await self.simple_response(scope, receive, send, request_headers=headers)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 149, in simple_response
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+[WebServer]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+[WebServer]     await self.app(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 676, in __call__
+[WebServer]     await self.middleware_stack(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 2734, in app
+[WebServer]     await route.handle(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 1780, in handle
+[WebServer]     await self.original_router.handle(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 2789, in handle
+[WebServer]     await included_router._handle_selected(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 1800, in _handle_selected
+[WebServer]     await original_route.handle(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 1279, in handle
+[WebServer]     await app(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 158, in app
+[WebServer]     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[WebServer]     raise exc
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[WebServer]     await app(scope, receive, sender)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 144, in app
+[WebServer]     response = await f(request)
+[WebServer]                ^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 706, in app
+[WebServer]     raw_response = await run_endpoint_function(
+[WebServer]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 354, in run_endpoint_function
+[WebServer]     return await run_in_threadpool(dependant.call, **values)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+[WebServer]     return await anyio.to_thread.run_sync(func)
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 65, in run_sync
+[WebServer]     return await get_async_backend().run_sync_in_worker_thread(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2706, in run_sync_in_worker_thread
+[WebServer]     return await future
+[WebServer]            ^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 1100, in run
+[WebServer]     result = context.run(func, *args)
+[WebServer]              ^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/presentation/router.py", line 68, in login
+[WebServer]     user = authenticate_with_attempt_limit(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/application/use_cases.py", line 70, in authenticate_with_attempt_limit
+[WebServer]     remaining = max(seconds_locked(attempts.get(key), now) for key in keys)
+[WebServer]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/application/use_cases.py", line 70, in <genexpr>
+[WebServer]     remaining = max(seconds_locked(attempts.get(key), now) for key in keys)
+[WebServer]                                    ^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/app/modules/authentication/infrastructure/sqlalchemy_login_attempt_store.py", line 44, in get
+[WebServer]     row = self._db.execute(select(IntentoLogin).where(_same_key(key))).scalar_one_or_none()
+[WebServer]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2473, in execute
+[WebServer]     return self._execute_internal(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2363, in _execute_internal
+[WebServer]     compile_state_cls.orm_execute_statement(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 316, in orm_execute_statement
+[WebServer]     result = conn.execute(
+[WebServer]              ^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1448, in execute
+[WebServer]     return meth(
+[WebServer]            ^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 533, in _execute_on_connection
+[WebServer]     return connection._execute_clauseelement(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1668, in _execute_clauseelement
+[WebServer]     ret = self._execute_context(
+[WebServer]           ^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1822, in _execute_context
+[WebServer]     return self._exec_single_context(
+[WebServer]            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1962, in _exec_single_context
+[WebServer]     self._handle_dbapi_exception(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2332, in _handle_dbapi_exception
+[WebServer]     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1943, in _exec_single_context
+[WebServer]     self.dialect.do_execute(
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1180, in do_execute
+[WebServer]     cursor.execute(statement, parameters)
+[WebServer]   File "~/newglass-qa/e2e/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+[WebServer]     raise ex.with_traceback(None)
+[WebServer] sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedTable) relation "intentos_login" does not exist
+[WebServer] LINE 2: FROM intentos_login 
+[WebServer]              ^
+[WebServer] [SQL: SELECT intentos_login.alcance, intentos_login.clave, intentos_login.fallos, intentos_login.inicio_ventana, intentos_login.bloqueado_hasta, intentos_login.actualizado_en 
+[WebServer] FROM intentos_login 
+[WebServer] WHERE intentos_login.alcance = %(alcance_1)s::VARCHAR AND intentos_login.clave = %(clave_1)s::VARCHAR]
+[WebServer] [parameters: {'alcance_1': 'account', 'clave_1': 'E88332182'}]
+[WebServer] (Background on this error at: https://sqlalche.me/e/21/f405)
+  ✘  2 [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL (2.1s)
+
+
+  1) [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+       at optimizationRealSupport.js:28
+
+      26 | export async function loginApi(request, credentials) {
+      27 |   const response = await request.post(`${api}/api/auth/login`, { data: credentials });
+    > 28 |   expect(response.status()).toBe(200);
+         |                             ^
+      29 |   return { Authorization: `Bearer ${(await response.json()).access_token}` };
+      30 | }
+      31 | export async function setup(page, scenario, { createOrders = true } = {}) {
+        at loginApi (~/newglass-qa/e2e/frontend/tests/e2e/optimizationRealSupport.js:28:29)
+        at setup (~/newglass-qa/e2e/frontend/tests/e2e/optimizationRealSupport.js:33:19)
+        at ~/newglass-qa/e2e/frontend/tests/e2e/optimization-comparison.spec.js:707:16
+
+    Error Context: test-results/e2e-phases/run-Mqsnv5/b02/optimization-comparison-TA-e1e14-pués-del-upgrade-PostgreSQL-chromium-desktop/error-context.md
+
+  2) [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+       at optimizationRealSupport.js:28
+
+      26 | export async function loginApi(request, credentials) {
+      27 |   const response = await request.post(`${api}/api/auth/login`, { data: credentials });
+    > 28 |   expect(response.status()).toBe(200);
+         |                             ^
+      29 |   return { Authorization: `Bearer ${(await response.json()).access_token}` };
+      30 | }
+      31 | export async function setup(page, scenario, { createOrders = true } = {}) {
+        at loginApi (~/newglass-qa/e2e/frontend/tests/e2e/optimizationRealSupport.js:28:29)
+        at setup (~/newglass-qa/e2e/frontend/tests/e2e/optimizationRealSupport.js:33:19)
+        at ~/newglass-qa/e2e/frontend/tests/e2e/optimization-comparison.spec.js:707:16
+
+    Error Context: test-results/e2e-phases/run-Mqsnv5/b02/optimization-comparison-TA-e1e14-pués-del-upgrade-PostgreSQL-chromium-mobile/error-context.md
+
+  2 failed
+    [chromium-desktop] › tests/e2e/optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+    [chromium-mobile] › tests/e2e/optimization-comparison.spec.js:701:1 › TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL 
+
+Gate E2E (TA-040) fallido:
+- ejecución incompleta o fallida: b02 (failed)
+Gate conjunto TA-040: FAIL, 0/156 escenarios validados.
+b02: proceso fallido (1)
+evidencia ausente o JSON corrupto: ~/newglass-qa/e2e/frontend/test-results/e2e-phases/run-Mqsnv5/remaining.json: ENOENT: no such file or directory, open '~/newglass-qa/e2e/frontend/test-results/e2e-phases/run-Mqsnv5/remaining.json'
+EXIT=1

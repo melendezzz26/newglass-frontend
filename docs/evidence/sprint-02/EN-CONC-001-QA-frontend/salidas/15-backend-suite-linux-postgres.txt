@@ -1,0 +1,63 @@
+WSL2 | Python 3.12.3 | PostgreSQL 16.15 | backend 806cde3 | NEWGLASS_REQUIRE_POSTGRES=1 (API e integración se ejecutan, no se omiten)
+$ python -m pytest tests -q -ra --ignore=tests/unit/optimization/test_comparison_runner.py --ignore=tests/unit/optimization/test_sequential_runner.py --ignore=tests/unit/optimization/test_resource_profile.py
+>       root = Path(os.environ["NEWGLASS_QA_LAB"])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/optimization/test_qa_frontend_lab.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = environ({'SHELL': '/bin/bash', 'WSL2_GUI_APPS_ENABLED': '1', 'WSL_DISTRO_NAME': 'Ubuntu-24.04', 'PYTHON_DOTENV_DISABLE...: '480', 'PYTEST_CURRENT_TEST': 'tests/integration/optimization/test_qa_frontend_lab.py::test_qa_frontend_lab (call)'})
+key = 'NEWGLASS_QA_LAB'
+
+>   ???
+E   KeyError: 'NEWGLASS_QA_LAB'
+
+<frozen os>:685: KeyError
+=============================== warnings summary ===============================
+  ~/newglass-qa/backend/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [6] tests/integration/optimization/test_parallel_lab.py:151: Requires an isolated Linux systemd user lab
+SKIPPED [1] tests/integration/optimization/test_parallel_lab.py:238: Requires an isolated Linux systemd user lab
+SKIPPED [1] tests/integration/optimization/test_parallel_lab.py:346: Requires an isolated Linux systemd user lab
+SKIPPED [1] tests/integration/optimization/test_parallel_lab.py:389: Requires an isolated Linux systemd user lab
+SKIPPED [1] tests/integration/optimization/test_parallel_lab.py:435: Requires an isolated Linux systemd user lab
+FAILED tests/integration/optimization/test_browser_frontend_lab.py::test_browser_lab
+FAILED tests/integration/optimization/test_comparison_calculation.py::test_real_pipeline_persists_three_results_before_notifying_and_releases_after_join
+FAILED tests/integration/optimization/test_comparison_calculation.py::test_lost_observer_does_not_cancel_or_restart_calculations
+FAILED tests/integration/optimization/test_comparison_calculation.py::test_failed_engine_keeps_successful_persisted_results
+FAILED tests/integration/optimization/test_comparison_calculation.py::test_result_commit_failure_is_isolated_to_its_engine
+FAILED tests/integration/optimization/test_comparison_calculation.py::test_pool_timeout_after_valid_ff_calculation_preserves_bf_wf_and_inventory
+FAILED tests/integration/optimization/test_comparison_calculation.py::test_concurrent_supervisor_claim_cannot_start_another_calculation
+FAILED tests/integration/optimization/test_comparison_queue_v2.py::test_three_roles_queued_restart_active_cancel_and_other_jobs_complete
+FAILED tests/integration/optimization/test_comparison_queue_v2.py::test_revocation_in_queue_and_worker_failure_are_independent
+FAILED tests/integration/optimization/test_comparison_queue_v2.py::test_concurrent_v4_confirmations_cannot_consume_shared_stock_twice
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_common_capture_independent_commits_external_join_and_no_consumption
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_local_process_and_ipc_failure_preserve_other_five[crash_hf]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_local_process_and_ipc_failure_preserve_other_five[oversize_hf]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_database_write_failure_does_not_emit_false_persistence
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_observer_cannot_release_admission_while_supervisor_alive[disconnected]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_observer_cannot_release_admission_while_supervisor_alive[blocked]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_native_m6_diagnostic_survives_process_and_database[EXPANSION_LIMIT-limits0]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_native_m6_diagnostic_survives_process_and_database[GEOMETRY_PROBE_LIMIT-limits1]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_native_m6_diagnostic_survives_process_and_database[STATE_MEMORY_LIMIT-limits2]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_native_m6_diagnostic_survives_process_and_database[TIME_LIMIT-limits3]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_global_abort_and_shutdown_close_never_started_workers[deadline]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_global_abort_and_shutdown_close_never_started_workers[shutdown]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_failed_closure_commit_keeps_lease_until_successful_retry
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_startup_recovery_ignores_standalone_ff_and_keeps_invalid_comparison_reserved
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_recovery_requires_process_identity_proof_without_recalculation[dead]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_recovery_requires_process_identity_proof_without_recalculation[reused_pid]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_recovery_requires_process_identity_proof_without_recalculation[joined_worker]
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_v1_external_owner_commits_after_join_and_shared_retention_handoff
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_fastapi_lifespan_recovers_and_shuts_down_real_v2_without_routes
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_spawn_failure_keeps_other_engines_and_closes_spawn_intent
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_owner_allocation_failure_after_acceptance_keeps_operational_block
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_cancel_intent_recovery_never_assumes_process_death_and_marks_safe_terminal
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_user_cancel_during_bf_preserves_ff_result_and_prevents_later_dispatch
+FAILED tests/integration/optimization/test_comparison_supervision_v2.py::test_cancel_racing_natural_completion_keeps_completed_result
+FAILED tests/integration/optimization/test_qa_frontend_lab.py::test_qa_frontend_lab
+35 failed, 3866 passed, 10 skipped, 1 warning in 831.51s (0:13:51)
+EXIT=1

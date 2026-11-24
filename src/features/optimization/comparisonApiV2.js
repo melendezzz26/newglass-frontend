@@ -1,6 +1,7 @@
 // TA-043/B07: explicit comparison-v2 transport. The comparison-v1 API is unchanged.
 import { API_URL } from '../../shared/apiUrl';
 import { admissionDiagnostic } from './admissionDiagnostic';
+import { parseProgress, progressQuery, retryAfterMs } from './distributedProgress.js';
 import { getAccessToken } from '../authentication/authApi';
 import { RunContractError, parseConfirmation } from './runContract';
 import { parseMaskDescriptor, parseVisualMask } from './visualContract';
@@ -48,7 +49,7 @@ export function createComparisonV2Api({ token, fetchImpl = globalThis.fetch } = 
     if (!response.ok) {
       const detail = (await json().catch(() => null))?.detail;
       throw Object.assign(new Error(detail?.message ?? (response.status === 401 ? 'Tu sesión venció.' : 'No se pudo completar la operación.')),
-        { status: response.status, code: detail?.code, latestSequence: detail?.latest_sequence,
+        { status: response.status, code: detail?.code, latestSequence: detail?.latest_sequence, retryAfterMs: retryAfterMs(response),
           admissionDiagnostic: response.status === 503 ? admissionDiagnostic(detail) : null,
           requestAccepted: detail?.request_accepted });
     }
@@ -74,6 +75,11 @@ export function createComparisonV2Api({ token, fetchImpl = globalThis.fetch } = 
     load: async (comparisonId, signal) => {
       check(id(comparisonId));
       return parseComparisonV2(await request(`/${comparisonId}`, { signal }));
+    },
+    async progress(comparisonId, after, signal) {
+      check(id(comparisonId));
+      return parseProgress(await request(`/${comparisonId}/progress?${progressQuery(after)}`, { signal, maximum: 32768 }),
+        { profile: 'V2', id: comparisonId, after });
     },
     lookup: async (key, signal) => parseComparisonV2(await request(`/requests/${encodeURIComponent(key)}`, { signal })),
     async choose(current, executionId) {

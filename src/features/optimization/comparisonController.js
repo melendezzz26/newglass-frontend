@@ -1,34 +1,53 @@
 // Autor: Fabricio Melendez Quezada. Revisor asignado: Andro Quispe.
 import { emptyVisual } from './visualState';
 import { visualPlacement, unitKey, stockKey } from './runContract';
+import { cursorStorage, followProgress, newRequestKey as newKey, readStored, transientProgressError, writeStored } from './distributedProgress.js';
 
 const freshVisual = () => ({ ...emptyVisual(), enabled: true });
-const newKey = () => globalThis.crypto?.randomUUID?.() ?? `cmp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-export function createComparisonController({ api, apiV2, source, storageKey, initialId, initialProfile, onExpired, onLegacy }) {
+export function createComparisonController({ api, apiV2, source, storageKey, initialId, initialProfile, distributed = false, onExpired, onLegacy }) {
   let state = { orders: [], selected: [], comparison: null, results: {}, visuals: {}, live: {}, cursor: 0,
     busy: false, loading: true, error: '', success: '', history: false, connection: 'connecting', partial: false,
     savedComparisons: [], historyNext: null, historyOpen: false, pendingRequest: false,
-    profile: initialProfile === 'comparison-v2' ? 'comparison-v2' : 'comparison-v1' };
+    progress: null, progressLoading: false, visualUnavailable: false,
+    profile: initialProfile ?? 'comparison-v1' };
   let active = false, generation = 0, observer, request, retry, unsubscribe, requestKey, operation, cancelOperation, syncTimer;
-  let actionSequence = 0, preservedHistory = false;
+  let actionSequence = 0, preservedHistory = false, retryAdmissionAt = 0;
   let attemptOrders = null;
   const confirmedOrders = new Set();
   const listeners = new Set();
   const set = patch => { state = { ...state, ...patch }; listeners.forEach(fn => fn()); };
-  const remember = (pending = false, preserveHistory = preservedHistory) => { try { localStorage.setItem(storageKey, JSON.stringify({ id: pending ? null : state.comparison?.comparison_id,
-    requestKey, operation, cancelOperation, attemptOrders, profile: !pending && preserveHistory ? state.comparison?.profile ?? state.profile : state.profile,
-    preserveHistory })); } catch { /* Almacenamiento opcional. */ } };
+  const profileKey = storageKey ? storageKey + ':active-profile' : null;
+  const v2Key = storageKey ? storageKey + ':v2' : null;
+  const scopedRecords = distributed || Boolean(readStored(profileKey) || readStored(v2Key));
+  const recordKey = profile => scopedRecords && profile === 'comparison-v2' ? v2Key : storageKey;
+  function readRecord(profile) {
+    const key = recordKey(profile);
+    const saved = readStored(key);
+    if (saved && (!scopedRecords || !saved.profile || saved.profile === profile)) return saved;
+    if (key === storageKey) return null;
+    const legacy = readStored(storageKey);
+    if (legacy?.profile !== 'comparison-v2') return null;
+    if (writeStored(key, legacy)) writeStored(storageKey, null);
+    return legacy;
+  }
+  const remember = (pending = false, preserveHistory = preservedHistory) => {
+    const profile = !pending && preserveHistory ? state.comparison?.profile ?? state.profile : state.profile;
+    const saved = writeStored(recordKey(profile), { id: pending ? null : state.comparison?.comparison_id,
+      requestKey, operation, cancelOperation, attemptOrders, profile, preserveHistory });
+    if (saved && scopedRecords) writeStored(profileKey, profile);
+    return saved;
+  };
   const client = profile => profile === 'comparison-v2' ? apiV2 : api;
   const valid = g => active && g === generation;
   const fail = error => { if (error.status === 401) onExpired?.(); set({ error: error.message,
     admissionDiagnostic: error.admissionDiagnostic ?? null, loading: false }); };
   function clearWork(success = '') {
     prepare(); actionSequence++; requestKey = null; operation = null; cancelOperation = null; attemptOrders = null; preservedHistory = false;
-    try { localStorage.removeItem(storageKey); } catch { /* Almacenamiento opcional. */ }
+    writeStored(recordKey(state.profile), null);
     set({ comparison: null, results: {}, visuals: {}, live: {}, cursor: 0, selected: [], error: '',
       partial: false, history: false, busy: false, loading: true, success, connection: 'connecting',
-      pendingRequest: false, orders: state.orders.filter(order => !confirmedOrders.has(order.id_pedido)) });
+      pendingRequest: false, progress: null, progressLoading: false, visualUnavailable: false, orders: state.orders.filter(order => !confirmedOrders.has(order.id_pedido)) });
     source.refresh?.({ force: true });
   }
   function confirmed(current) {
@@ -43,11 +62,17 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
     const profile = current.profile === 'comparison-v2' ? 'comparison-v2' : 'comparison-v1';
     set({ comparison: current, profile, loading: false, pendingRequest: false }); remember();
   }
-  async function sync(visual = false) {
+  async function sync(visual = false, loaded) {
     const g = generation, current = state.comparison;
     if (!current) return;
     const activeApi = client(current.profile);
-    const next = await activeApi.load(current.comparison_id, request?.signal);
+    let next;
+    try {
+      next = loaded ?? await activeApi.load(current.comparison_id, request?.signal);
+    } catch (error) {
+      if (valid(g) && [401, 403, 404].includes(error.status)) hideInaccessible(error);
+      throw error;
+    }
     if (!valid(g)) return;
     if (next.profile !== 'comparison-v2' && next.confirmed && !state.history) { confirmed(next); return; }
     if (next.profile !== 'comparison-v2' && next.released && !state.history) { released(next); return; }
@@ -61,7 +86,8 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
           if (valid(g)) set({ results: { ...state.results, [execution.execution_id]: { result: value.result, signature } } });
         }
       }
-      if (visual) {
+      if (visual && !(distributed && current.profile === 'comparison-v2')
+        && state.visuals[execution.execution_id]?.unavailable !== true) {
         try {
           const manifest = await activeApi.manifest(next, execution, request?.signal);
           if (!valid(g)) return;
@@ -73,7 +99,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         } catch (error) {
           if (error.name === 'AbortError' || !valid(g)) return;
           if (error.status === 401) onExpired?.();
-          set({ visuals: { ...state.visuals, [execution.execution_id]: { ...(state.visuals[execution.execution_id] ?? freshVisual()), error: error.message } } });
+          set({ visuals: { ...state.visuals, [execution.execution_id]: { ...(state.visuals[execution.execution_id] ?? freshVisual()), unavailable: error.status === 410, error: error.message } } });
         }
       }
     }));
@@ -118,14 +144,69 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
     }
     if (value.event === 'comparison_finished') delayedSync();
   }
+  function hideInaccessible(error) {
+    prepare();
+    set({ comparison: null, results: {}, visuals: {}, live: {}, progress: null, progressLoading: false });
+    fail(error);
+  }
+  async function followSnapshot(g) {
+    if (!valid(g)) return;
+    let delay = 1000;
+    try {
+      await sync();
+      if (valid(g)) set({ connection: 'connected' });
+    } catch (error) {
+      if (!valid(g) || error.name === 'AbortError') return;
+      if (!transientProgressError(error)) { fail(error); return; }
+      set({ connection: 'reconnecting' });
+      delay = Math.max(delay, error.retryAfterMs ?? 0);
+    }
+    if (valid(g) && !state.comparison?.terminal) retry = setTimeout(() => followSnapshot(g), delay);
+  }
   async function follow(g) {
     observer?.abort(); observer = new AbortController();
+    const current = state.comparison;
+    if (distributed && current.profile === 'comparison-v2') {
+      const identifier = current.comparison_id;
+      set({ progressLoading: true });
+      await followProgress({
+        signal: observer.signal,
+        cursor: cursorStorage(recordKey(current.profile), identifier),
+        read: (after, signal) => apiV2.progress(identifier, after, signal),
+        apply: async page => {
+          if (!valid(g)) return;
+          if (page.current_engine && !current.executions.some(engine =>
+            engine.execution_id === page.current_engine.execution_id && engine.method === page.current_engine.method)
+            || page.events.some(event => event.execution_id !== null && !current.executions.some(engine =>
+              engine.execution_id === event.execution_id && engine.method === event.method))) {
+            throw new Error('El progreso no corresponde a los motores de este trabajo.');
+          }
+          if (page.version > state.comparison.version || page.state === 'TERMINAL' && !state.comparison.terminal
+            || state.connection === 'reconnecting' || state.progress === null) await sync();
+          if (valid(g)) set({ progress: page, progressLoading: false, connection: 'connected' });
+        },
+        onReconnect: () => { if (valid(g)) set({ progressLoading: true, connection: 'reconnecting' }); },
+        onReset: () => { if (valid(g)) set({ partial: true, connection: 'reconnecting' }); },
+        onError: error => {
+          if (!valid(g)) return;
+          if ([401, 403, 404].includes(error.status)) hideInaccessible(error);
+          else { set({ progressLoading: false }); fail(error); }
+        },
+      });
+      return;
+    }
+    if (state.visualUnavailable) { await followSnapshot(g); return; }
     try {
       await client(state.comparison.profile).observe(state.comparison, state.cursor, value => { if (valid(g)) event(value); }, observer.signal);
       if (valid(g)) await sync();
     } catch (error) {
       if (!valid(g) || error.name === 'AbortError') return;
       if (error.status === 401) { fail(error); return; }
+      if (error.status === 410 && current.profile === 'comparison-v2') {
+        set({ visualUnavailable: true });
+        await followSnapshot(g);
+        return;
+      }
       if (error.code === 'EVENT_CURSOR_EXPIRED' && Number.isSafeInteger(error.latestSequence)) set({ cursor: error.latestSequence, partial: true });
       set({ connection: 'reconnecting' });
       try { await sync(true); } catch (e) { if (valid(g)) fail(e); }
@@ -139,19 +220,32 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
   }
   async function load(id, { automatic = false, profile = state.profile } = {}) {
     const selectedProfile = profile === 'comparison-v2' ? 'comparison-v2' : 'comparison-v1';
-    const g = prepare(); set({ profile: selectedProfile, loading: true, error: '', success: '', history: false, cursor: 0, visuals: {}, results: {}, live: {}, partial: false });
+    const sameJob = state.comparison?.comparison_id === id && state.comparison?.profile === selectedProfile;
+    const g = prepare();
+    set({ profile: selectedProfile, loading: true, error: '', success: '', history: false,
+      ...(sameJob ? {} : { comparison: null, cursor: 0, visuals: {}, results: {}, live: {}, partial: false,
+        progress: null, progressLoading: false, visualUnavailable: false }) });
     try {
       const current = await client(selectedProfile).load(id, request.signal);
       if (!valid(g)) return;
       if (automatic && current.profile !== 'comparison-v2' && current.confirmed) { confirmed(current); return; }
       if (automatic && current.profile !== 'comparison-v2' && current.released) { released(current); return; }
       set({ history: current.confirmed || current.released });
-      apply(current); await sync(true);
-      if (valid(g) && !state.comparison.terminal) follow(g);
+      apply(current);
+      if (distributed && selectedProfile === 'comparison-v2' && !current.terminal) follow(g);
+      else {
+        await sync(true, current);
+        if (valid(g) && !state.comparison.terminal) follow(g);
+      }
     } catch (error) {
       if (!valid(g) || error.name === 'AbortError') return;
       if (selectedProfile === 'comparison-v1' && error.status === 404 && onLegacy) onLegacy(id);
-      else fail(error);
+      else if ([401, 403, 404].includes(error.status)) hideInaccessible(error);
+      else if (distributed && selectedProfile === 'comparison-v2' && transientProgressError(error)) {
+        set({ connection: 'reconnecting', loading: false, progressLoading: true });
+        retry = setTimeout(() => { if (valid(g)) load(id, { automatic, profile: selectedProfile }); },
+          Math.max(1000, error.retryAfterMs ?? 0));
+      } else fail(error);
     }
   }
   async function action(fn) {
@@ -165,6 +259,34 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       }
     } finally { if (active && sequence === actionSequence) set({ busy: false }); }
   }
+  function restore(profile, identifier) {
+    const saved = readRecord(profile) ?? {};
+    const sameWork = !identifier || saved.id === identifier;
+    preservedHistory = sameWork && saved.preserveHistory === true;
+    requestKey = sameWork ? saved.requestKey : null;
+    operation = sameWork ? saved.operation : null;
+    cancelOperation = sameWork ? saved.cancelOperation : null;
+    attemptOrders = sameWork && Array.isArray(saved.attemptOrders)
+      && saved.attemptOrders.every(id => Number.isSafeInteger(id) && id > 0) ? saved.attemptOrders : null;
+    if (identifier ?? saved.id) {
+      load(identifier ?? saved.id, { automatic: !identifier && !preservedHistory, profile });
+    } else if (requestKey) {
+      set({ pendingRequest: true, selected: attemptOrders ?? [] });
+      const g = prepare();
+      const lookup = async () => {
+        try {
+          const activeApi = client(profile);
+          const current = await (distributed ? activeApi.lookup(requestKey, request.signal) : activeApi.lookup(requestKey));
+          if (valid(g)) load(current.comparison_id, { automatic: true, profile });
+        } catch (error) {
+          if (!valid(g) || error.status === 404 || error.name === 'AbortError') return;
+          if (distributed && transientProgressError(error)) retry = setTimeout(lookup, Math.max(1000, error.retryAfterMs ?? 0));
+          else fail(error);
+        }
+      };
+      lookup();
+    }
+  }
   return {
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     getSnapshot: () => state,
@@ -174,32 +296,29 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         if (!active) return;
         if (e.type === 'orders') {
           const orders = e.orders.filter(order => !confirmedOrders.has(order.id_pedido));
-          set({ orders, selected: state.selected.filter(id => orders.some(o => o.id_pedido === id)), loading: false });
+          set({ orders, selected: distributed && state.pendingRequest ? state.selected : state.selected.filter(id => orders.some(o => o.id_pedido === id)), loading: false });
         }
         else { set({ connection: 'reconnecting' }); fail(e.error); }
       });
       source.load();
-      let saved = {};
-      try { const value = JSON.parse(localStorage.getItem(storageKey) ?? '{}'); if (value && typeof value === 'object') saved = value; } catch { /* Sin estado local. */ }
-      preservedHistory = saved.preserveHistory === true;
-      const restoredProfile = initialProfile ?? (initialId ? 'comparison-v1' : saved.profile);
-      if (restoredProfile === 'comparison-v2' && apiV2) set({ profile: 'comparison-v2' });
-      requestKey = saved.requestKey; operation = saved.operation; cancelOperation = saved.cancelOperation;
-      attemptOrders = Array.isArray(saved.attemptOrders) && saved.attemptOrders.every(id => Number.isSafeInteger(id) && id > 0)
-        ? saved.attemptOrders : null;
-      if (requestKey && !saved.id) set({ pendingRequest: true, selected: attemptOrders ?? [] });
-      const g = generation;
-      if (initialId ?? saved.id) load(initialId ?? saved.id, { automatic: !initialId && !saved.preserveHistory, profile: restoredProfile });
-      else if (requestKey) client(restoredProfile).lookup(requestKey).then(current => { if (valid(g)) load(current.comparison_id, { automatic: true, profile: restoredProfile }); })
-        .catch(error => { if (valid(g) && error.status !== 404) fail(error); });
+      const preferred = readStored(profileKey) ?? (readStored(v2Key) ? 'comparison-v2' : readStored(storageKey)?.profile);
+      const profile = initialProfile ?? (initialId ? 'comparison-v1' : preferred ?? state.profile);
+      set({ profile });
+      restore(profile, initialId);
     },
     dispose() { active = false; prepare(); unsubscribe?.(); source.dispose(); },
-    select: ids => set({ selected: ids }),
+    select: ids => { if (!distributed || !state.pendingRequest) set({ selected: ids }); },
     setProfile(profile) {
       if (!['comparison-v1', 'comparison-v2'].includes(profile) || profile === 'comparison-v2' && !apiV2
         || state.pendingRequest || state.comparison && !state.comparison.released && !state.comparison.confirmed) return;
-      if (profile !== state.profile) { requestKey = null; operation = null; }
-      set({ profile, error: '' }); remember(true);
+      if (profile !== state.profile) {
+        requestKey = null; operation = null; cancelOperation = null; attemptOrders = null;
+      }
+      set({ profile, error: '' });
+      if (scopedRecords) {
+        writeStored(profileKey, profile);
+        restore(profile);
+      } else remember(true);
     },
     load,
     history: beforeId => action(async () => {
@@ -219,37 +338,58 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       });
     },
     refresh: () => action(async () => {
-      if (state.comparison) await sync(true);
+      if (state.pendingRequest && requestKey) {
+        const g = generation;
+        const current = await client(state.profile).lookup(requestKey, request?.signal);
+        if (valid(g)) await load(current.comparison_id, { profile: state.profile });
+      } else if (state.comparison) {
+        if (distributed && state.comparison.profile === 'comparison-v2' && !state.comparison.terminal) {
+          const id = state.comparison.comparison_id;
+          await load(id, { profile: 'comparison-v2' });
+        } else await sync(true);
+      }
       else if (requestKey) { const current = await client(state.profile).lookup(requestKey); await load(current.comparison_id, { profile: state.profile }); }
       else source.refresh?.();
     }),
     start: (profile = state.profile) => action(async () => {
-      if (!state.selected.length || state.comparison && !state.comparison.released && !state.comparison.confirmed) return;
+      if (Date.now() < retryAdmissionAt || !(distributed && state.pendingRequest ? attemptOrders?.length : state.selected.length)
+        || state.comparison && !state.comparison.released && !state.comparison.confirmed) return;
       if (state.comparison?.confirmed || state.comparison?.released) requestKey = null;
       if (!['comparison-v1', 'comparison-v2'].includes(profile) || profile === 'comparison-v2' && !apiV2) return;
       if (state.pendingRequest && profile !== state.profile) throw new Error('Actualiza el resultado antes de cambiar los métodos.');
       if (profile !== state.profile) { requestKey = null; operation = null; }
-      const selectedOrders = [...state.selected].sort((a, b) => a - b);
+      const selectedOrders = [...(distributed && state.pendingRequest ? attemptOrders : state.selected)].sort((a, b) => a - b);
       if (requestKey && attemptOrders && JSON.stringify(selectedOrders) !== JSON.stringify(attemptOrders)) {
         throw new Error('Hay una comparación por recuperar. Actualiza el resultado antes de cambiar los pedidos.');
       }
+      const wasPending = state.pendingRequest;
       set({ profile });
       const g = prepare(); requestKey ??= newKey(); attemptOrders = selectedOrders; operation = null; cancelOperation = null;
-      set({ pendingRequest: true }); remember(true);
+      set({ pendingRequest: true });
+      if (!remember(true) && distributed) throw new Error('Habilita el almacenamiento local para guardar la solicitud antes de enviarla.');
       let current;
       try { current = await client(profile).start(attemptOrders, requestKey, request.signal); }
       catch (error) {
-        // A rejected input never became an accepted work. Network errors and
-        // conflicts remain recoverable with the original key and frozen orders.
-        if ([400, 422].includes(error.status) || error.requestAccepted === false) {
+        // Release only a definitively rejected lot. An uncertain admission
+        // remains recoverable with the original key and frozen orders.
+        if (!valid(g)) return;
+        if (distributed && [429, 503].includes(error.status)) retryAdmissionAt = Date.now() + (error.retryAfterMs ?? 1000);
+        const rejected = error.requestAccepted === false || (error.requestAccepted !== true
+          && (profile === 'comparison-v2' && error.status === 409 && error.code === 'STATE_CONFLICT'
+            || !wasPending && [400, 403, 422].includes(error.status)));
+        if (rejected) {
           requestKey = null; attemptOrders = null; preservedHistory = !!state.comparison;
-          set({ pendingRequest: false }); remember();
+          set({ pendingRequest: false, selected: state.selected.filter(id => state.orders.some(order => order.id_pedido === id)) });
+          remember();
         }
         throw error;
       }
       if (!valid(g)) return;
       preservedHistory = false;
-      set({ visuals: {}, results: {}, live: {}, cursor: 0, partial: false, success: '', history: false }); apply(current); source.refresh?.(); follow(g);
+      set({ visuals: {}, results: {}, live: {}, cursor: 0, partial: false, progress: null,
+        progressLoading: false, visualUnavailable: false, success: '', history: false }); apply(current); source.refresh?.();
+      if (distributed && profile === 'comparison-v2' && current.terminal) await sync(false, current);
+      else follow(g);
     }),
     choose: id => action(async () => {
       const current = state.comparison, g = generation;
@@ -262,7 +402,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       if (!current?.confirmable || current.confirmed || current.released) return;
       const g = generation;
       if (!operation || operation.executionId !== current.selected_execution_id) operation = { executionId: current.selected_execution_id, version: current.version, key: newKey() };
-      remember();
+      if (!remember() && distributed) throw new Error('Habilita el almacenamiento local antes de confirmar.');
       try { await client(current.profile).confirm(current, operation); }
       catch (error) {
         if (current.profile !== 'comparison-v2' || !valid(g)) throw error;
@@ -289,7 +429,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       if (!cancelOperation || cancelOperation.comparisonId !== current.comparison_id) {
         cancelOperation = { comparisonId: current.comparison_id, key: newKey() };
       }
-      remember();
+      if (!remember() && distributed) throw new Error('Habilita el almacenamiento local antes de solicitar la cancelación.');
       // Optimistic versions can change as FF starts/finishes between the
       // summary render and the operator's click. Refresh the durable version
       // and retry with the SAME idempotency key; never invent a stopped state.

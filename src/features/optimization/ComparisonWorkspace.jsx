@@ -9,6 +9,7 @@ import { createComparisonV2Api } from './comparisonApiV2';
 import { CATALOG_V2 } from './comparisonV2Contract';
 import { beamFallbackSummary } from './beamFallbackModel';
 import { createComparisonController } from './comparisonController';
+import { ownerStorageKey, progressLabel } from './distributedProgress.js';
 import { resultSnapshot, visualPlacement } from './runContract';
 import { GeometryPreview } from './GeometryPreview';
 import { OriginalMeasuresTable } from './OriginalMeasuresTable';
@@ -119,7 +120,7 @@ function liveSnapshot(comparison, live) {
     groups: [...groups.values()], materials_used: live?.materials ?? [], residual_regions: [] });
 }
 
-function EnginePanel({ comparison, execution, visual: supplied, live, result, api, onSessionExpired, patternAnchor }) {
+function EnginePanel({ comparison, execution, visual: supplied, live, result, api, onSessionExpired, patternAnchor, distributed }) {
   const visual = supplied ?? { descriptors: {}, current: null, order: [], processed: 0 };
   const [presented, setPresented] = useState(0), [inspection, setInspection] = useState(null), [paused, setPaused] = useState(null);
   const masks = Object.values(visual.descriptors).filter(m => m.kind === 'PIECE' && Number(m.rotation_deg) === 0);
@@ -168,7 +169,7 @@ function EnginePanel({ comparison, execution, visual: supplied, live, result, ap
     {beamSearch && search && !result && <><p role="status">Buscando una distribución. Las piezas se mostrarán cuando haya un resultado guardado.</p>
       <details><summary>Detalles de búsqueda</summary><div className="comparison-search-progress">Búsqueda provisional · nivel {search.completed_levels} · {search.expansions} expansiones · {search.geometry_probes} sondeos geométricos · frente {search.frontier_size}.<small>Estos estados no representan colocaciones finales.</small></div></details></>}
     {execution.diagnostic && <details><summary>Detalles del método</summary><code>{execution.diagnostic.origin} · {execution.diagnostic.termination_reason}</code>{fallback && <p>{fallback}</p>}</details>}
-    {execution.status !== 'FALLIDA' && execution.outcome !== 'FAILED' && <div className="comparison-progress"><p role="status">{placed} / {execution.total_units} piezas colocadas · {processed} procesadas</p>
+    {(!distributed || result) && execution.status !== 'FALLIDA' && execution.outcome !== 'FAILED' && <div className="comparison-progress"><p role="status">{placed} / {execution.total_units} piezas colocadas · {processed} procesadas</p>
       <progress aria-label={`Piezas colocadas por ${methodName(execution.method)}`} value={placed} max={execution.total_units} /></div>}
     <ol className="comparison-phases" aria-label="Fases del motor">{PHASES.map((label, index) => <li key={label}>
       <button type="button" aria-current={phase === index ? 'step' : undefined} disabled={!available[index] && index !== 0}
@@ -255,21 +256,21 @@ function Metrics({ execution, result }) {
   </section>;
 }
 
-export function ComparisonWorkspace({ token, user, initialRunId, initialProfile, onSessionExpired, onLegacy, comparisonAdapter, comparisonV2Adapter, source: suppliedSource }) {
+export function ComparisonWorkspace({ token, user, initialRunId, initialProfile, onSessionExpired, onLegacy, comparisonAdapter, comparisonV2Adapter, source: suppliedSource, distributed = false }) {
   const execute = canExecuteOptimization(user), canConfirm = hasPermission(user, 'optimization.confirm');
   const api = useMemo(() => comparisonAdapter ?? createComparisonApi({ token }), [comparisonAdapter, token]);
   const apiV2 = useMemo(() => comparisonV2Adapter ?? createComparisonV2Api({ token }), [comparisonV2Adapter, token]);
   const source = useMemo(() => suppliedSource ?? (execute ? createPendingOrdersSource({ token }) : readOnlySource()), [suppliedSource, execute, token]);
-  const storageKey = `newglass:comparison:${user.id_usuario ?? user.user_id ?? user.usuario}`;
+  const storageKey = ownerStorageKey(user, 'comparison');
   const flow = useMemo(() => createComparisonController({ api, apiV2, source, storageKey, initialId: initialRunId,
-    initialProfile, onExpired: onSessionExpired, onLegacy }), [api, apiV2, source, storageKey, initialRunId, initialProfile, onSessionExpired, onLegacy]);
+    initialProfile, distributed, onExpired: onSessionExpired, onLegacy }), [api, apiV2, source, storageKey, initialRunId, initialProfile, distributed, onSessionExpired, onLegacy]);
   const state = useSyncExternalStore(flow.subscribe, flow.getSnapshot, flow.getSnapshot);
   useEffect(() => { flow.mount(); return () => flow.dispose(); }, [flow]);
   return <ComparisonView key={state.comparison?.comparison_id ?? 'pending'} state={state} flow={flow}
-    api={api} apiV2={apiV2} execute={execute} canConfirm={canConfirm} onSessionExpired={onSessionExpired} />;
+    api={api} apiV2={apiV2} execute={execute} canConfirm={canConfirm} onSessionExpired={onSessionExpired} distributed={distributed} />;
 }
 
-function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessionExpired }) {
+function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessionExpired, distributed }) {
   const [tab, setTab] = useState('FF'), [lookup, setLookup] = useState(''), [lookupKey, setLookupKey] = useState(''), [dialog, setDialog] = useState(false), [cancelDialog, setCancelDialog] = useState(false);
   const [pendingChoice, setPendingChoice] = useState(null);
   const pendingHeading = useRef(null);
@@ -300,15 +301,20 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
   const cancelledCount = current?.executions.filter(e => e.diagnostic?.termination_reason === 'CANCELLED').length ?? 0;
   const failedCount = current?.executions.filter(e => e.outcome === 'FAILED' && e.diagnostic?.termination_reason !== 'CANCELLED').length ?? 0;
   const cancellation = current?.cancellation_status ?? 'NONE';
+  const distributedV2 = distributed && current?.profile === 'comparison-v2';
+  const status = distributedV2 && (!current.terminal || state.progress?.state === 'TERMINAL')
+    ? progressLabel(state.progress) : null;
+  const currentMethod = state.progress?.state === 'RUNNING' ? state.progress.current_engine?.method : null;
   const canCancel = execute && current?.profile === 'comparison-v2' && !current.terminal && cancellation === 'NONE';
+  const showRequestHint = state.pendingRequest && !!state.selected.length;
   return <PageCard className="comparison-workspace">
     <header className="comparison-heading"><div><span className="comparison-eyebrow">{methodCount} motores · una misma solicitud</span><h2>Comparar distribuciones de corte</h2>
       <p>{current?.profile === 'comparison-v2' ? 'Revisa y compara los resultados independientes de las seis heurísticas.' : 'Revisa el proceso de cada motor, compara sus métricas y elige una distribución.'}</p></div>
-      {current && <div className="comparison-job">Trabajo <strong>#{current.comparison_id}</strong><small>{current.confirmed ? 'Corte confirmado' : current.released ? 'Pedidos liberados' : cancellation === 'CANCELLED' ? 'Optimización cancelada' : cancellation === 'REQUESTED' ? 'Cancelando' : current.terminal ? 'Comparación finalizada' : 'Comparación en curso'}</small>{selected && <small>Elegido: {methodName(selected.method)}</small>}</div>}</header>
+      {current && <div className="comparison-job">Trabajo <strong>#{current.comparison_id}</strong><small>{current.confirmed ? 'Corte confirmado' : current.released ? 'Pedidos liberados' : cancellation === 'CANCELLED' ? 'Optimización cancelada' : cancellation === 'REQUESTED' ? 'Cancelando' : status ?? (current.terminal ? distributedV2 && current.status === 'SIN_SOLUCION' ? 'Sin solución' : distributedV2 && current.status === 'FALLIDA' ? 'Error de optimización' : 'Comparación finalizada' : 'Comparación en curso')}</small>{selected && <small>Elegido: {methodName(selected.method)}</small>}</div>}</header>
     {current && <nav className="comparison-context" aria-label="Contexto y navegación de la comparación">
       <div className="comparison-context__info"><strong>Trabajo #{current.comparison_id}</strong>
         <span>Pedidos: {current.order_ids.map(orderId => `#${orderId}`).join(', ')}</span>
-        <span>{current.confirmed ? 'Confirmado · solo consulta' : current.released ? 'Pedidos liberados' : cancellation === 'CANCELLED' ? 'Cancelación confirmada · solo consulta' : cancellation === 'REQUESTED' ? 'Cancelando optimización' : current.terminal ? 'Resultados guardados' : 'Comparación en curso'}</span>
+        <span>{current.confirmed ? 'Confirmado · solo consulta' : current.released ? 'Pedidos liberados' : cancellation === 'CANCELLED' ? 'Cancelación confirmada · solo consulta' : cancellation === 'REQUESTED' ? 'Cancelando optimización' : status ?? (current.terminal ? 'Resultados guardados' : 'Comparación en curso')}</span>
         <span>Vista: {activeTab === 'comparison' ? 'Comparación' : activeTab}</span>
         <button type="button" className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>
         {canCancel && <button type="button" className="ng-button ng-button--danger"
@@ -321,7 +327,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
         onClick={() => setTab(key)} onKeyDown={e => {
           const next = e.key === 'ArrowRight' ? (index + 1) % tabs.length : e.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
           if (next !== null) { e.preventDefault(); setTab(tabs[next]); document.getElementById(`${id}-tab-${tabs[next]}`)?.focus(); }
-        }}>{key === 'comparison' ? 'Comparación' : methodLabel(key, current.profile)}{key !== 'comparison' && <small>{executionStatus(current.executions.find(e => e.method === key))}</small>}</button>)}</div>
+        }}>{key === 'comparison' ? 'Comparación' : methodLabel(key, current.profile)}{key !== 'comparison' && <small>{key === currentMethod ? 'Motor actual · Ejecutando' : executionStatus(current.executions.find(e => e.method === key))}</small>}</button>)}</div>
     </nav>}
     {state.error && <FeedbackMessage variant="error">{state.error}</FeedbackMessage>}
     {import.meta.env.MODE === 'staging' && state.error && state.admissionDiagnostic && <section aria-label="Diagnóstico técnico de admisión">
@@ -331,6 +337,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       <p>Activos: {state.admissionDiagnostic.actual}</p>
       <p>Máximo: {state.admissionDiagnostic.maximum}</p>
     </section>}
+    {state.visualUnavailable && <p role="status">El detalle visual temporal no está disponible. Los resultados guardados se conservan.</p>}
     {state.success && <FeedbackMessage variant="success">{state.success}</FeedbackMessage>}
     {cancellation === 'REQUESTED' && <FeedbackMessage variant="info">Cancelando optimización. El backend está deteniendo los motores; los pedidos siguen reservados hasta acreditar el cierre.</FeedbackMessage>}
     {cancellation === 'CANCELLED' && <FeedbackMessage variant="success" title="Cancelación confirmada">Cancelación confirmada. Se verificó el cierre de procesos, los pedidos volvieron a pendientes y el inventario no fue descontado. Los resultados ya calculados siguen disponibles para consulta.</FeedbackMessage>}
@@ -341,7 +348,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       <button className="ng-button" disabled={state.busy} onClick={() => flow.history()}>Ver comparaciones anteriores</button>
       {!current && <button className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>}
     </div>
-    {state.pendingRequest && <p role="status">La solicitud se conserva para reintentar o actualizar sin crear otra comparación.</p>}
+    {showRequestHint && <p role="status">La solicitud se conserva para reintentar o actualizar sin crear otra comparación.</p>}
     {state.historyOpen && <section className="comparison-history" aria-label="Comparaciones anteriores">
       <h3>Comparaciones anteriores</h3>
       {!state.savedComparisons.length && <p>No hay comparaciones guardadas.</p>}
@@ -353,18 +360,18 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       {state.historyNext && <button className="ng-button" disabled={state.busy} onClick={() => flow.history(state.historyNext)}>Ver más comparaciones</button>}
     </section>}
     <details className="comparison-technical"><summary>Consulta avanzada</summary>
-      <form onSubmit={e => { e.preventDefault(); if (Number(lookup) > 0) flow.load(Number(lookup), { profile: state.profile }); }}>
+      <form onSubmit={e => { e.preventDefault(); if (!state.pendingRequest && Number(lookup) > 0) flow.load(Number(lookup), { profile: state.profile }); }}>
       <label>Consultar trabajo guardado<input className="ng-control" type="number" min="1" value={lookup} onChange={e => setLookup(e.target.value)} /></label>
-      <button className="ng-button" disabled={state.busy || !Number.isSafeInteger(Number(lookup)) || Number(lookup) <= 0}>Consultar</button></form>
-      <form onSubmit={e => { e.preventDefault(); flow.loadByKey(lookupKey, state.profile); }}><label>Recuperar por clave idempotente<input className="ng-control" value={lookupKey} onChange={e => setLookupKey(e.target.value)} /></label>
-        <button className="ng-button" disabled={state.busy || !lookupKey.trim()}>Recuperar</button></form>
+      <button className="ng-button" disabled={state.busy || state.pendingRequest || !Number.isSafeInteger(Number(lookup)) || Number(lookup) <= 0}>Consultar</button></form>
+      <form onSubmit={e => { e.preventDefault(); if (!state.pendingRequest) flow.loadByKey(lookupKey, state.profile); }}><label>Recuperar por clave idempotente<input className="ng-control" value={lookupKey} onChange={e => setLookupKey(e.target.value)} /></label>
+        <button className="ng-button" disabled={state.busy || state.pendingRequest || !lookupKey.trim()}>Recuperar</button></form>
     </details>
     {state.loading && <LoadingState>Consultando pedidos y trabajo guardado…</LoadingState>}
     {execute && (!current || current.released || current.confirmed) && <section className="comparison-pending" aria-label="Seleccionar pedidos">
       <h3 ref={pendingHeading} tabIndex={-1}>Pedidos pendientes</h3><p>Las existencias se descuentan al confirmar la distribución que elijas.</p>
       {!state.orders.length && <p>No hay pedidos pendientes.</p>}
       <div className="comparison-pending-list">{state.orders.map(order => <label key={order.id_pedido}>
-        <input type="checkbox" disabled={!!locked} checked={state.selected.includes(order.id_pedido)} onChange={e => flow.select(e.target.checked
+        <input type="checkbox" disabled={!!locked || distributed && state.pendingRequest} checked={state.selected.includes(order.id_pedido)} onChange={e => flow.select(e.target.checked
           ? [...state.selected, order.id_pedido] : state.selected.filter(i => i !== order.id_pedido))} />
         <span><strong>Pedido #{order.id_pedido}</strong><small>{order.cliente}</small></span></label>)}</div>
       <button className="ng-button ng-button--primary" disabled={!!locked || !state.selected.length} onClick={() => flow.start(state.profile)}>
@@ -372,7 +379,10 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
     </section>}
     {current && <>
       <OriginalRequest comparison={current} />
-      <p role="status">{completeCount} de {current.executions.length} métodos completaron todas las piezas.
+      <p role="status">
+        {status === 'En espera' && <span>El trabajo está guardado. Comenzará cuando haya una plaza de cálculo disponible. </span>}
+        {status === 'Recuperación bloqueada' && <span>El servidor aún debe verificar el cierre. Los pedidos siguen reservados. </span>}
+        {completeCount} de {current.executions.length} métodos completaron todas las piezas.
         {' '}{current.executions.filter(e => e.outcome === 'PARTIAL').length} parciales · {failedCount} interrumpidos o con error{cancelledCount ? ` · ${cancelledCount} cancelados por solicitud` : ''}.
         {current.terminal && cancellation !== 'CANCELLED' && completeCount !== current.executions.length ? ' Comparación parcialmente completada.' : ''}</p>
       {current.confirmed && <InventoryReceipt confirmation={current.confirmation} />}
@@ -385,7 +395,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
         aria-label={methodName(execution.method)} aria-labelledby={`${id}-tab-${execution.method}`} hidden={activeTab !== execution.method}>
         <EnginePanel comparison={current} execution={execution} visual={state.visuals[execution.execution_id]} live={state.live[execution.execution_id]}
           result={state.results[execution.execution_id]?.result} api={activeApi} onSessionExpired={onSessionExpired}
-          patternAnchor={`${id}-pattern-${execution.method}`} />
+          patternAnchor={`${id}-pattern-${execution.method}`} distributed={distributedV2} />
       </div>)}
       <section className="comparison-panel comparison-results" role="tabpanel" id={`${id}-panel-comparison`} aria-labelledby={`${id}-tab-comparison`} hidden={activeTab !== 'comparison'}>
         <h2>Comparación de resultados</h2><p>Los {current.executions.length} motores usaron la misma solicitud, configuración e inventario inicial.{current.profile === 'comparison-v2' ? ' Las métricas no se ordenan ni recomiendan un motor.' : ' La elección es tuya.'}</p>
@@ -422,7 +432,7 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
       <footer className="comparison-footer">
         {execute && current.terminal && !current.confirmed && !current.released && cancellation !== 'CANCELLED' && <button className="ng-button" disabled={state.busy} onClick={flow.release}>Liberar pedidos sin confirmar</button>}
         {(current.confirmed || current.released || cancellation === 'CANCELLED') && <button className="ng-button" onClick={flow.reset}>Preparar otro trabajo</button>}
-        <p>{current.confirmed ? 'Confirmado' : current.released ? 'Liberado' : cancellation === 'CANCELLED' ? 'Cancelado con cierre seguro' : cancellation === 'REQUESTED' ? 'Solicitando cancelación' : current.terminal ? 'Resultados guardados' : 'Cálculo en curso'} · Trabajo #{current.comparison_id}</p>
+        <p>{current.confirmed ? 'Confirmado' : current.released ? 'Liberado' : cancellation === 'CANCELLED' ? 'Cancelado con cierre seguro' : cancellation === 'REQUESTED' ? 'Solicitando cancelación' : status ?? (current.terminal ? 'Resultados guardados' : 'Cálculo en curso')} · Trabajo #{current.comparison_id}</p>
       </footer>
     </>}
     <ConfirmDialog open={cancelDialog && canCancel && !state.busy}

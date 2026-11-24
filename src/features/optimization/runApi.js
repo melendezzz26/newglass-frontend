@@ -4,10 +4,12 @@ import { getOrder } from '../orders/ordersApi';
 import { detectMaterialGroups } from './materialGroups';
 import { pieceCount } from './optimizationModel';
 import { createRunTransport } from './runTransport';
+import { buildRunRequest } from './runContract.js';
+import { jobId, parseDurableRun, parseProgress, progressQuery, retryAfterMs } from './distributedProgress.js';
 import { parseMaskDescriptor, parseVisualManifest, parseVisualMask, readVisualNdjson } from './visualContract';
 
 export class RunApiError extends Error {
-  constructor(message, status, code, { limit = null, retryAfter = null } = {}) {
+  constructor(message, status, code, { limit = null, retryAfter = null, requestAccepted, retryDelay = null } = {}) {
     super(message);
     this.name = 'RunApiError';
     this.status = status;
@@ -15,6 +17,8 @@ export class RunApiError extends Error {
     // TA-037: which operational limit was exceeded and when to retry (503).
     this.limit = limit;
     this.retryAfter = retryAfter;
+    this.retryAfterMs = retryDelay;
+    this.requestAccepted = requestAccepted;
   }
 }
 
@@ -50,15 +54,16 @@ export function createBackendRunAdapter({ token, fetchImpl = globalThis.fetch, r
       return JSON.parse(text + decoder.decode());
     } finally { await reader.cancel(); reader.releaseLock(); }
   }
-  async function request(path, { method = 'GET', body, signal, stream = false, maxBytes } = {}) {
+  async function request(path, { method = 'GET', body, signal, key, stream = false, maxBytes } = {}) {
     let response;
     try {
       const accessToken = token ?? getAccessToken();
       response = await fetchImpl(`${API_URL}/api/optimization/runs${path}`, {
-        method, signal,
+        method, signal, cache: 'no-store',
         headers: {
           ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+          ...(key ? { 'Idempotency-Key': key } : {}),
           Accept: stream ? 'application/x-ndjson' : 'application/json',
         },
         ...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -75,7 +80,8 @@ export function createBackendRunAdapter({ token, fetchImpl = globalThis.fetch, r
       }
       throw new RunApiError(data?.detail?.message ?? messages[response.status]
         ?? 'El servidor no pudo completar la operación.', response.status, data?.detail?.code,
-      { limit: data?.detail?.limit ?? null, retryAfter: retryAfterSeconds(response) });
+      { limit: data?.detail?.limit ?? null, retryAfter: retryAfterSeconds(response),
+        requestAccepted: data?.detail?.request_accepted, retryDelay: retryAfterMs(response) });
     }
     if (!stream) return boundedJson(response, maxBytes);
     if (!response.headers.get('content-type')?.startsWith('application/x-ndjson') || !response.body) {
@@ -117,6 +123,19 @@ export function createBackendRunAdapter({ token, fetchImpl = globalThis.fetch, r
   });
   return {
     ...transport,
+    async startDurable(orderIds, key, signal) {
+      if (!/^[A-Za-z0-9_-]{8,64}$/.test(key)) throw new RunApiError('Clave de solicitud inválida.', 422, 'INVALID_INPUT');
+      return parseDurableRun(await request('/durable', { method: 'POST', body: buildRunRequest(orderIds), key, signal }));
+    },
+    async loadDurable(id, signal) {
+      if (!jobId(id)) throw new RunApiError('Identificador de trabajo inválido.', 422, 'INVALID_INPUT');
+      return parseDurableRun(await request(`/durable/${id}`, { signal }), id);
+    },
+    async progress(id, after, signal) {
+      if (!jobId(id)) throw new RunApiError('Identificador de trabajo inválido.', 422, 'INVALID_INPUT');
+      return parseProgress(await request(`/durable/${id}/progress?${progressQuery(after)}`, { signal, maxBytes: 32768 }),
+        { profile: 'FF', id, after });
+    },
     async loadVisualManifest(id, { offset = 0, signal } = {}) {
       if (!Number.isSafeInteger(id) || id <= 0 || !Number.isSafeInteger(offset) || offset < 0 || offset > 1024) throw new RunApiError('Consulta visual inválida.', 422, 'INVALID_INPUT');
       return parseVisualManifest(await request(`/${id}/visual?offset=${offset}`, { signal, maxBytes: 262144 }), id);

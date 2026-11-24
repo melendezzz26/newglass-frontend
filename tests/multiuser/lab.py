@@ -1,4 +1,5 @@
 """Run this pytest harness from the merged backend root with an isolated WSL2 interpreter."""
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -8,7 +9,8 @@ import time
 import pytest
 from sqlalchemy import func, select
 
-from app.models import MovimientoInventario, OptimizationWorkerAttempt, OptimizationWorkerJob, Plancha, RolPermiso, Usuario
+from app.models import (MovimientoInventario, OptimizationWorkerAttempt, OptimizationWorkerJob,
+                        Optimizacion, OptimizacionPedido, Plancha, RolPermiso, Usuario)
 from app.shared.security import hash_password
 from tests.integration.optimization.test_comparison_v2_http_restart import activate, worker_db
 from tests.integration.optimization.test_parallel_lab import isolated_slice, orders_for
@@ -26,7 +28,7 @@ def test_browser_lab(worker_db, tmp_path):
     assert capacity in (1, 2)
     data = worker_db
     activate(data, mixed=True)
-    orders = orders_for(data, 20)
+    orders = [*orders_for(data, 20), data.orders["A"]]
     actors = {}
     with data.sessions.begin() as db:
         db.add(RolPermiso(id_rol=data.role_ids['A'], id_permiso=data.codes['orders.view']))
@@ -35,6 +37,13 @@ def test_browser_lab(worker_db, tmp_path):
             password = token_urlsafe(18)
             user.password_hash = hash_password(password)
             actors[letter] = dict(username=user.usuario, password=password)
+        for letter, identifier in (("C", 4), ("D", 5)):
+            dni = f"{identifier:08}"
+            username, password = f"O{dni}", token_urlsafe(18)
+            db.add(Usuario(id_usuario=identifier, dni=dni, usuario=username, nombres="QA", apellidos=letter,
+                           password_hash=hash_password(password), estado=True, fecha_creacion=datetime.now(timezone.utc),
+                           id_rol=data.role_ids["O"]))
+            actors[letter] = dict(username=username, password=password)
 
     process_a, api_a = data.services.api("browser-api-a")
     _, api_b = data.services.api("browser-api-b")
@@ -66,8 +75,13 @@ def test_browser_lab(worker_db, tmp_path):
             pytest.fail("Browser test did not finish before the laboratory deadline")
         with data.sessions() as db:
             jobs = db.scalars(select(OptimizationWorkerJob)).all()
-            assert sorted(job.kind for job in jobs) == ["FF", "V1", "V2", "V2", "V2"]
+            assert sorted(job.kind for job in jobs) == ["FF", "V1", "V2", "V2", "V2", "V2"]
             assert all(job.state == "TERMINAL" and job.generation == 1 and job.slot is None for job in jobs)
-            assert db.scalar(select(func.count()).select_from(OptimizationWorkerAttempt)) == 5
+            assert db.scalar(select(func.count()).select_from(OptimizationWorkerAttempt)) == 6
+            requests = db.execute(select(Optimizacion.id_usuario_ejecutor, OptimizacionPedido.id_pedido)
+                .join(OptimizationWorkerJob, OptimizationWorkerJob.comparison_id == Optimizacion.id_optimizacion)
+                .join(OptimizacionPedido, OptimizacionPedido.id_optimizacion == Optimizacion.id_optimizacion)
+                .where(OptimizationWorkerJob.kind == "V2")).all()
+            assert dict(requests) == dict(zip((data.actors["A"], data.actors["O"], 4, 5), orders))
             assert db.get(Plancha, 1).cantidad == 4
             assert db.scalar(select(func.count()).select_from(MovimientoInventario)) == 0

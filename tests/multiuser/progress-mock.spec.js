@@ -52,10 +52,11 @@ test('progreso simulado: límite de lectura, cursor vencido, recuperación bloqu
   });
   await page.goto('/');
   await page.getByRole('button', { name: 'Optimización', exact: true }).click();
+  await page.getByLabel('Métodos').selectOption('comparison-v2');
   await page.getByRole('checkbox', { name: /Pedido #1/ }).check({ timeout: 15_000 });
   await page.getByRole('button', { name: 'Comparar con los seis motores' }).click();
   await expect(page.getByText('El trabajo está guardado. Comenzará cuando haya una plaza de cálculo disponible.')).toBeVisible();
-  await expect(page.getByText('Reconectando al progreso guardado…')).toBeVisible();
+  await expect(page.getByText('Recuperando el avance; los motores continúan ejecutándose.')).toBeVisible();
   await expect(page.getByText('Recuperación bloqueada', { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/Parte del avance anterior ya no estaba retenido/)).toBeVisible();
   expect(requests.slice(0, 5).map(call => call.after)).toEqual([null, '1', '1', '1', null]);

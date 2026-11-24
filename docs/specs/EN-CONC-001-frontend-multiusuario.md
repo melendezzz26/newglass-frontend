@@ -1,6 +1,6 @@
 # EN-CONC-001 · Frontend multiusuario
 
-El modo `VITE_OPTIMIZATION_MODE=distributed` se habilita cuando el backend dispone del piloto mixto API y worker. V2 se abre con los seis motores y conserva V1 en el selector. FF individual usa la admisión durable. El modo histórico, que se conserva por defecto, usa la observación NDJSON que ya soportaba el frontend. La selección de modo es operativa y no altera el número de plazas.
+El modo `VITE_OPTIMIZATION_MODE=distributed` se habilita cuando el backend dispone del piloto mixto API y worker. El selector mantiene V1 como opción inicial y permite elegir V2 con los seis motores. La entrada histórica de FF individual usa la admisión durable en ese modo. El modo histórico, que se conserva por defecto, usa la observación NDJSON que ya soportaba el frontend. La selección de modo es operativa y no altera el número de plazas.
 
 V2 y FF durable guardan la identidad de admisión y el último cursor aplicado en el navegador, por propietario y tipo de trabajo, sin guardar tokens ni resultados en esos registros. V2 recupera una admisión ambigua por su clave. FF durable permite reintentar el mismo cuerpo con la misma clave porque su contrato no define una consulta por clave. Cuando la identidad es conocida, la reconexión solo consulta estado. La cancelación V2 y la confirmación requieren una acción explícita y conservan las garantías del servidor.
 

@@ -17,22 +17,36 @@ export function useDurableRun({ storageKey, adapter, dispatch, onSessionExpired 
   const retryAdmissionAt = useRef(0);
   const patch = useCallback(value => setState(previous => ({ ...previous, ...value })), []);
 
-  const report = useCallback((error, signal, id) => {
+  const report = useCallback((error, signal, id, definitive = false) => {
     if (signal.aborted || error.name === 'AbortError') return;
     if (error.status === 401) onSessionExpired?.();
-    if (id && [401, 403, 404].includes(error.status)) {
+    const missing = definitive && error.status === 404 && error.code === 'NOT_FOUND';
+    if (missing && id && attempt.current?.id === id) {
+      const saved = savedAttempt(storageKey);
+      if (saved?.id === id && saved.key === attempt.current.key) writeStored(storageKey, null);
+      cursorStorage(storageKey, id).set(null);
+      attempt.current = null;
+    }
+    if (id && ([401, 403].includes(error.status) || missing)) {
       dispatch({ type: 'durable_inaccessible' });
       patch({ id: null, progress: null });
     }
     patch({ posting: false, reconnecting: false, error: error.message });
-  }, [onSessionExpired, dispatch, patch]);
+  }, [onSessionExpired, dispatch, patch, storageKey]);
 
   const watch = useCallback(async (id, signal) => {
+    let missing;
     try {
       await followProgress({
         signal,
         cursor: cursorStorage(storageKey, id),
-        read: (after, activeSignal) => adapter.progress(id, after, activeSignal),
+        read: async (after, activeSignal) => {
+          try { return await adapter.progress(id, after, activeSignal); }
+          catch (error) {
+            if (error.status === 404) missing = error;
+            throw error;
+          }
+        },
         apply: async page => {
           if (page.state === 'TERMINAL' && !page.has_more) {
             const result = await adapter.loadResult(id, { signal });
@@ -45,7 +59,7 @@ export function useDurableRun({ storageKey, adapter, dispatch, onSessionExpired 
         },
         onReconnect: () => patch({ reconnecting: true }),
         onReset: () => patch({ partial: true, reconnecting: true }),
-        onError: error => report(error, signal, id),
+        onError: error => report(error, signal, id, error === missing),
       });
     } finally {
       if (request.current?.signal === signal) request.current = null;
@@ -122,7 +136,7 @@ export function useDurableRun({ storageKey, adapter, dispatch, onSessionExpired 
         if (controller.signal.aborted) return;
         patch({ id, progress: { state: status.state } });
         await watch(id, controller.signal);
-      } catch (error) { report(error, controller.signal, id); }
+      } catch (error) { report(error, controller.signal, id, true); }
       finally { if (request.current === controller) request.current = null; }
     })();
   }

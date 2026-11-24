@@ -10,20 +10,32 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
     busy: false, loading: true, error: '', success: '', history: false, connection: 'connecting', partial: false,
     savedComparisons: [], historyNext: null, historyOpen: false, pendingRequest: false,
     progress: null, progressLoading: false, visualUnavailable: false,
-    profile: initialProfile ?? (distributed ? 'comparison-v2' : 'comparison-v1') };
+    profile: initialProfile ?? 'comparison-v1' };
   let active = false, generation = 0, observer, request, retry, unsubscribe, requestKey, operation, cancelOperation, syncTimer;
   let actionSequence = 0, preservedHistory = false, retryAdmissionAt = 0;
   let attemptOrders = null;
   const confirmedOrders = new Set();
   const listeners = new Set();
   const set = patch => { state = { ...state, ...patch }; listeners.forEach(fn => fn()); };
-  const recordKey = profile => distributed && profile === 'comparison-v2' && storageKey ? storageKey + ':v2' : storageKey;
-  const profileKey = distributed && storageKey ? storageKey + ':active-profile' : null;
+  const profileKey = storageKey ? storageKey + ':active-profile' : null;
+  const v2Key = storageKey ? storageKey + ':v2' : null;
+  const scopedRecords = distributed || Boolean(readStored(profileKey) || readStored(v2Key));
+  const recordKey = profile => scopedRecords && profile === 'comparison-v2' ? v2Key : storageKey;
+  function readRecord(profile) {
+    const key = recordKey(profile);
+    const saved = readStored(key);
+    if (saved && (!scopedRecords || !saved.profile || saved.profile === profile)) return saved;
+    if (key === storageKey) return null;
+    const legacy = readStored(storageKey);
+    if (legacy?.profile !== 'comparison-v2') return null;
+    if (writeStored(key, legacy)) writeStored(storageKey, null);
+    return legacy;
+  }
   const remember = (pending = false, preserveHistory = preservedHistory) => {
     const profile = !pending && preserveHistory ? state.comparison?.profile ?? state.profile : state.profile;
     const saved = writeStored(recordKey(profile), { id: pending ? null : state.comparison?.comparison_id,
       requestKey, operation, cancelOperation, attemptOrders, profile, preserveHistory });
-    writeStored(profileKey, profile);
+    if (saved && scopedRecords) writeStored(profileKey, profile);
     return saved;
   };
   const client = profile => profile === 'comparison-v2' ? apiV2 : api;
@@ -247,6 +259,34 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       }
     } finally { if (active && sequence === actionSequence) set({ busy: false }); }
   }
+  function restore(profile, identifier) {
+    const saved = readRecord(profile) ?? {};
+    const sameWork = !identifier || saved.id === identifier;
+    preservedHistory = sameWork && saved.preserveHistory === true;
+    requestKey = sameWork ? saved.requestKey : null;
+    operation = sameWork ? saved.operation : null;
+    cancelOperation = sameWork ? saved.cancelOperation : null;
+    attemptOrders = sameWork && Array.isArray(saved.attemptOrders)
+      && saved.attemptOrders.every(id => Number.isSafeInteger(id) && id > 0) ? saved.attemptOrders : null;
+    if (identifier ?? saved.id) {
+      load(identifier ?? saved.id, { automatic: !identifier && !preservedHistory, profile });
+    } else if (requestKey) {
+      set({ pendingRequest: true, selected: attemptOrders ?? [] });
+      const g = prepare();
+      const lookup = async () => {
+        try {
+          const activeApi = client(profile);
+          const current = await (distributed ? activeApi.lookup(requestKey, request.signal) : activeApi.lookup(requestKey));
+          if (valid(g)) load(current.comparison_id, { automatic: true, profile });
+        } catch (error) {
+          if (!valid(g) || error.status === 404 || error.name === 'AbortError') return;
+          if (distributed && transientProgressError(error)) retry = setTimeout(lookup, Math.max(1000, error.retryAfterMs ?? 0));
+          else fail(error);
+        }
+      };
+      lookup();
+    }
+  }
   return {
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     getSnapshot: () => state,
@@ -261,33 +301,10 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         else { set({ connection: 'reconnecting' }); fail(e.error); }
       });
       source.load();
-      const activeProfile = readStored(profileKey);
-      const profile = initialProfile ?? (initialId ? 'comparison-v1' : activeProfile ?? state.profile);
-      const saved = readStored(recordKey(profile)) ?? {};
-      preservedHistory = saved.preserveHistory === true;
-      const restoredProfile = distributed || initialId ? profile : initialProfile ?? saved.profile;
-      if (restoredProfile === 'comparison-v2' && apiV2) set({ profile: 'comparison-v2' });
-      requestKey = saved.requestKey; operation = saved.operation; cancelOperation = saved.cancelOperation;
-      attemptOrders = Array.isArray(saved.attemptOrders) && saved.attemptOrders.every(id => Number.isSafeInteger(id) && id > 0)
-        ? saved.attemptOrders : null;
-      if (requestKey && !saved.id) set({ pendingRequest: true, selected: attemptOrders ?? [] });
-      const g = generation;
-      if (initialId ?? saved.id) load(initialId ?? saved.id, { automatic: !initialId && !saved.preserveHistory, profile: restoredProfile });
-      else if (requestKey) {
-        const restore = async () => {
-          try {
-            const activeApi = client(restoredProfile);
-            const current = await (distributed ? activeApi.lookup(requestKey, request?.signal) : activeApi.lookup(requestKey));
-            if (valid(g)) load(current.comparison_id, { automatic: true, profile: restoredProfile });
-          } catch (error) {
-            if (!valid(g) || error.status === 404 || error.name === 'AbortError') return;
-            if (distributed && transientProgressError(error)) retry = setTimeout(restore, Math.max(1000, error.retryAfterMs ?? 0));
-            else fail(error);
-          }
-        };
-        request = new AbortController();
-        restore();
-      }
+      const preferred = readStored(profileKey) ?? (readStored(v2Key) ? 'comparison-v2' : readStored(storageKey)?.profile);
+      const profile = initialProfile ?? (initialId ? 'comparison-v1' : preferred ?? state.profile);
+      set({ profile });
+      restore(profile, initialId);
     },
     dispose() { active = false; prepare(); unsubscribe?.(); source.dispose(); },
     select: ids => { if (!distributed || !state.pendingRequest) set({ selected: ids }); },
@@ -298,16 +315,9 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
         requestKey = null; operation = null; cancelOperation = null; attemptOrders = null;
       }
       set({ profile, error: '' });
-      if (distributed) {
+      if (scopedRecords) {
         writeStored(profileKey, profile);
-        const saved = readStored(recordKey(profile));
-        if (saved?.id) {
-          requestKey = saved.requestKey;
-          operation = saved.operation;
-          cancelOperation = saved.cancelOperation;
-          attemptOrders = saved.attemptOrders;
-          load(saved.id, { automatic: true, profile });
-        }
+        restore(profile);
       } else remember(true);
     },
     load,
@@ -328,7 +338,11 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       });
     },
     refresh: () => action(async () => {
-      if (state.comparison) {
+      if (state.pendingRequest && requestKey) {
+        const g = generation;
+        const current = await client(state.profile).lookup(requestKey, request?.signal);
+        if (valid(g)) await load(current.comparison_id, { profile: state.profile });
+      } else if (state.comparison) {
         if (distributed && state.comparison.profile === 'comparison-v2' && !state.comparison.terminal) {
           const id = state.comparison.comparison_id;
           await load(id, { profile: 'comparison-v2' });
@@ -348,6 +362,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       if (requestKey && attemptOrders && JSON.stringify(selectedOrders) !== JSON.stringify(attemptOrders)) {
         throw new Error('Hay una comparación por recuperar. Actualiza el resultado antes de cambiar los pedidos.');
       }
+      const wasPending = state.pendingRequest;
       set({ profile });
       const g = prepare(); requestKey ??= newKey(); attemptOrders = selectedOrders; operation = null; cancelOperation = null;
       set({ pendingRequest: true });
@@ -355,13 +370,17 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       let current;
       try { current = await client(profile).start(attemptOrders, requestKey, request.signal); }
       catch (error) {
-        // A rejected input never became an accepted work. Network errors and
-        // conflicts remain recoverable with the original key and frozen orders.
+        // Release only a definitively rejected lot. An uncertain admission
+        // remains recoverable with the original key and frozen orders.
         if (!valid(g)) return;
         if (distributed && [429, 503].includes(error.status)) retryAdmissionAt = Date.now() + (error.retryAfterMs ?? 1000);
-        if ([400, 403, 422].includes(error.status) || error.requestAccepted === false && !(distributed && error.status === 503)) {
+        const rejected = error.requestAccepted === false || (error.requestAccepted !== true
+          && (profile === 'comparison-v2' && error.status === 409 && error.code === 'STATE_CONFLICT'
+            || !wasPending && [400, 403, 422].includes(error.status)));
+        if (rejected) {
           requestKey = null; attemptOrders = null; preservedHistory = !!state.comparison;
-          set({ pendingRequest: false }); remember();
+          set({ pendingRequest: false, selected: state.selected.filter(id => state.orders.some(order => order.id_pedido === id)) });
+          remember();
         }
         throw error;
       }

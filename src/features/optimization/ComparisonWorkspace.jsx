@@ -323,20 +323,13 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
           <button type="button" className="ng-button" onClick={() => document.getElementById(`${id}-pattern-${activeTab}`)?.scrollIntoView?.({ block: 'start' })}>Ir al patrón</button>}
       </div>
       <div className={`comparison-tabs ${current.profile === 'comparison-v2' ? 'comparison-tabs--six' : ''}`} role="tablist" aria-label="Motores y comparación">{tabs.map((key, index) => <button key={key} type="button" role="tab"
-        id={`${id}-tab-${key}`} className={key === currentMethod ? 'comparison-current-engine' : undefined} aria-selected={activeTab === key} aria-controls={`${id}-panel-${key}`} tabIndex={activeTab === key ? 0 : -1}
+        id={`${id}-tab-${key}`} aria-selected={activeTab === key} aria-controls={`${id}-panel-${key}`} tabIndex={activeTab === key ? 0 : -1}
         onClick={() => setTab(key)} onKeyDown={e => {
           const next = e.key === 'ArrowRight' ? (index + 1) % tabs.length : e.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
           if (next !== null) { e.preventDefault(); setTab(tabs[next]); document.getElementById(`${id}-tab-${tabs[next]}`)?.focus(); }
         }}>{key === 'comparison' ? 'Comparación' : methodLabel(key, current.profile)}{key !== 'comparison' && <small>{key === currentMethod ? 'Motor actual · Ejecutando' : executionStatus(current.executions.find(e => e.method === key))}</small>}</button>)}</div>
     </nav>}
-    {state.error && <FeedbackMessage variant={state.pendingRequest ? 'warning' : 'error'}>{state.error}</FeedbackMessage>}
-    {status === 'En espera' && <FeedbackMessage variant="info" title="En espera">El trabajo está guardado. Comenzará cuando haya una plaza de cálculo disponible.</FeedbackMessage>}
-    {status === 'Recuperación bloqueada' && <FeedbackMessage variant="warning" title="Recuperación bloqueada">
-      El servidor aún debe verificar el cierre del cálculo. Los pedidos siguen reservados y los resultados guardados permanecen disponibles.
-    </FeedbackMessage>}
-    {distributedV2 && state.progressLoading && <div className="optimization-refresh-status" role="status">
-      {state.connection === 'reconnecting' ? 'Reconectando al progreso guardado…' : 'Consultando el progreso guardado…'}
-    </div>}
+    {state.error && <FeedbackMessage variant="error">{state.error}</FeedbackMessage>}
     {import.meta.env.MODE === 'staging' && state.error && state.admissionDiagnostic && <section aria-label="Diagnóstico técnico de admisión">
       <h3>Diagnóstico técnico</h3>
       <p>Código: {state.admissionDiagnostic.code}</p>
@@ -382,18 +375,21 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
           ? [...state.selected, order.id_pedido] : state.selected.filter(i => i !== order.id_pedido))} />
         <span><strong>Pedido #{order.id_pedido}</strong><small>{order.cliente}</small></span></label>)}</div>
       <button className="ng-button ng-button--primary" disabled={!!locked || !state.selected.length} onClick={() => flow.start(state.profile)}>
-        {state.pendingRequest && distributed ? 'Reintentar solicitud' : <>Comparar con {state.profile === 'comparison-v2' ? 'los seis motores' : 'los tres motores'}</>}</button>
+        Comparar con {state.profile === 'comparison-v2' ? 'los seis motores' : 'los tres motores'}</button>
     </section>}
     {current && <>
       <OriginalRequest comparison={current} />
-      <p role="status">{completeCount} de {current.executions.length} métodos completaron todas las piezas.
+      <p role="status">
+        {status === 'En espera' && <span>El trabajo está guardado. Comenzará cuando haya una plaza de cálculo disponible. </span>}
+        {status === 'Recuperación bloqueada' && <span>El servidor aún debe verificar el cierre. Los pedidos siguen reservados. </span>}
+        {completeCount} de {current.executions.length} métodos completaron todas las piezas.
         {' '}{current.executions.filter(e => e.outcome === 'PARTIAL').length} parciales · {failedCount} interrumpidos o con error{cancelledCount ? ` · ${cancelledCount} cancelados por solicitud` : ''}.
         {current.terminal && cancellation !== 'CANCELLED' && completeCount !== current.executions.length ? ' Comparación parcialmente completada.' : ''}</p>
       {current.confirmed && <InventoryReceipt confirmation={current.confirmation} />}
       <CutSeparation configuration={current.configuration} />
       <details className="comparison-configuration"><summary>Configuración y unidades aplicadas</summary><p>Resolución {current.configuration.resolucion_raster_mm} mm/celda · margen {current.configuration.margen_mm} mm · separación {current.configuration.separacion_mm} mm · paso angular {current.configuration.paso_angular_grados}°.</p></details>
       {state.partial && <FeedbackMessage variant="info">Se recuperó el estado actual. Parte del avance anterior ya no estaba retenido; los resultados guardados se conservan.</FeedbackMessage>}
-      {!distributedV2 && state.connection === 'reconnecting' && !current.terminal && <p role="status">{cancellation === 'REQUESTED' ? 'Recuperando la confirmación de parada segura.' : 'Recuperando el avance; los motores continúan ejecutándose.'}</p>}
+      {state.connection === 'reconnecting' && !current.terminal && <p role="status">{cancellation === 'REQUESTED' ? 'Recuperando la confirmación de parada segura.' : 'Recuperando el avance; los motores continúan ejecutándose.'}</p>}
 
       {current.executions.map(execution => <div className="comparison-panel" key={execution.execution_id} role="tabpanel" id={`${id}-panel-${execution.method}`}
         aria-label={methodName(execution.method)} aria-labelledby={`${id}-tab-${execution.method}`} hidden={activeTab !== execution.method}>

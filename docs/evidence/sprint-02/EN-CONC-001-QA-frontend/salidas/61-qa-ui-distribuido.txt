@@ -1,0 +1,25 @@
+﻿node.exe : [WebServer] (node:15764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:9476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop] › docs\evidence\sprint-02\EN-CONC-001-QA-frontend\scripts\qa-ui.spec.js:94:1 › flujo completo: login, pedidos, seis motores, resultados, inspectores 2D/3D, recarga y liberación (8.0s)
+  ok 2 [desktop] › docs\evidence\sprint-02\EN-CONC-001-QA-frontend\scripts\qa-ui.spec.js:160:1 › roles en optimización: Operario, Almacenero y Administrador (12.7s)
+(node:29792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [mobile] › docs\evidence\sprint-02\EN-CONC-001-QA-frontend\scripts\qa-ui.spec.js:94:1 › flujo completo: login, pedidos, seis motores, resultados, inspectores 2D/3D, recarga y liberación (8.4s)
+  -  4 [mobile] › docs\evidence\sprint-02\EN-CONC-001-QA-frontend\scripts\qa-ui.spec.js:160:1 › roles en optimización: Operario, Almacenero y Administrador
+
+  1 skipped
+  3 passed (33.7s)
+EXIT=0

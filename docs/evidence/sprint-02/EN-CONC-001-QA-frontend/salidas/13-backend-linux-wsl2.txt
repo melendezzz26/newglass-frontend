@@ -1,0 +1,19 @@
+WSL2 | Python 3.12.3 | PostgreSQL 16.15 | backend 806cde3
+$ python -m pytest tests/unit/optimization/test_comparison_runner.py -q
+..............                                                           [100%]
+14 passed in 2.94s
+EXIT=0
+$ python -m pytest tests/unit/optimization/test_sequential_runner.py -q
+..........................                                               [100%]
+26 passed in 19.16s
+EXIT=0
+$ python -m pytest tests/unit/optimization/test_resource_profile.py -q
+.......                                                                  [100%]
+7 passed in 0.19s
+EXIT=0
+$ NEWGLASS_TEST_PARALLEL=1 python -m pytest tests/integration/optimization/test_parallel_lab.py -q -ra  (repetición en máquina sin otra carga)
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+11 passed, 1 warning in 181.27s (0:03:01)
+EXIT=0

@@ -1,0 +1,9 @@
+﻿
+      Tests  2 passed | 30 skipped (32)
+   Duration  5.23s (tests 49%, environment 26%, transform 15%, setup 5%, import 5%)
+      Tests  2 passed | 30 skipped (32)
+   Duration  5.79s (tests 48%, environment 25%, transform 16%, setup 6%, import 5%)
+      Tests  2 passed | 30 skipped (32)
+   Duration  5.88s (tests 48%, environment 27%, transform 14%, setup 5%, import 5%)
+
+

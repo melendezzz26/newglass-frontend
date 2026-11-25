@@ -5,12 +5,12 @@ import { cursorStorage, followProgress, newRequestKey as newKey, readStored, tra
 
 const freshVisual = () => ({ ...emptyVisual(), enabled: true });
 
-export function createComparisonController({ api, apiV2, source, storageKey, initialId, initialProfile, distributed = false, onExpired, onLegacy }) {
+export function createComparisonController({ api, apiV2, source, storageKey, initialId, initialProfile, distributed = false, v2Only = false, onExpired, onLegacy }) {
   let state = { orders: [], selected: [], comparison: null, results: {}, visuals: {}, live: {}, cursor: 0,
     busy: false, loading: true, error: '', success: '', history: false, connection: 'connecting', partial: false,
     savedComparisons: [], historyNext: null, historyOpen: false, pendingRequest: false,
     progress: null, progressLoading: false, visualUnavailable: false,
-    profile: initialProfile ?? 'comparison-v1' };
+    profile: initialProfile ?? (v2Only ? 'comparison-v2' : 'comparison-v1') };
   let active = false, generation = 0, observer, request, retry, unsubscribe, requestKey, operation, cancelOperation, syncTimer;
   let actionSequence = 0, preservedHistory = false, retryAdmissionAt = 0;
   let attemptOrders = null;
@@ -46,6 +46,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
     prepare(); actionSequence++; requestKey = null; operation = null; cancelOperation = null; attemptOrders = null; preservedHistory = false;
     writeStored(recordKey(state.profile), null);
     set({ comparison: null, results: {}, visuals: {}, live: {}, cursor: 0, selected: [], error: '',
+      profile: v2Only ? 'comparison-v2' : state.profile,
       partial: false, history: false, busy: false, loading: true, success, connection: 'connecting',
       pendingRequest: false, progress: null, progressLoading: false, visualUnavailable: false, orders: state.orders.filter(order => !confirmedOrders.has(order.id_pedido)) });
     source.refresh?.({ force: true });
@@ -302,7 +303,8 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       });
       source.load();
       const preferred = readStored(profileKey) ?? (readStored(v2Key) ? 'comparison-v2' : readStored(storageKey)?.profile);
-      const profile = initialProfile ?? (initialId ? 'comparison-v1' : preferred ?? state.profile);
+      const profile = initialId ? initialProfile ?? 'comparison-v1'
+        : v2Only ? 'comparison-v2' : initialProfile ?? preferred ?? state.profile;
       set({ profile });
       restore(profile, initialId);
     },
@@ -352,6 +354,7 @@ export function createComparisonController({ api, apiV2, source, storageKey, ini
       else source.refresh?.();
     }),
     start: (profile = state.profile) => action(async () => {
+      if (v2Only && profile !== 'comparison-v2') return;
       if (Date.now() < retryAdmissionAt || !(distributed && state.pendingRequest ? attemptOrders?.length : state.selected.length)
         || state.comparison && !state.comparison.released && !state.comparison.confirmed) return;
       if (state.comparison?.confirmed || state.comparison?.released) requestKey = null;

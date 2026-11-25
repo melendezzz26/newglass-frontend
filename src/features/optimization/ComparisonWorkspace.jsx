@@ -256,21 +256,22 @@ function Metrics({ execution, result }) {
   </section>;
 }
 
-export function ComparisonWorkspace({ token, user, initialRunId, initialProfile, onSessionExpired, onLegacy, comparisonAdapter, comparisonV2Adapter, source: suppliedSource, distributed = false }) {
+export function ComparisonWorkspace({ token, user, initialRunId, initialProfile, onSessionExpired, onLegacy, comparisonAdapter, comparisonV2Adapter, source: suppliedSource, distributed = false, v2Only = false }) {
   const execute = canExecuteOptimization(user), canConfirm = hasPermission(user, 'optimization.confirm');
   const api = useMemo(() => comparisonAdapter ?? createComparisonApi({ token }), [comparisonAdapter, token]);
   const apiV2 = useMemo(() => comparisonV2Adapter ?? createComparisonV2Api({ token }), [comparisonV2Adapter, token]);
   const source = useMemo(() => suppliedSource ?? (execute ? createPendingOrdersSource({ token }) : readOnlySource()), [suppliedSource, execute, token]);
   const storageKey = ownerStorageKey(user, 'comparison');
   const flow = useMemo(() => createComparisonController({ api, apiV2, source, storageKey, initialId: initialRunId,
-    initialProfile, distributed, onExpired: onSessionExpired, onLegacy }), [api, apiV2, source, storageKey, initialRunId, initialProfile, distributed, onSessionExpired, onLegacy]);
+    initialProfile, distributed, v2Only, onExpired: onSessionExpired, onLegacy }), [api, apiV2, source, storageKey, initialRunId, initialProfile, distributed, v2Only, onSessionExpired, onLegacy]);
   const state = useSyncExternalStore(flow.subscribe, flow.getSnapshot, flow.getSnapshot);
   useEffect(() => { flow.mount(); return () => flow.dispose(); }, [flow]);
   return <ComparisonView key={state.comparison?.comparison_id ?? 'pending'} state={state} flow={flow}
-    api={api} apiV2={apiV2} execute={execute} canConfirm={canConfirm} onSessionExpired={onSessionExpired} distributed={distributed} />;
+    api={api} apiV2={apiV2} execute={execute} canConfirm={canConfirm} onSessionExpired={onSessionExpired} distributed={distributed} v2Only={v2Only} />;
 }
 
-function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessionExpired, distributed }) {
+function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessionExpired, distributed, v2Only }) {
+  const admissionProfile = v2Only ? 'comparison-v2' : state.profile;
   const [tab, setTab] = useState('FF'), [lookup, setLookup] = useState(''), [lookupKey, setLookupKey] = useState(''), [dialog, setDialog] = useState(false), [cancelDialog, setCancelDialog] = useState(false);
   const [pendingChoice, setPendingChoice] = useState(null);
   const pendingHeading = useRef(null);
@@ -343,8 +344,8 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
     {cancellation === 'CANCELLED' && <FeedbackMessage variant="success" title="Cancelación confirmada">Cancelación confirmada. Se verificó el cierre de procesos, los pedidos volvieron a pendientes y el inventario no fue descontado. Los resultados ya calculados siguen disponibles para consulta.</FeedbackMessage>}
     {cancellation === 'COMPLETED_BEFORE_CANCEL' && <FeedbackMessage variant="info">La optimización terminó antes de poder interrumpirse. Los resultados se conservan y no se registra como cancelada.</FeedbackMessage>}
     <div className="comparison-toolbar">
-      <label>Métodos<select className="ng-control" value={state.profile} disabled={state.pendingRequest || !!current && !current.released && !current.confirmed}
-        onChange={e => flow.setProfile(e.target.value)}><option value="comparison-v1">Tres métodos (histórico)</option><option value="comparison-v2">Seis métodos</option></select></label>
+      <label>Métodos<select className="ng-control" value={admissionProfile} disabled={v2Only || state.pendingRequest || !!current && !current.released && !current.confirmed}
+        onChange={e => flow.setProfile(e.target.value)}>{!v2Only && <option value="comparison-v1">Tres métodos (histórico)</option>}<option value="comparison-v2">Seis métodos</option></select></label>
       <button className="ng-button" disabled={state.busy} onClick={() => flow.history()}>Ver comparaciones anteriores</button>
       {!current && <button className="ng-button" disabled={state.busy} onClick={flow.refresh}>Actualizar resultado</button>}
     </div>
@@ -374,8 +375,8 @@ function ComparisonView({ state, flow, api, apiV2, execute, canConfirm, onSessio
         <input type="checkbox" disabled={!!locked || distributed && state.pendingRequest} checked={state.selected.includes(order.id_pedido)} onChange={e => flow.select(e.target.checked
           ? [...state.selected, order.id_pedido] : state.selected.filter(i => i !== order.id_pedido))} />
         <span><strong>Pedido #{order.id_pedido}</strong><small>{order.cliente}</small></span></label>)}</div>
-      <button className="ng-button ng-button--primary" disabled={!!locked || !state.selected.length} onClick={() => flow.start(state.profile)}>
-        Comparar con {state.profile === 'comparison-v2' ? 'los seis motores' : 'los tres motores'}</button>
+      <button className="ng-button ng-button--primary" disabled={!!locked || !state.selected.length} onClick={() => flow.start(admissionProfile)}>
+        Comparar con {admissionProfile === 'comparison-v2' ? 'los seis motores' : 'los tres motores'}</button>
     </section>}
     {current && <>
       <OriginalRequest comparison={current} />

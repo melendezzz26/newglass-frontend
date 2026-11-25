@@ -222,10 +222,11 @@ function OptimizationContent({ user, result, initialRunId, token, source: provid
   </PageCard>;
 }
 export function OptimizationPage({ user, toolbar, initialMode = 'first-fit',
-  distributed = import.meta.env.VITE_OPTIMIZATION_MODE === 'distributed', ...props }) {
+  v2Only = import.meta.env.VITE_OPTIMIZATION_MODE === 'distributed-v2',
+  distributed = v2Only || import.meta.env.VITE_OPTIMIZATION_MODE === 'distributed', ...props }) {
   const [legacyOrigin, setLegacyOrigin] = useState(null);
   const legacy = legacyOrigin || props.adapter || props.result || initialMode === 'legacy-first-fit';
-  const durable = distributed && initialMode === 'legacy-first-fit' && !legacyOrigin && !props.initialRunId && !props.adapter && !props.result;
+  const durable = distributed && !v2Only && initialMode === 'legacy-first-fit' && !legacyOrigin && !props.initialRunId && !props.adapter && !props.result;
   const showLegacy = useCallback(id => setLegacyOrigin(id), []);
   return <AppShell activeItem="optimization" user={user}>{toolbar}
     {canViewResults(user) ? <>
@@ -237,7 +238,7 @@ export function OptimizationPage({ user, toolbar, initialMode = 'first-fit',
       {initialMode !== 'hu015' ? legacy ? <OptimizationContent {...props} durable={durable}
         readOnly={distributed && !durable && !props.adapter && !props.result}
         initialRunId={typeof legacyOrigin === 'number' ? legacyOrigin : props.initialRunId} user={user} />
-        : <ComparisonWorkspace {...props} distributed={distributed} initialRunId={legacyOrigin === false ? undefined : props.initialRunId} user={user} onLegacy={showLegacy} />
+        : <ComparisonWorkspace {...props} distributed={distributed} v2Only={v2Only} initialRunId={legacyOrigin === false ? undefined : props.initialRunId} user={user} onLegacy={showLegacy} />
         : canExecuteOptimization(user) ? <Hu015Rasterization {...props} />
           : <FeedbackMessage variant="error">No tienes permiso para preparar la vista previa de piezas.</FeedbackMessage>}
     </> : <FeedbackMessage variant="error">No tienes permiso para consultar la optimización.</FeedbackMessage>}

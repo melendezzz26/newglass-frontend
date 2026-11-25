@@ -32,6 +32,7 @@ jobs:
       name: github-pages
     env:
       VITE_API_URL: ${{ vars.VITE_API_URL }}
+      VITE_OPTIMIZATION_MODE: distributed-v2
     defaults:
       run:
         working-directory: .

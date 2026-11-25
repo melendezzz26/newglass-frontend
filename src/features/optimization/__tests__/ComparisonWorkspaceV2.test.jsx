@@ -9,7 +9,7 @@ import { withPermissions } from '../../authentication/__tests__/permissionFixtur
 const user = withPermissions({ id_usuario: 1, usuario: 'Operario', rol: 'Operario' });
 beforeEach(() => localStorage.clear());
 
-function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false, separation, active = false, distributed = false } = {}) {
+function setupV2({ partial = false, lostResponse = false, conflict = false, actingUser = user, beamStatistics = null, notStarted = false, separation, active = false, distributed = false, v2Only = false } = {}) {
   const current = structuredClone(partial ? comparisonV2.mixed : comparisonV2.completed);
   if (active) {
     current.status = 'EN_EJECUCION';
@@ -81,7 +81,7 @@ function setupV2({ partial = false, lostResponse = false, conflict = false, acti
   };
   const v1 = { start: vi.fn(), load: vi.fn(), lookup: vi.fn(), observe: vi.fn(), result: vi.fn(), manifest: vi.fn(),
     forExecution: vi.fn(), choose: vi.fn(), confirm: vi.fn(), release: vi.fn() };
-  const view = render(<OptimizationPage user={actingUser} source={source} comparisonAdapter={v1} comparisonV2Adapter={apiV2} distributed={distributed} />);
+  const view = render(<OptimizationPage user={actingUser} source={source} comparisonAdapter={v1} comparisonV2Adapter={apiV2} distributed={distributed || v2Only} v2Only={v2Only} />);
   const completeCancellation = () => {
     current.cancellation_status = 'CANCELLED'; current.terminal = true;
     current.supervisor_stopped = true; current.status = 'FALLIDA';
@@ -93,6 +93,30 @@ function setupV2({ partial = false, lostResponse = false, conflict = false, acti
   };
   return { apiV2, v1, view, completeCancellation };
 }
+
+test('Staging abre en V2 y solo inicia comparaciones de seis motores', async () => {
+  const { apiV2, v1 } = setupV2({ v2Only: true });
+  expect(screen.getByLabelText('Métodos')).toHaveValue('comparison-v2');
+  expect(screen.queryByRole('option', { name: /Tres métodos/ })).not.toBeInTheDocument();
+  fireEvent.click(await screen.findByRole('checkbox', { name: /Pedido #1/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Comparar con los seis motores' }));
+  await waitFor(() => expect(apiV2.start).toHaveBeenCalledOnce());
+  expect(v1.start).not.toHaveBeenCalled();
+});
+
+test('Staging conserva la consulta del historial V1', async () => {
+  const { apiV2, v1 } = setupV2({ v2Only: true });
+  const old = { ...comparisonV1.completed, released: true };
+  v1.load.mockResolvedValue(old);
+  apiV2.history = vi.fn(async () => ({ next_before_id: null, items: [{
+    profile: 'comparison-v1', comparison_id: old.comparison_id, started_at: '2026-11-11T10:00:00Z',
+    order_ids: old.order_ids, status: old.status, released: true, confirmed: false,
+  }] }));
+  fireEvent.click(screen.getByRole('button', { name: 'Ver comparaciones anteriores' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Ver comparación #' + old.comparison_id }));
+  await waitFor(() => expect(v1.load).toHaveBeenCalledWith(old.comparison_id, expect.any(AbortSignal)));
+  expect(screen.queryByRole('button', { name: 'Comparar con los tres motores' })).not.toBeInTheDocument();
+});
 
 test('distributed V2 displays a queued work, polls once per cycle and retains ownership on remount', async () => {
   const { apiV2, v1, view } = setupV2({ active: true, distributed: true });

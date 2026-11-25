@@ -79,10 +79,16 @@ npm run preview
 El CI de este repositorio ejecuta `npm ci`, `npm run test:unit`,
 `npm run test:component`, `npm run lint` y `npm run build`.
 También ejecuta Playwright E2E contra **dos checkouts Git independientes**
-(frontend y backend), con PostgreSQL temporal y Chromium administrado. La
-revisión del backend está fijada al SHA completo de
-[.github/backend-e2e.sha](.github/backend-e2e.sha): cada actualización de
-backend requiere revisar compatibilidad y actualizar el SHA en un PR del frontend.
+(frontend y backend), con PostgreSQL temporal y Chromium administrado. El CI
+usa `main` del backend por defecto y conserva el SHA exacto en
+`backend-sha.txt`, junto con la evidencia de Playwright. Para reproducir la
+pareja archivada en [.github/backend-e2e.sha](.github/backend-e2e.sha),
+seleccionar `pinned` al lanzar el workflow manualmente.
+
+El [laboratorio multiusuario](docs/specs/EN-CONC-001-frontend-multiusuario.md#pruebas)
+cubre la cola distribuida con una y dos plazas, cuatro solicitantes y stock sintético.
+El [informe TA-QA-008](docs/evidence/sprint-02/TA-QA-008/README.md)
+recoge la matriz de interfaz y sus condiciones de reproducción.
 
 Para reproducir E2E localmente, clonar los repositorios como carpetas hermanas:
 

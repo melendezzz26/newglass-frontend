@@ -40,7 +40,10 @@ async function connect(browser, actor, api) {
   return { context, page, posts, reads, switchApi: value => { api = value; }, loseFF: () => { loseFF = true; },
     async request(path, options) {
       const token = await page.evaluate(() => JSON.parse(sessionStorage.getItem('optimizador.auth')).access_token);
-      return context.request.fetch(address(path).href, { ...options, headers: { Authorization: 'Bearer ' + token, ...options?.headers } });
+      return context.request.fetch(address(path).href, { ...options, headers: {
+        // Avoid retaining a Windows/WSL connection to a restarted test API.
+        Connection: 'close', Authorization: 'Bearer ' + token, ...options?.headers,
+      } });
     } };
 }
 
@@ -51,8 +54,9 @@ async function admit(session, order) {
   const next = page.waitForResponse(r => new URL(r.url()).pathname === cmp && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Comparar con los seis motores' }).click();
   const response = await next;
-  expect(response.status()).toBe(201);
-  return (await response.json()).comparison_id;
+  const body = await response.json();
+  expect(response.status(), `Admisión del pedido ${order}: ${body.detail?.code ?? response.status()}`).toBe(201);
+  return body.comparison_id;
 }
 
 async function progress(session, id) {
@@ -127,7 +131,8 @@ test('cuatro solicitantes V2, almacén, cancelación y FF durable reales', async
 
     const oldApi = state().api_a;
     mark('restart_a');
-    await expect.poll(() => state().api_a).not.toBe(oldApi);
+    // The harness allows up to 25 s for the replacement Uvicorn process to boot.
+    await expect.poll(() => state().api_a, { timeout: 30_000 }).not.toBe(oldApi);
     a.switchApi('api_b');
     b.switchApi('api_a');
     await a.page.reload();

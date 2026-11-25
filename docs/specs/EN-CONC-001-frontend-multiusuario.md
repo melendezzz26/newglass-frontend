@@ -27,3 +27,13 @@ python -m pytest tests/integration/optimization/test_browser_frontend_lab.py -q
 ```
 
 Desde el frontend, al aparecer `ready.json`, ejecutar `npx playwright test -c tests/multiuser/playwright.config.js multiuser.spec.js`. El navegador inicia sesión contra FastAPI. El adaptador Playwright reenvía las solicitudes a las instancias de loopback y permite cambiar de instancia sin cambiar el origen del navegador. La pérdida de la primera respuesta de FF ocurre después de la admisión real. Los permisos, eventos, geometría y stock llegan del backend real. El arnés verifica el número de intentos de ejecución y los movimientos de inventario directamente en PostgreSQL temporal. Los trabajos quedan sin confirmar. Ante un fallo del navegador, marcar `abort` en el directorio del ensayo para cerrar el laboratorio. Al terminar, retirar `ready.json`, que contiene solo credenciales efímeras de los usuarios sintéticos. Las capturas están en `test-results/multiuser-<capacidad>/`.
+
+### Verificación local del 24 de noviembre de 2026
+
+Se probó el backend `843caf492a3ed3eca93727fa2c91d1ec0c3dfbfa` y el frontend basado en `5cb33bb17ebfcae4296b7198832a643cae56083a` con los ajustes de pruebas de este cierre. El perfil de una plaza mostró un trabajo activo y tres en espera. El perfil de dos plazas mostró dos activos y dos en espera.
+
+En ambos perfiles, cuatro propietarios iniciaron V2 sobre pedidos distintos y Almacén registró y editó una plancha independiente. El laboratorio comprobó aislamiento de resultados, cancelación con cierre acreditado, progreso después de reiniciar una API, recuperación de FF durable con la misma clave e historial V1. Los trabajos de simulación conservaron las existencias originales y generaron cero movimientos. Todo se ejecutó en PostgreSQL temporal con usuarios y pedidos sintéticos.
+
+En escritorio y móvil se verificaron B02, B07 y los dos escenarios RBAC. B02 restaura la revisión actual antes de reanudar el tráfico HTTP. La prueba RBAC de comparación comprueba el `404` para un tercero y la lectura de su historial por el propietario tras revocar `optimization.execute`. B07 recupera los patrones persistidos en 2D y 3D y libera los pedidos sin consumir inventario.
+
+El [informe TA-QA-008](../evidence/sprint-02/TA-QA-008/README.md) documenta la matriz de interfaz y conserva sus resultados en el entorno original.

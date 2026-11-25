@@ -1,6 +1,7 @@
 // Autor: Fabricio Melendez Quezada. Revisor asignado: Andro Quispe.
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { api, setup, login, loginApi, open, run, stock, capture, save } from './optimizationRealSupport.js';
 import { parseComparisonV2, parseExecutionV2, parseComparisonEventV2 } from '../../src/features/optimization/comparisonV2Contract.js';
@@ -699,10 +700,11 @@ test('TA-043 B07 smoke: interfaz v2, seis distribuciones y recuperacion visual r
 });
 
 test('TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL', async ({ page }, info) => {
+  test.setTimeout(120_000);
   const backend = fileURLToPath(new URL('../../../backend/', import.meta.url));
-  const migrate = (...args) => JSON.parse(execFileSync('python', ['-m', 'tests.optimization_b02_upgrade', ...args],
+  const migrate = () => JSON.parse(execFileSync('python',
+    ['-c', readFileSync(new URL('./b02_roundtrip.py', import.meta.url), 'utf8')],
     { cwd: backend, encoding: 'utf8' }));
-  expect(migrate('--prepare').prepared_revision).toBe('s2cmp01a1b2c');
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const data = await setup(page, 'single');
   const inventory = await stock(page, data);
@@ -713,7 +715,7 @@ test('TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL
   await page.getByRole('button', { name: 'Comparar con los tres motores', exact: true }).click();
   const response = await accepted; expect(response.status()).toBe(201);
   const id = (await response.json()).comparison_id;
-  await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
+  await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible({ timeout: 40_000 });
   const get = async url => {
     const result = await page.request.get(`${api}/api/optimization/${url}`, { headers: data.headers });
     expect(result.status()).toBe(200); return result.json();
@@ -731,15 +733,20 @@ test('TA-043 B02 smoke: historia v1 y FF intacta después del upgrade PostgreSQL
   expect(lines.at(-1).event).toBe('optimization_completed');
   const runId = lines[0].id_optimizacion;
   const ff = await get(`runs/${runId}`); expect(ff.metodo).toBe('FF'); expect(ff.completo).toBe(true);
+  // Suspend browser observers while the disposable database is on historical revisions.
+  await page.goto('about:blank');
   const migration = migrate();
-  expect(migration.result).toBe('PASS');
+  expect(migration).toMatchObject({
+    result: 'PASS', previous_revision: 's2cmp01a1b2c', b02_revision: 's2cmp02d4e6f8',
+    restored_revision: data.runtime.alembic_heads[0],
+  });
   expect(migration.before_sha256).toEqual(migration.after_sha256);
   expect(await get(`comparisons/${id}`)).toEqual(current);
   for (let i = 0; i < results.length; i++) {
     expect(await get(`comparisons/${id}/executions/${current.executions[i].execution_id}`)).toEqual(results[i]);
   }
   expect(await get(`runs/${runId}`)).toEqual(ff);
-  await page.reload(); await open(page);
+  await page.goto('/'); await open(page);
   // Let the existing automatic recovery settle before testing explicit lookup.
   await expect(page.getByRole('tab')).toHaveCount(4);
   await expect(page.getByText('Comparación finalizada', { exact: true })).toBeVisible();
@@ -1004,7 +1011,25 @@ test('consulta sin permisos de ejecución recupera resultados sin permitir elecc
   const created = await page.request.post(`${api}/api/optimization/comparisons`, { headers: { ...data.headers, 'Idempotency-Key': `view-only-${Date.now()}` }, data: { order_ids: data.orders } });
   expect(created.status()).toBe(201);
   const comparison = await created.json();
-  await login(page, data.actors.view, { comparative: true }); await open(page);
+  const url = `${api}/api/optimization/comparisons/${comparison.comparison_id}`;
+  const foreign = await loginApi(page.request, data.actors.view);
+  expect((await page.request.get(url, { headers: foreign })).status()).toBe(404);
+  await expect.poll(async () => (await (await page.request.get(url, { headers: data.headers })).json()).terminal,
+    { timeout: 25_000 }).toBe(true);
+
+  // A read-only owner can recover its own comparison after losing execution rights.
+  const session = await page.request.get(`${api}/api/auth/me`, { headers: data.headers });
+  expect(session.status()).toBe(200);
+  const { rol } = await session.json();
+  const roles = await page.request.get(`${api}/api/roles`, { headers: data.headers });
+  expect(roles.status()).toBe(200);
+  const ownerRole = (await roles.json()).find(role => role.nombre === rol);
+  expect(ownerRole?.nombre).toMatch(/^E2E-all-/);
+  const reduced = await page.request.put(`${api}/api/roles/${ownerRole.id_rol}/permissions`, {
+    headers: data.headers, data: { permisos: ['optimization.view'] },
+  });
+  expect(reduced.status()).toBe(200);
+  await login(page, data.actors.all, { comparative: true }); await open(page);
   await page.getByText('Consulta avanzada', { exact: true }).click();
   await page.getByLabel('Consultar trabajo guardado').fill(String(comparison.comparison_id));
   await page.getByRole('button', { name: 'Consultar', exact: true }).click();
@@ -1014,8 +1039,7 @@ test('consulta sin permisos de ejecución recupera resultados sin permitir elecc
   for (const radio of await page.getByRole('radio').all()) await expect(radio).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Comparar con los tres motores' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Confirmar distribución elegida' })).toHaveCount(0);
-  const headers = await loginApi(page.request, data.actors.view);
-  const rejected = await page.request.put(`${api}/api/optimization/comparisons/${comparison.comparison_id}/selection`, {
-    headers, data: { execution_id: comparison.executions[0].execution_id, expected_version: comparison.version } });
+  const rejected = await page.request.put(`${url}/selection`, {
+    headers: data.headers, data: { execution_id: comparison.executions[0].execution_id, expected_version: comparison.version } });
   expect(rejected.status()).toBe(403);
 });

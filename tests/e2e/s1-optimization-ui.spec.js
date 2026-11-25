@@ -172,15 +172,21 @@ test('E2E8 RBAC real: sin view, view, execute y confirm independientes', async (
   await expect(page.getByRole('button', { name: 'Revisar vidrios y piezas', exact: true })).toHaveCount(0);
   await page.getByLabel('Número de trabajo', { exact: true }).fill(String(result.id_optimizacion));
   await page.getByRole('button', { name: 'Consultar resultado', exact: true }).click();
-  await expect(page.getByText('Estado del trabajo: Distribución lista', { exact: true })).toBeVisible();
+  await expect(page.getByText('No se encontró la optimización.', { exact: true })).toBeVisible();
   const view = await loginApi(page.request, data.actors.view);
+  expect((await page.request.get(`${api}/api/optimization/runs/${result.id_optimizacion}`, { headers: view })).status()).toBe(404);
   expect((await page.request.post(`${api}/api/optimization/runs`, { headers: view, data: { order_ids: data.orders } })).status()).toBe(403);
   await capture(page, info, 'view-only');
   await page.getByRole('button', { name: 'Cerrar sesión', exact: true }).click();
   await login(page, data.actors.confirm); await open(page);
   await page.getByLabel('Número de trabajo', { exact: true }).fill(String(result.id_optimizacion));
   await page.getByRole('button', { name: 'Consultar resultado', exact: true }).click();
-  await confirm(page, data, result, info);
+  await expect(page.getByText('No se encontró la optimización.', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirmar corte', exact: true })).toHaveCount(0);
+  const confirmation = await loginApi(page.request, data.actors.confirm);
+  expect((await page.request.post(`${api}/api/optimization/runs/${result.id_optimizacion}/confirm`,
+    { headers: confirmation })).status()).toBe(404);
+  expect(await orderStates(page, data)).toEqual(['OPTIMIZADO']);
 });
 test('E2E9 rotación real: contorno orientado se traduce una sola vez en 2D y 3D', async ({ page }, info) => {
   const data = await setup(page, 'rotated'); await login(page, data.actors.all); await open(page);
